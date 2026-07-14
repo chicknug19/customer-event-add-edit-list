@@ -1,0 +1,81 @@
+# Visual Studio / .NET
+.vs/
+*.vssscc
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+
+# Build results
+[Bb]in/
+[Oo]bj/
+out/
+publish/
+
+# NuGet
+*.nupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ASP.NET / IIS
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+
+# Runtime files
+*.log
+*.pid
+*.seed
+
+# Database files
+*.mdf
+*.ldf
+*.sqlite
+*.db
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/
+
+# Resharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+# Node / front-end
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dist/
+
+# Test results / coverage
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+*.trx
+
+# Packaging
+*.zip
+*.tar.gz
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Certificates and keys
+*.pfx
+*.key
+*.crt
+
+# Debug / profiling
+*.log
+*.appmap
+
+# Ignore local settings and files that should not be pushed to GitHub
+local.settings.json
+.env
