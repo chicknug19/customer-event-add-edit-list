@@ -1,0 +1,277 @@
+﻿@model JPP.Models.Admin.StoreList.Responses.StoreDetailViewModel
+
+@{
+    var form = Model.Form;
+
+    ViewData["Title"] = "Store Detail";
+    ViewData["PageTitle"] = "Store Detail";
+    ViewData["PageSubtitle"] = "View store master data";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="admin-page-header mb-4">
+    <div>
+        <span class="admin-eyebrow">Admin</span>
+        <h3>Store Detail</h3>
+        <p>
+            View complete information for selected store.
+        </p>
+    </div>
+
+    <div class="admin-page-actions">
+        <a asp-area="Admin"
+           asp-controller="StoreList"
+           asp-action="Index"
+           class="btn btn-soft">
+            <i class="bi bi-arrow-left me-2"></i>
+            Back to List
+        </a>
+
+        <a asp-area="Admin"
+           asp-controller="StoreList"
+           asp-action="Edit"
+           asp-route-id="@form.Id"
+           class="btn btn-main">
+            <i class="bi bi-pencil-square me-2"></i>
+            Edit
+        </a>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="crm-card store-detail-card">
+    <div class="store-detail-toolbar">
+        <div>
+            <h5>@DisplayText(form.StoreName)</h5>
+            <p>
+                Store ID: @form.Id
+                <span class="mx-2">•</span>
+                Code: @DisplayText(form.Code)
+            </p>
+        </div>
+
+        <div class="store-detail-actions">
+            @if (form.IsPublished)
+            {
+                <span class="badge rounded-pill bg-success-subtle text-success px-3 py-2">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Published
+                </span>
+            }
+            else
+            {
+                <span class="badge rounded-pill bg-secondary-subtle text-secondary px-3 py-2">
+                    <i class="bi bi-eye-slash me-1"></i>
+                    Unpublished
+                </span>
+            }
+        </div>
+    </div>
+
+    <div class="store-form-section">
+        <div class="section-title">
+            <h5>Basic Information</h5>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="store-readonly-box">
+                    <label>Store ID</label>
+                    <strong>@form.Id</strong>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="store-readonly-box">
+                    <label>Code</label>
+                    <strong>@DisplayText(form.Code)</strong>
+                </div>
+            </div>
+
+            <div class="col-xl-6 col-lg-8 col-md-12">
+                <div class="store-readonly-box">
+                    <label>Store Name</label>
+                    <strong>@DisplayText(form.StoreName)</strong>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-lg-6 col-md-6">
+                <div class="store-readonly-box">
+                    <label>Person In Charge</label>
+                    <strong>@DisplayText(form.InChargeName)</strong>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-lg-6 col-md-6">
+                <div class="store-readonly-box">
+                    <label>BIZ Reg No.</label>
+                    <strong>@DisplayText(form.BizRegNo)</strong>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-lg-6 col-md-6">
+                <div class="store-readonly-box">
+                    <label>Last Updated</label>
+                    <strong>@DisplayText(Model.LastUpdatedText)</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="store-form-section">
+        <div class="section-title">
+            <h5>Address Information</h5>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="store-readonly-box">
+                    <label>Block / House No.</label>
+                    <strong>@DisplayText(form.BlockHouseNo)</strong>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="store-readonly-box">
+                    <label>Unit No.</label>
+                    <strong>@DisplayText(form.UnitNo)</strong>
+                </div>
+            </div>
+
+            <div class="col-xl-6 col-lg-8 col-md-12">
+                <div class="store-readonly-box">
+                    <label>Address 1</label>
+                    <strong>@DisplayText(form.Address1)</strong>
+                </div>
+            </div>
+
+            <div class="col-xl-6 col-lg-8 col-md-12">
+                <div class="store-readonly-box">
+                    <label>Address 2</label>
+                    <strong>@DisplayText(form.Address2)</strong>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="store-readonly-box">
+                    <label>City</label>
+                    <strong>@DisplayText(form.City)</strong>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="store-readonly-box">
+                    <label>State</label>
+                    <strong>@DisplayText(form.State)</strong>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="store-readonly-box">
+                    <label>Country</label>
+                    <strong>@DisplayText(form.Country)</strong>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="store-readonly-box">
+                    <label>Postal Code</label>
+                    <strong>@DisplayText(form.PostalCode)</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="store-form-section">
+        <div class="section-title">
+            <h5>Contact Information</h5>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="store-readonly-box">
+                    <label>Phone</label>
+                    <strong>@DisplayText(form.Phone)</strong>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="store-readonly-box">
+                    <label>Fax</label>
+                    <strong>@DisplayText(form.Fax)</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="store-form-section">
+        <div class="section-title">
+            <h5>Connection Information</h5>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="store-readonly-box">
+                    <label>IP Address</label>
+                    <strong>@DisplayText(form.IpAddress)</strong>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="store-readonly-box">
+                    <label>Port No.</label>
+                    <strong>@DisplayText(form.PortNo)</strong>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="store-readonly-box">
+                    <label>DB Name</label>
+                    <strong>@DisplayText(form.DbName)</strong>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="store-readonly-box">
+                    <label>DB Login</label>
+                    <strong>@DisplayText(form.DbLogin)</strong>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="store-readonly-box">
+                    <label>DB Password</label>
+                    <strong>@MaskText(form.DbPassword)</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+@functions {
+    private static string DisplayText(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value) ? "-" : value.Trim();
+    }
+
+    private static string MaskText(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value) ? "-" : "••••••••";
+    }
+}

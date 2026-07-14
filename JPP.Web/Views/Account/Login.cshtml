@@ -1,0 +1,412 @@
+﻿@using System.Text.Json
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+
+    var showForgotPassword = ViewBag.ShowForgotPassword == true;
+    var serverErrorMessage = TempData["ErrorMessage"] as string ?? string.Empty;
+    var forgotPasswordMessage = ViewBag.ForgotPasswordMessage as string ?? string.Empty;
+}
+
+<div class="legacy-login-page"
+     ng-app="jppLoginApp"
+     ng-controller="LoginController"
+     ng-cloak>
+    <div class="legacy-login-hero">
+        <div class="legacy-login-overlay"></div>
+
+        <div class="legacy-login-content">
+            <div class="legacy-login-brand">
+                <img src="~/images/logo-default-258x116-1.png.webp"
+                     alt="JPP Logo"
+                     class="legacy-login-logo" />
+            </div>
+
+            <div class="legacy-login-headline">
+                <span class="legacy-login-subtitle">Secure Admin Access</span>
+                <h1>Welcome Back</h1>
+                <p>Please enter your username and password</p>
+            </div>
+
+            <div class="legacy-login-card">
+                <div class="alert legacy-alert"
+                     ng-if="alert.message"
+                     ng-class="'alert-' + alert.type"
+                     role="alert">
+                    <i class="bi me-2" ng-class="alert.icon"></i>
+                    <span ng-bind="alert.message"></span>
+                </div>
+
+                <form id="loginOtpForm"
+                      name="loginOtpForm"
+                      autocomplete="off"
+                      ng-submit="loginWithOtp($event)"
+                      novalidate>
+
+                    @Html.AntiForgeryToken()
+
+                    <div class="legacy-login-fields">
+                        <div class="legacy-input-wrap">
+                            <i class="bi bi-person"></i>
+                            <input type="text"
+                                   id="Username"
+                                   name="Username"
+                                   class="legacy-input"
+                                   placeholder="Username"
+                                   autocomplete="username"
+                                   ng-model="login.username"
+                                   ng-keydown="usernameKeydown($event)" />
+                        </div>
+
+                        <div class="legacy-input-wrap password-wrap">
+                            <i class="bi bi-lock"></i>
+                            <input id="Password"
+                                   name="Password"
+                                   class="legacy-input"
+                                   placeholder="Password"
+                                   autocomplete="current-password"
+                                   ng-attr-type="{{ showPassword ? 'text' : 'password' }}"
+                                   ng-model="login.password"
+                                   ng-keydown="passwordKeydown($event)" />
+
+                            <button type="button"
+                                    class="legacy-password-toggle"
+                                    aria-label="Show or hide password"
+                                    ng-click="togglePassword()">
+                                <i class="bi" ng-class="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                            </button>
+                        </div>
+
+                        <button type="button"
+                                class="legacy-button legacy-button-primary"
+                                ng-click="requestLoginOtp()"
+                                ng-disabled="isRequestingOtp">
+                            <span ng-bind="isRequestingOtp ? 'Processing...' : 'Get OTP'"></span>
+                            <span class="spinner-border spinner-border-sm"
+                                  ng-class="{ 'd-none': !isRequestingOtp }"
+                                  aria-hidden="true"></span>
+                        </button>
+                    </div>
+
+                    <div class="legacy-otp-panel"
+                         ng-class="{ 'd-none': !showOtpPanel }">
+                        <div class="legacy-otp-message">
+                            <i class="bi bi-envelope-check"></i>
+                            <span>OTP is sent to your email. Please enter the OTP.</span>
+                        </div>
+
+                        <div class="legacy-login-fields legacy-otp-fields">
+                            <div class="legacy-input-wrap">
+                                <i class="bi bi-shield-lock"></i>
+                                <input type="text"
+                                       id="OTP"
+                                       name="OTP"
+                                       class="legacy-input"
+                                       placeholder="OTP"
+                                       inputmode="numeric"
+                                       autocomplete="one-time-code"
+                                       ng-model="login.otp"
+                                       ng-keydown="otpKeydown($event)" />
+                            </div>
+
+                            <button type="submit"
+                                    class="legacy-button legacy-button-success"
+                                    ng-disabled="isLoggingIn">
+                                <span ng-bind="isLoggingIn ? 'Logging in...' : 'Login'"></span>
+                                <span class="spinner-border spinner-border-sm"
+                                      ng-class="{ 'd-none': !isLoggingIn }"
+                                      aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="legacy-login-actions">
+                    <button type="button"
+                            class="legacy-link-button"
+                            ng-click="showForgotPasswordPanel()">
+                        Forget Password?
+                    </button>
+                </div>
+            </div>
+
+            <div class="legacy-forgot-card"
+                 ng-class="{ 'd-none': !showForgotPassword }">
+                <form id="forgotPasswordForm"
+                      name="forgotPasswordForm"
+                      autocomplete="off"
+                      ng-submit="submitForgotPassword($event)"
+                      novalidate>
+
+                    @Html.AntiForgeryToken()
+
+                    <div class="legacy-forgot-title">
+                        <i class="bi bi-key"></i>
+                        <div>
+                            <h2>Forget your password?</h2>
+                            <p>Please enter your registered email address</p>
+                        </div>
+                    </div>
+
+                    <div class="legacy-forgot-form">
+                        <input type="email"
+                               id="ForgotEmail"
+                               name="email"
+                               class="legacy-input legacy-forgot-input"
+                               placeholder="Registered email address"
+                               ng-model="forgot.email" />
+
+                        <button type="submit"
+                                class="legacy-button legacy-button-primary"
+                                ng-disabled="isSubmittingForgotPassword">
+                            <span ng-bind="isSubmittingForgotPassword ? 'Submitting...' : 'Submit'"></span>
+                            <span class="spinner-border spinner-border-sm"
+                                  ng-class="{ 'd-none': !isSubmittingForgotPassword }"
+                                  aria-hidden="true"></span>
+                        </button>
+                    </div>
+
+                    <div class="legacy-forgot-message" ng-if="forgotMessage">
+                        <span ng-bind="forgotMessage"></span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        window.jppLoginConfig = {
+            showForgotPassword: @JsonSerializer.Serialize(showForgotPassword),
+            serverErrorMessage: @Html.Raw(JsonSerializer.Serialize(serverErrorMessage)),
+            forgotPasswordMessage: @Html.Raw(JsonSerializer.Serialize(forgotPasswordMessage)),
+            requestOtpUrl: '@Url.Action("RequestLoginOtp", "Account")',
+            loginWithOtpUrl: '@Url.Action("LoginWithOtp", "Account")',
+            forgotPasswordUrl: '@Url.Action("ForgotPassword", "Account")'
+        };
+
+        angular.module('jppLoginApp', [])
+            .controller('LoginController', ['$scope', '$http', '$timeout', function ($scope, $http, $timeout) {
+                const config = window.jppLoginConfig || {};
+
+                $scope.login = {
+                    username: '',
+                    password: '',
+                    otp: ''
+                };
+
+                $scope.forgot = {
+                    email: ''
+                };
+
+                $scope.alert = {
+                    type: '',
+                    icon: '',
+                    message: ''
+                };
+
+                $scope.forgotMessage = config.forgotPasswordMessage || '';
+                $scope.showPassword = false;
+                $scope.showOtpPanel = false;
+                $scope.showForgotPassword = !!config.showForgotPassword;
+                $scope.isRequestingOtp = false;
+                $scope.isLoggingIn = false;
+                $scope.isSubmittingForgotPassword = false;
+
+                if (config.serverErrorMessage) {
+                    setAlert(config.serverErrorMessage, 'danger');
+                }
+
+                function setAlert(message, type) {
+                    const alertType = type || 'warning';
+
+                    $scope.alert = {
+                        type: alertType,
+                        message: message,
+                        icon: alertType === 'danger'
+                            ? 'bi-exclamation-triangle'
+                            : alertType === 'success'
+                                ? 'bi-check-circle'
+                                : 'bi-info-circle'
+                    };
+                }
+
+                function focusElement(elementId) {
+                    $timeout(function () {
+                        const element = document.getElementById(elementId);
+
+                        if (element) {
+                            element.focus();
+                        }
+                    }, 0);
+                }
+
+                function getAntiForgeryToken(formId) {
+                    const form = document.getElementById(formId);
+                    const tokenInput = form ? form.querySelector('input[name="__RequestVerificationToken"]') : null;
+
+                    return tokenInput ? tokenInput.value : '';
+                }
+
+                function postForm(url, formId, data) {
+                    const formData = new FormData();
+                    const token = getAntiForgeryToken(formId);
+
+                    Object.keys(data).forEach(function (key) {
+                        formData.append(key, data[key] || '');
+                    });
+
+                    formData.append('__RequestVerificationToken', token);
+
+                    return $http.post(url, formData, {
+                        transformRequest: angular.identity,
+                        headers: {
+                            'Content-Type': undefined,
+                            'RequestVerificationToken': token
+                        }
+                    });
+                }
+
+                $scope.togglePassword = function () {
+                    $scope.showPassword = !$scope.showPassword;
+                };
+
+                $scope.requestLoginOtp = function () {
+                    if (!$scope.login.username || !$scope.login.username.trim()) {
+                        setAlert('Please fill in your username', 'warning');
+                        focusElement('Username');
+                        return;
+                    }
+
+                    if (!$scope.login.password || !$scope.login.password.trim()) {
+                        setAlert('Please fill in your password', 'warning');
+                        focusElement('Password');
+                        return;
+                    }
+
+                    $scope.isRequestingOtp = true;
+
+                    postForm(config.requestOtpUrl, 'loginOtpForm', {
+                        username: $scope.login.username.trim(),
+                        password: $scope.login.password
+                    }).then(function (response) {
+                        const result = response.data || {};
+
+                        if (result.statusCode === 200) {
+                            $scope.showOtpPanel = true;
+                            $scope.showForgotPassword = false;
+                            $scope.forgotMessage = '';
+                            setAlert(result.statusMessage || 'OTP is sent to your email. Please enter the OTP.', 'success');
+                            focusElement('OTP');
+                            return;
+                        }
+
+                        setAlert(result.statusMessage || 'Login Details Incorrect. Please try again.', 'danger');
+                    }).catch(function () {
+                        setAlert('Unable to request OTP. Please try again.', 'danger');
+                    }).finally(function () {
+                        $scope.isRequestingOtp = false;
+                    });
+                };
+
+                $scope.loginWithOtp = function ($event) {
+                    if ($event) {
+                        $event.preventDefault();
+                    }
+
+                    if (!$scope.login.username || !$scope.login.username.trim()) {
+                        setAlert('Please fill in your username', 'warning');
+                        focusElement('Username');
+                        return;
+                    }
+
+                    if (!$scope.login.password || !$scope.login.password.trim()) {
+                        setAlert('Please fill in your password', 'warning');
+                        focusElement('Password');
+                        return;
+                    }
+
+                    if (!$scope.login.otp || !$scope.login.otp.trim()) {
+                        setAlert('Please fill in your OTP', 'warning');
+                        focusElement('OTP');
+                        return;
+                    }
+
+                    $scope.isLoggingIn = true;
+
+                    postForm(config.loginWithOtpUrl, 'loginOtpForm', {
+                        username: $scope.login.username.trim(),
+                        password: $scope.login.password,
+                        otp: $scope.login.otp.trim()
+                    }).then(function (response) {
+                        const result = response.data || {};
+
+                        if (result.statusCode === 200 && result.redirectUrl) {
+                            window.location.href = result.redirectUrl;
+                            return;
+                        }
+
+                        setAlert(result.statusMessage || 'Login Details Incorrect. Please try again.', 'danger');
+                    }).catch(function () {
+                        setAlert('Unable to login. Please try again.', 'danger');
+                    }).finally(function () {
+                        $scope.isLoggingIn = false;
+                    });
+                };
+
+                $scope.submitForgotPassword = function ($event) {
+                    if ($event) {
+                        $event.preventDefault();
+                    }
+
+                    if (!$scope.forgot.email || !$scope.forgot.email.trim()) {
+                        $scope.forgotMessage = 'Please enter your registered email address.';
+                        focusElement('ForgotEmail');
+                        return;
+                    }
+
+                    $scope.isSubmittingForgotPassword = true;
+
+                    postForm(config.forgotPasswordUrl, 'forgotPasswordForm', {
+                        email: $scope.forgot.email.trim()
+                    }).then(function (response) {
+                        const result = response.data || {};
+
+                        $scope.forgotMessage = result.statusMessage || 'If the email is registered, password reset instructions will be sent.';
+                    }).catch(function () {
+                        $scope.forgotMessage = 'Unable to submit forgot password request. Please try again.';
+                    }).finally(function () {
+                        $scope.isSubmittingForgotPassword = false;
+                    });
+                };
+
+                $scope.showForgotPasswordPanel = function () {
+                    $scope.showForgotPassword = true;
+                    $scope.showOtpPanel = false;
+                    setAlert('', 'warning');
+                    focusElement('ForgotEmail');
+                };
+
+                $scope.usernameKeydown = function ($event) {
+                    if ($event.keyCode === 13 && $scope.login.username && $scope.login.username.trim()) {
+                        $event.preventDefault();
+                        focusElement('Password');
+                    }
+                };
+
+                $scope.passwordKeydown = function ($event) {
+                    if ($event.keyCode === 13 && $scope.login.password && $scope.login.password.trim()) {
+                        $event.preventDefault();
+                        $scope.requestLoginOtp();
+                    }
+                };
+
+                $scope.otpKeydown = function ($event) {
+                    if ($event.keyCode === 13 && $scope.login.otp && $scope.login.otp.trim()) {
+                        $scope.loginWithOtp($event);
+                    }
+                };
+            }]);
+    </script>
+}

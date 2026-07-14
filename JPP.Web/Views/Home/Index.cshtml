@@ -1,0 +1,323 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    ViewData["PageTitle"] = "Dashboard";
+    ViewData["PageSubtitle"] = "Monitor leads, customers, sales pipeline, and sales activities";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="welcome-card mb-4">
+    <h3>Welcome to Batavia Central</h3>
+    <p>
+        Manage leads, customers, sales pipeline, follow-ups, support tickets,
+        marketing campaigns, and business reports from one clean dashboard.
+    </p>
+</div>
+
+<div class="row g-4 mb-4">
+
+    <div class="col-xl-3 col-md-6">
+        <div class="crm-card stat-card">
+            <span class="stat-badge badge-up">+12%</span>
+
+            <div class="stat-icon icon-primary">
+                <i class="bi bi-person-plus"></i>
+            </div>
+
+            <h3>1,284</h3>
+            <p>Total Leads</p>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="crm-card stat-card">
+            <span class="stat-badge badge-up">+8%</span>
+
+            <div class="stat-icon icon-success">
+                <i class="bi bi-people"></i>
+            </div>
+
+            <h3>864</h3>
+            <p>Customers</p>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="crm-card stat-card">
+            <span class="stat-badge badge-up">+21%</span>
+
+            <div class="stat-icon icon-warning">
+                <i class="bi bi-cash-stack"></i>
+            </div>
+
+            <h3>$58.2K</h3>
+            <p>Revenue</p>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="crm-card stat-card">
+            <span class="stat-badge badge-down">-3%</span>
+
+            <div class="stat-icon icon-danger">
+                <i class="bi bi-exclamation-circle"></i>
+            </div>
+
+            <h3>37</h3>
+            <p>Pending Follow-Ups</p>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-4 mb-4">
+
+    <div class="col-xl-4">
+        <div class="crm-card">
+            <div class="section-title">
+                <h5>Sales Pipeline</h5>
+                <a href="#">View All</a>
+            </div>
+
+            <div class="pipeline-item">
+                <div class="pipeline-dot dot-new"></div>
+                <div class="pipeline-info">
+                    <strong>New Leads</strong>
+                    <span>New leads received this week</span>
+                </div>
+                <div class="pipeline-value">342</div>
+            </div>
+
+            <div class="pipeline-item">
+                <div class="pipeline-dot dot-contacted"></div>
+                <div class="pipeline-info">
+                    <strong>Contacted</strong>
+                    <span>Leads already contacted by sales</span>
+                </div>
+                <div class="pipeline-value">218</div>
+            </div>
+
+            <div class="pipeline-item">
+                <div class="pipeline-dot dot-qualified"></div>
+                <div class="pipeline-info">
+                    <strong>Qualified</strong>
+                    <span>Ready to move into deal stage</span>
+                </div>
+                <div class="pipeline-value">126</div>
+            </div>
+
+            <div class="pipeline-item">
+                <div class="pipeline-dot dot-lost"></div>
+                <div class="pipeline-info">
+                    <strong>Lost Deals</strong>
+                    <span>Deals that were not completed</span>
+                </div>
+                <div class="pipeline-value">41</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4">
+        <div class="crm-card">
+            <div class="section-title">
+                <h5>Recent Activities</h5>
+                <a href="#">View All</a>
+            </div>
+
+            <div class="activity-item">
+                <div class="activity-avatar">
+                    <i class="bi bi-telephone"></i>
+                </div>
+                <div class="activity-text">
+                    <strong>Customer follow-up</strong>
+                    <p>Sales contacted PT Maju Sentosa.</p>
+                    <span>10 minutes ago</span>
+                </div>
+            </div>
+
+            <div class="activity-item">
+                <div class="activity-avatar">
+                    <i class="bi bi-envelope"></i>
+                </div>
+                <div class="activity-text">
+                    <strong>Email campaign sent</strong>
+                    <p>The monthly promotion campaign was sent successfully.</p>
+                    <span>35 minutes ago</span>
+                </div>
+            </div>
+
+            <div class="activity-item">
+                <div class="activity-avatar">
+                    <i class="bi bi-kanban"></i>
+                </div>
+                <div class="activity-text">
+                    <strong>Deal updated</strong>
+                    <p>The deal with CV Sumber Jaya moved to negotiation stage.</p>
+                    <span>1 hour ago</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4">
+        <div class="crm-card">
+            <div class="section-title">
+                <h5>Quick Actions</h5>
+            </div>
+
+            <div class="d-grid gap-3">
+                <button type="button" class="btn btn-main">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Add New Lead
+                </button>
+
+                <button type="button" class="btn btn-soft">
+                    <i class="bi bi-person-add me-2"></i>
+                    Add Customer
+                </button>
+
+                <button type="button" class="btn btn-soft">
+                    <i class="bi bi-calendar2-plus me-2"></i>
+                    Schedule Follow-Up
+                </button>
+
+                <button type="button" class="btn btn-soft">
+                    <i class="bi bi-file-earmark-bar-graph me-2"></i>
+                    Generate Report
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="crm-card">
+    <div class="section-title">
+        <h5>Latest Leads</h5>
+
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-soft btn-sm">
+                <i class="bi bi-filter me-1"></i>
+                Filter
+            </button>
+
+            <button type="button" class="btn btn-main btn-sm">
+                <i class="bi bi-plus-lg me-1"></i>
+                Add Lead
+            </button>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table crm-table align-middle">
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Company</th>
+                    <th>Source</th>
+                    <th>Status</th>
+                    <th>Owner</th>
+                    <th>Value</th>
+                    <th class="text-end">Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="customer-box">
+                            <div class="customer-avatar">RS</div>
+                            <div>
+                                <strong>Rizky Saputra</strong>
+                                <span>rizky@email.com</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>PT Maju Sentosa</td>
+                    <td>Website</td>
+                    <td>
+                        <span class="status-pill status-hot">Hot Lead</span>
+                    </td>
+                    <td>Sarah</td>
+                    <td><strong>$12,000</strong></td>
+                    <td class="text-end">
+                        <button type="button" class="btn btn-soft btn-sm">
+                            <i class="bi bi-three-dots"></i>
+                        </button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="customer-box">
+                            <div class="customer-avatar">DN</div>
+                            <div>
+                                <strong>Diana Natalia</strong>
+                                <span>diana@email.com</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>CV Sumber Jaya</td>
+                    <td>Referral</td>
+                    <td>
+                        <span class="status-pill status-warm">Warm Lead</span>
+                    </td>
+                    <td>Andi</td>
+                    <td><strong>$8,400</strong></td>
+                    <td class="text-end">
+                        <button type="button" class="btn btn-soft btn-sm">
+                            <i class="bi bi-three-dots"></i>
+                        </button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="customer-box">
+                            <div class="customer-avatar">FA</div>
+                            <div>
+                                <strong>Fajar Ahmad</strong>
+                                <span>fajar@email.com</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>Global Tekno</td>
+                    <td>Facebook Ads</td>
+                    <td>
+                        <span class="status-pill status-cold">Cold Lead</span>
+                    </td>
+                    <td>Michael</td>
+                    <td><strong>$3,750</strong></td>
+                    <td class="text-end">
+                        <button type="button" class="btn btn-soft btn-sm">
+                            <i class="bi bi-three-dots"></i>
+                        </button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="customer-box">
+                            <div class="customer-avatar">LM</div>
+                            <div>
+                                <strong>Lina Marlina</strong>
+                                <span>lina@email.com</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>Mandiri Creative</td>
+                    <td>Google Ads</td>
+                    <td>
+                        <span class="status-pill status-hot">Hot Lead</span>
+                    </td>
+                    <td>Sarah</td>
+                    <td><strong>$15,600</strong></td>
+                    <td class="text-end">
+                        <button type="button" class="btn btn-soft btn-sm">
+                            <i class="bi bi-three-dots"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

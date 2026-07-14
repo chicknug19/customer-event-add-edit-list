@@ -1,0 +1,981 @@
+﻿@model JPP.Models.HR.EmployeeList.Responses.EmployeeDetailViewModel
+
+@{
+    ViewData["Title"] = Model.PageTitle;
+    ViewData["PageTitle"] = Model.PageTitle;
+    ViewData["PageSubtitle"] = Model.PageSubtitle;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var form = Model.Form;
+    var disabled = Model.IsReadOnly ? "disabled" : null;
+    var months = System.Globalization.CultureInfo.InvariantCulture.DateTimeFormat.MonthNames
+        .Where(x => !string.IsNullOrWhiteSpace(x))
+        .Select((name, index) => new { Name = name, Value = index + 1 })
+        .ToList();
+}
+
+<div class="admin-page-header mb-4">
+    <div>
+        <span class="admin-eyebrow">HR Module</span>
+        <h3>@Model.PageTitle</h3>
+        <p>
+            Manage employee account, personal information, HR payroll settings,
+            security access, weekly time table, custom time table, and duty roaster.
+        </p>
+    </div>
+
+    <div class="admin-page-actions">
+        <a asp-area="HR"
+           asp-controller="EmployeeList"
+           asp-action="Index"
+           class="btn btn-soft">
+            <i class="bi bi-arrow-left me-2"></i>
+            Back to List
+        </a>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger" role="alert">
+        <strong>Please check your entry.</strong>
+        <div asp-validation-summary="All"></div>
+    </div>
+}
+
+<form asp-area="HR"
+      asp-controller="EmployeeList"
+      asp-action="Save"
+      method="post"
+      id="employeeForm">
+
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" name="Id" value="@form.Id" />
+    <input type="hidden" name="SubmitMode" id="SubmitMode" value="Save" />
+
+    <div class="employee-form-shell">
+        <div class="employee-toolbar crm-card mb-4">
+            <div>
+                <h5>@(Model.IsEditMode ? Model.DisplayName : "New Employee")</h5>
+                <p>@(Model.IsEditMode ? $"Employee ID: {form.Id}" : "Complete the employee data below.")</p>
+            </div>
+
+            <div class="employee-toolbar-actions">
+                @if (!Model.IsReadOnly)
+                {
+                    <button type="submit"
+                            class="btn btn-main"
+                            data-submit-mode="Save">
+                        <span class="spinner-border spinner-border-sm me-2 d-none employee-save-spinner"></span>
+                        <i class="bi bi-save me-2 employee-save-icon"></i>
+                        Save
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-main-outline"
+                            data-submit-mode="SaveAndClose">
+                        <span class="spinner-border spinner-border-sm me-2 d-none employee-save-spinner"></span>
+                        <i class="bi bi-check2-circle me-2 employee-save-icon"></i>
+                        Save And Close
+                    </button>
+                }
+
+                <a asp-area="HR"
+                   asp-controller="EmployeeList"
+                   asp-action="Index"
+                   class="btn btn-soft">
+                    Cancel
+                </a>
+            </div>
+        </div>
+
+        <div class="crm-card mb-4">
+            <div class="section-title">
+                <h5>User Account</h5>
+                <p>Employee master information and access credential.</p>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-xl-3 col-md-6">
+                    <label class="form-label admin-form-label">Emp No. <span class="text-danger">*</span></label>
+                    <input type="text" name="Number" value="@form.Number" class="form-control" @disabled />
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <label class="form-label admin-form-label">Firstname <span class="text-danger">*</span></label>
+                    <input type="text" name="FirstName" value="@form.FirstName" class="form-control" @disabled />
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <label class="form-label admin-form-label">Lastname</label>
+                    <input type="text" name="LastName" value="@form.LastName" class="form-control" @disabled />
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <label class="form-label admin-form-label">HP No.</label>
+                    <input type="text" name="HPNum" value="@form.HPNum" class="form-control" @disabled />
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <label class="form-label admin-form-label">Role</label>
+                    <select name="RoleId" class="form-select" @disabled>
+                        @foreach (var role in Model.Roles)
+                        {
+                            <option value="@role.Value" selected="@(role.Value == form.RoleId)">@role.Text</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <label class="form-label admin-form-label">Department</label>
+                    <select name="EmployeeDepartmentId" class="form-select" @disabled>
+                        @foreach (var department in Model.Departments)
+                        {
+                            <option value="@department.Value" selected="@(department.Value == form.EmployeeDepartmentId)">@department.Text</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <label class="form-label admin-form-label">Supervisor</label>
+                    <select name="SupervisorId" class="form-select" @disabled>
+                        @foreach (var supervisor in Model.Supervisors)
+                        {
+                            <option value="@supervisor.Value" selected="@(supervisor.Value == form.SupervisorId)">@supervisor.Text</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <label class="form-label admin-form-label">Email Address</label>
+                    <input type="email" name="EmailAddress" value="@form.EmailAddress" class="form-control" @disabled />
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <label class="form-label admin-form-label">Username <span class="text-danger">*</span></label>
+                    <input type="text" name="Username" value="@form.Username" class="form-control" @disabled />
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <label class="form-label admin-form-label">Password @(Model.IsEditMode ? "(leave blank to keep)" : "*")</label>
+                    <input type="password" name="Password" value="" class="form-control" autocomplete="new-password" @disabled />
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <label class="form-label admin-form-label">Confirm Password</label>
+                    <input type="password" name="ConfirmPassword" value="" class="form-control" autocomplete="new-password" @disabled />
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <label class="form-label admin-form-label">4 Digit PassCode <span class="text-danger">*</span></label>
+                    <input type="text" name="Passcode" value="@form.Passcode" maxlength="4" class="form-control" @disabled />
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <label class="form-label admin-form-label">Time Category</label>
+                    <select name="HrTimeCategoryId" class="form-select" @disabled>
+                        @foreach (var timeCategory in Model.TimeCategories)
+                        {
+                            <option value="@timeCategory.Value" selected="@(timeCategory.Value == form.HrTimeCategoryId)">@timeCategory.Text</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-xl-9 col-md-6 d-flex flex-wrap gap-3 align-items-end">
+                    @Checkbox("AllowToChangePrice", "Allow to Change Price", form.AllowToChangePrice, disabled)
+                    @Checkbox("AllowToManageServicePackage", "Allow to Manage Service Package", form.AllowToManageServicePackage, disabled)
+                    @Checkbox("AllowToManageRedemption", "Allow to Manage Redemption", form.AllowToManageRedemption, disabled)
+                    @Checkbox("AllowToVoid", "Allow to Void", form.AllowToVoid, disabled)
+                    @Checkbox("Inactive", "Inactive", form.Inactive, disabled)
+                </div>
+            </div>
+        </div>
+
+        <div class="crm-card">
+            <ul class="nav nav-tabs employee-tabs" id="employeeTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#personalTab" type="button">Personal</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#hrTab" type="button">HR</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#securityTab" type="button">Security</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#timeTableTab" type="button">Time Table</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#customTimeTableTab" type="button">Custom Time Table</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#dutyRoasterTab" type="button">Duty Roaster</button>
+                </li>
+            </ul>
+
+            <div class="tab-content employee-tab-content">
+                <div class="tab-pane fade show active" id="personalTab">
+                    <div class="section-title">
+                        <h5>Personal</h5>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-xl-3 col-md-6">
+                            <label class="form-label admin-form-label">NRIC/Passport/Pass No.</label>
+                            <input type="text" name="Nric" value="@form.Nric" class="form-control" @disabled />
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <label class="form-label admin-form-label">Race</label>
+                            <input type="text" name="Race" value="@form.Race" class="form-control" @disabled />
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <label class="form-label admin-form-label">Country of Birth</label>
+                            <input type="text" name="CountryOfBirth" value="@form.CountryOfBirth" class="form-control" @disabled />
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <label class="form-label admin-form-label">DOB</label>
+                            <input type="date" name="Dob" value="@(form.Dob?.ToString("yyyy-MM-dd"))" class="form-control" @disabled />
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <label class="form-label admin-form-label">Marital Status</label>
+                            <select name="MaritalStatus" class="form-select" @disabled>
+                                <option value="" selected="@(string.IsNullOrWhiteSpace(form.MaritalStatus))">- Please Select -</option>
+                                <option value="Single" selected="@(form.MaritalStatus == "Single")">Single</option>
+                                <option value="Married" selected="@(form.MaritalStatus == "Married")">Married</option>
+                            </select>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <label class="form-label admin-form-label">Spouse Name</label>
+                            <input type="text" name="SpouseName" value="@form.SpouseName" class="form-control" @disabled />
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <label class="form-label admin-form-label">Spouse Contact No.</label>
+                            <input type="text" name="SpouseContactNo" value="@form.SpouseContactNo" class="form-control" @disabled />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="hrTab">
+                    <div class="section-title">
+                        <h5>HR</h5>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-xl-3 col-md-6">
+                            <label class="form-label admin-form-label">Date Hired</label>
+                            <input type="date" name="DateHired" value="@(form.DateHired?.ToString("yyyy-MM-dd"))" class="form-control" @disabled />
+                        </div>
+                        <div class="col-xl-3 col-md-6 d-flex align-items-end">
+                            @Checkbox("HasContractEnd", "Contract End", form.HasContractEnd, disabled, "contractEndCheckbox")
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <label class="form-label admin-form-label">Contract End Date</label>
+                            <input type="date" name="DateContractEnd" value="@(form.DateContractEnd?.ToString("yyyy-MM-dd"))" class="form-control contract-end-input" @disabled />
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <label class="form-label admin-form-label">Pay Method</label>
+                            @SelectStatic("PayMethod", form.PayMethod, new[] { "Monthly Pay", "Time Card" }, disabled)
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <label class="form-label admin-form-label">Pay Frequency</label>
+                            @SelectStatic("PayFrequency", form.PayFrequency, new[] { "Monthly", "Bi Weekly", "Daily" }, disabled)
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <label class="form-label admin-form-label">Payment Mode</label>
+                            @SelectStatic("PaymentMode", form.PaymentMode, new[] { "Cash", "Cheque" }, disabled)
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <label class="form-label admin-form-label">Bank A/C No.</label>
+                            <input type="text" name="BankAccNo" value="@form.BankAccNo" class="form-control" @disabled />
+                        </div>
+                    </div>
+
+                    <div class="employee-form-subtitle">Rates (With CPF)</div>
+                    <div class="row g-3 mb-4">
+                        @Money("RateUsedToBillCustomer", "Rate To Bill Customer", form.RateUsedToBillCustomer, disabled)
+                        @Money("RateSalary", "Salary Rate", form.RateSalary, disabled)
+                        @Money("RateSalaryHourly", "Hourly Rate", form.RateSalaryHourly, disabled)
+                        @Money("DirectorRemuneration", "Director Remuneration", form.DirectorRemuneration, disabled)
+                        @Money("CpfEmployeePercent", "Rate CPF Employee (%)", form.CpfEmployeePercent, disabled)
+                        @Money("CpfEmployerPercent", "Rate CPF Employer (%)", form.CpfEmployerPercent, disabled)
+                        @Money("RateOvertimeWeekday", "Weekday Overtime Rate", form.RateOvertimeWeekday, disabled)
+                        @Money("RateOvertimeWeekend", "Weekend Overtime Rate", form.RateOvertimeWeekend, disabled)
+                        @Money("RateOvertimePublicHoliday", "Public Holiday Overtime Rate", form.RateOvertimePublicHoliday, disabled)
+                        @Money("SalesCommission", "Sales Commission", form.SalesCommission, disabled)
+                        @Money("DeductionUnpaidLeave", "Deduction Unpaid Leave", form.DeductionUnpaidLeave, disabled)
+                        @Money("AllowanceTransport", "Allowance Transport", form.AllowanceTransport, disabled)
+                        @Money("DeductionOthers", "Deduction Others", form.DeductionOthers, disabled)
+                        @Money("AllowancePaidLeave", "Allowance Paid Leave", form.AllowancePaidLeave, disabled)
+                        @Money("ForeignLevy", "F/Levy", form.ForeignLevy, disabled)
+                        @Money("AllowanceOther", "Allowance Other", form.AllowanceOther, disabled)
+                        @Money("Bonus", "Bonus", form.Bonus, disabled)
+                    </div>
+
+                    <div class="employee-form-subtitle">Rates (Without CPF)</div>
+                    <div class="row g-3">
+                        @Money("Donation", "Donation", form.Donation, disabled)
+                        <div class="col-xl-3 col-md-6">
+                            <label class="form-label admin-form-label">Donation Type</label>
+                            @SelectStatic("DonationType", form.DonationType, new[] { "CDAC", "MBMF", "Sinda", "ECF" }, disabled)
+                        </div>
+                        @Money("Sdl", "SDL", form.Sdl, disabled)
+                        @Money("Reimbursement", "Reimbursement", form.Reimbursement, disabled)
+                        @Money("DeductionWithoutCpf", "Deduction", form.DeductionWithoutCpf, disabled)
+                        <div class="col-xl-6 col-md-6">
+                            <label class="form-label admin-form-label">Remarks</label>
+                            <textarea name="AllowanceRemarks" class="form-control" rows="2" @disabled>@form.AllowanceRemarks</textarea>
+                        </div>
+                        <div class="col-xl-6 col-md-6">
+                            <label class="form-label admin-form-label">Notice</label>
+                            <textarea name="Notice" class="form-control" rows="2" @disabled>@form.Notice</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="securityTab">
+                    <div class="section-title">
+                        <h5>Security</h5>
+                        <p>Module access flags from legacy employee security.</p>
+                    </div>
+                    <div class="security-grid">
+                        @Checkbox("ModHome", "Batavia Central Access", form.ModHome, disabled)
+                        @Checkbox("ModAdmin", "Admin", form.ModAdmin, disabled)
+                        @Checkbox("ModOutlet", "Outlet", form.ModOutlet, disabled)
+                        @Checkbox("ModDental", "Dental", form.ModDental, disabled)
+                        @Checkbox("ModPos", "POS", form.ModPos, disabled)
+                        @Checkbox("ModAms", "Asset Mgt", form.ModAms, disabled)
+                        @Checkbox("ModCrm", "CRM", form.ModCrm, disabled)
+                        @Checkbox("ModHr", "HR", form.ModHr, disabled)
+                        @Checkbox("ModInv", "Inventory Mgt", form.ModInv, disabled)
+                        @Checkbox("ModSp", "Supply Chain", form.ModSp, disabled)
+                        @Checkbox("ModMed", "Medical", form.ModMed, disabled)
+                        @Checkbox("ModFin", "Finance", form.ModFin, disabled)
+                        @Checkbox("ModBi", "BI Reporting", form.ModBi, disabled)
+                        @Checkbox("ModEcom", "e-Commerce", form.ModEcom, disabled)
+                        @Checkbox("ModLogistic", "Logistic", form.ModLogistic, disabled)
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="timeTableTab">
+                    <div class="section-title">
+                        <h5>Employee Time Table</h5>
+                        <p>Set weekly working day, location, start time, and end time.</p>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table store-table employee-mini-table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Day</th>
+                                    <th>Location</th>
+                                    <th>Start</th>
+                                    <th>End</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (var i = 0; i < form.TimeTableDays.Count; i++)
+                                {
+                                    var day = form.TimeTableDays[i];
+                                    <tr class="time-table-row">
+                                        <td>
+                                            <input type="hidden" name="TimeTableDays[@i].DayName" value="@day.DayName" />
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input time-working-check" type="checkbox" name="TimeTableDays[@i].Working" value="true" checked="@day.Working" @disabled />
+                                                <input type="hidden" name="TimeTableDays[@i].Working" value="false" />
+                                                <label class="form-check-label fw-semibold">@day.DayName</label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <select name="TimeTableDays[@i].LocationId" class="form-select time-row-input" @disabled>
+                                                <option value="0">- Please Select -</option>
+                                                @foreach (var location in Model.WorkLocations)
+                                                {
+                                                    <option value="@location.Value" selected="@(location.Value == day.LocationId)">@location.Text</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="time" name="TimeTableDays[@i].StartTime" value="@(day.StartTime.HasValue ? day.StartTime.Value.ToString(@"hh\:mm") : "")" class="form-control time-row-input" @disabled />
+                                        </td>
+                                        <td>
+                                            <input type="time" name="TimeTableDays[@i].EndTime" value="@(day.EndTime.HasValue ? day.EndTime.Value.ToString(@"hh\:mm") : "")" class="form-control time-row-input" @disabled />
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="customTimeTableTab">
+                    <div class="section-title">
+                        <h5>Employee Custom Time Table</h5>
+                        <p>Add special schedule changes for a specific date.</p>
+                    </div>
+
+                    @if (form.Id <= 0)
+                    {
+                        <div class="alert alert-info">Please save employee before adding custom time table.</div>
+                    }
+                    else
+                    {
+                        <div class="custom-time-form mb-3">
+                            <input type="hidden" id="customEmployeeId" value="@form.Id" />
+                            <div class="row g-3 align-items-end">
+                                <div class="col-xl-3 col-md-6">
+                                    <label class="form-label admin-form-label">Date</label>
+                                    <input type="date" id="customDate" class="form-control" @disabled />
+                                </div>
+                                <div class="col-xl-3 col-md-6">
+                                    <label class="form-label admin-form-label">Location</label>
+                                    <select id="customLocationId" class="form-select" @disabled>
+                                        <option value="0">- Please Select -</option>
+                                        @foreach (var location in Model.WorkLocations)
+                                        {
+                                            <option value="@location.Value">@location.Text</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-xl-2 col-md-6">
+                                    <label class="form-label admin-form-label">Start</label>
+                                    <input type="time" id="customStartTime" class="form-control" @disabled />
+                                </div>
+                                <div class="col-xl-2 col-md-6">
+                                    <label class="form-label admin-form-label">End</label>
+                                    <input type="time" id="customEndTime" class="form-control" @disabled />
+                                </div>
+                                <div class="col-xl-2 col-md-12">
+                                    @if (!Model.IsReadOnly)
+                                    {
+                                        <button type="button" class="btn btn-main w-100" id="btnAddCustomTimeTable">
+                                            <i class="bi bi-plus-lg me-2"></i>
+                                            Add
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-danger d-none" id="customTimeError"></div>
+
+                        <div class="table-responsive">
+                            <table class="table store-table employee-mini-table align-middle" id="customTimeTable">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Location</th>
+                                        <th>Start Time</th>
+                                        <th>End Time</th>
+                                        @if (!Model.IsReadOnly)
+                                        {
+                                            <th class="text-center">Action</th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var customTime in Model.CustomTimeTables)
+                                    {
+                                        <tr data-id="@customTime.Id">
+                                            <td>@customTime.CustomDateText</td>
+                                            <td>@customTime.LocationName</td>
+                                            <td>@customTime.StartTimeText</td>
+                                            <td>@customTime.EndTimeText</td>
+                                            @if (!Model.IsReadOnly)
+                                            {
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-icon-danger btn-delete-custom" data-id="@customTime.Id" title="Delete">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+
+                <div class="tab-pane fade" id="dutyRoasterTab">
+                    <div class="section-title">
+                        <h5>Duty Roaster</h5>
+                        <p>Untick a day and choose a remark when the employee is not on duty.</p>
+                    </div>
+
+                    <div class="row g-3 align-items-end mb-3">
+                        <div class="col-xl-2 col-md-4">
+                            <label class="form-label admin-form-label">Year</label>
+                            <select name="RoasterYear" id="RoasterYear" class="form-select" @disabled>
+                                @foreach (var year in Model.RoasterYears)
+                                {
+                                    <option value="@year" selected="@(year == form.RoasterYear)">@year</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-xl-3 col-md-4">
+                            <label class="form-label admin-form-label">Month</label>
+                            <select name="RoasterMonth" id="RoasterMonth" class="form-select" @disabled>
+                                @foreach (var month in months)
+                                {
+                                    <option value="@month.Value" selected="@(month.Value == form.RoasterMonth)">@month.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-xl-3 col-md-4">
+                            @if (!Model.IsReadOnly)
+                            {
+                                <button type="button" class="btn btn-soft w-100" id="btnReloadRoaster">
+                                    <i class="bi bi-calendar3 me-2"></i>
+                                    Load Month
+                                </button>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="table-responsive duty-roaster-scroll">
+                        <table class="table store-table employee-mini-table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th style="width: 180px;">On Duty</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (var i = 0; i < form.DutyRoasterDays.Count; i++)
+                                {
+                                    var day = form.DutyRoasterDays[i];
+                                    <tr class="duty-roaster-row">
+                                        <td>
+                                            <input type="hidden" name="DutyRoasterDays[@i].Id" value="@day.Id" />
+                                            <input type="hidden" name="DutyRoasterDays[@i].WorkDate" value="@day.WorkDate.ToString("yyyy-MM-dd")" />
+                                            <strong>@day.WorkDate.ToString("ddd, dd MMM yyyy")</strong>
+                                        </td>
+                                        <td>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input duty-check" type="checkbox" name="DutyRoasterDays[@i].OnDuty" value="true" checked="@day.OnDuty" @disabled />
+                                                <input type="hidden" name="DutyRoasterDays[@i].OnDuty" value="false" />
+                                                <label class="form-check-label">On duty</label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <select name="DutyRoasterDays[@i].Remarks" class="form-select duty-remark" @disabled>
+                                                <option value="" selected="@(string.IsNullOrWhiteSpace(day.Remarks))">-- Select --</option>
+                                                <option value="Off-duty" selected="@(day.Remarks == "Off-duty")">Off-duty</option>
+                                                <option value="MC" selected="@(day.Remarks == "MC")">MC</option>
+                                                <option value="Leave" selected="@(day.Remarks == "Leave")">Leave</option>
+                                                <option value="Urgent" selected="@(day.Remarks == "Urgent")">Urgent</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<style>
+    .employee-form-shell .crm-card {
+        border: 0;
+        border-radius: 18px;
+        box-shadow: 0 12px 35px rgba(49, 55, 69, .08);
+    }
+
+    .employee-toolbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: center;
+        padding: 1.25rem;
+    }
+
+    .employee-toolbar h5 {
+        margin: 0;
+        font-weight: 700;
+        color: #313745;
+    }
+
+    .employee-toolbar p {
+        margin: .25rem 0 0;
+        color: #7b8190;
+    }
+
+    .employee-toolbar-actions {
+        display: flex;
+        gap: .75rem;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .employee-tabs {
+        padding: 1rem 1rem 0;
+        gap: .25rem;
+        border-bottom-color: #edf0f5;
+    }
+
+    .employee-tabs .nav-link {
+        border: 0;
+        border-radius: 12px 12px 0 0;
+        color: #6c7280;
+        font-weight: 600;
+        padding: .75rem 1rem;
+    }
+
+    .employee-tabs .nav-link.active {
+        color: #313745;
+        background: #f5f7fb;
+    }
+
+    .employee-tab-content {
+        padding: 1.25rem;
+    }
+
+    .employee-form-subtitle {
+        font-weight: 700;
+        color: #313745;
+        margin: .5rem 0 1rem;
+    }
+
+    .security-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: .9rem;
+    }
+
+    .employee-check-card {
+        padding: .75rem 1rem;
+        border: 1px solid #edf0f5;
+        border-radius: 14px;
+        background: #fbfcfe;
+    }
+
+    .employee-mini-table th {
+        white-space: nowrap;
+        color: #313745;
+        font-size: .8rem;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+    }
+
+    .employee-mini-table td {
+        vertical-align: middle;
+    }
+
+    .btn-main-outline {
+        border: 1px solid #313745;
+        color: #313745;
+        background: #fff;
+    }
+
+    .btn-main-outline:hover {
+        background: #313745;
+        color: #fff;
+    }
+
+    .btn-icon-danger {
+        border: 0;
+        background: rgba(220, 53, 69, .09);
+        color: #dc3545;
+        border-radius: 10px;
+        width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .duty-roaster-scroll {
+        max-height: 520px;
+        overflow: auto;
+    }
+
+    @@media (max-width: 768px) {
+        .employee-toolbar {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .employee-toolbar-actions {
+            justify-content: flex-start;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        (function ($) {
+            function setSubmitMode(mode) {
+                $('#SubmitMode').val(mode || 'Save');
+            }
+
+            function setSavingState(isSaving) {
+                var $buttons = $('#employeeForm button[type="submit"]');
+                $buttons.prop('disabled', isSaving);
+                $('.employee-save-spinner').toggleClass('d-none', !isSaving);
+                $('.employee-save-icon').toggleClass('d-none', isSaving);
+            }
+
+            function syncTimeTableRow($row) {
+                var isWorking = $row.find('.time-working-check').is(':checked');
+                $row.find('.time-row-input').prop('disabled', !isWorking || @Model.IsReadOnly.ToString().ToLowerInvariant());
+            }
+
+            function syncDutyRow($row) {
+                var onDuty = $row.find('.duty-check').is(':checked');
+                var isReadOnly = @Model.IsReadOnly.ToString().ToLowerInvariant();
+                $row.find('.duty-remark').prop('disabled', onDuty || isReadOnly);
+
+                if (onDuty) {
+                    $row.find('.duty-remark').val('');
+                }
+            }
+
+            function syncContractEnd() {
+                var checked = $('#contractEndCheckbox').is(':checked');
+                $('.contract-end-input').prop('disabled', !checked || @Model.IsReadOnly.ToString().ToLowerInvariant());
+            }
+
+            function showCustomTimeError(message) {
+                $('#customTimeError').text(message || '').toggleClass('d-none', !message);
+            }
+
+            function reloadCustomTimeTable() {
+                var employeeId = $('#customEmployeeId').val();
+
+                if (!employeeId || parseInt(employeeId, 10) <= 0) {
+                    return;
+                }
+
+                $.get('@Url.Action("GetCustomTimeTables", "EmployeeList", new { area = "HR" })', {
+                    employeeId: employeeId
+                }).done(function (result) {
+                    if (!result || result.statusCode !== 200) {
+                        showCustomTimeError(result && result.statusMessage ? result.statusMessage : 'Failed to load custom time table.');
+                        return;
+                    }
+
+                    var rows = '';
+                    var items = result.data || [];
+
+                    $.each(items, function (_, item) {
+                        rows += '<tr data-id="' + item.id + '">';
+                        rows += '<td>' + (item.customDateText || '-') + '</td>';
+                        rows += '<td>' + (item.locationName || '-') + '</td>';
+                        rows += '<td>' + (item.startTimeText || '-') + '</td>';
+                        rows += '<td>' + (item.endTimeText || '-') + '</td>';
+                        @if (!Model.IsReadOnly)
+                        {
+                            <text>
+                            rows += '<td class="text-center"><button type="button" class="btn btn-icon-danger btn-delete-custom" data-id="' + item.id + '" title="Delete"><i class="bi bi-trash"></i></button></td>';
+                            </text>
+                        }
+                        rows += '</tr>';
+                    });
+
+                    $('#customTimeTable tbody').html(rows || '<tr><td colspan="5" class="text-center text-muted py-4">No custom time table found.</td></tr>');
+                }).fail(function () {
+                    showCustomTimeError('Failed to load custom time table.');
+                });
+            }
+
+            $('.employee-toolbar-actions button[type="submit"]').on('click', function () {
+                setSubmitMode($(this).data('submit-mode'));
+            });
+
+            $('#employeeForm').on('submit', function () {
+                setSavingState(true);
+            });
+
+            $('.time-table-row').each(function () {
+                syncTimeTableRow($(this));
+            });
+
+            $('.time-working-check').on('change', function () {
+                syncTimeTableRow($(this).closest('tr'));
+            });
+
+            $('.duty-roaster-row').each(function () {
+                syncDutyRow($(this));
+            });
+
+            $('.duty-check').on('change', function () {
+                syncDutyRow($(this).closest('tr'));
+            });
+
+            $('#contractEndCheckbox').on('change', syncContractEnd);
+            syncContractEnd();
+
+            $('#btnReloadRoaster').on('click', function () {
+                var action = @((form.Id > 0).ToString().ToLowerInvariant())
+                    ? '@Url.Action("Edit", "EmployeeList", new { area = "HR", id = form.Id })'
+                    : '@Url.Action("Add", "EmployeeList", new { area = "HR" })';
+
+                var query = '?roasterYear=' + encodeURIComponent($('#RoasterYear').val())
+                    + '&roasterMonth=' + encodeURIComponent($('#RoasterMonth').val());
+
+                window.location.href = action + query;
+            });
+
+            $('#btnAddCustomTimeTable').on('click', function () {
+                showCustomTimeError('');
+
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                var employeeId = $('#customEmployeeId').val();
+                var payload = {
+                    __RequestVerificationToken: token,
+                    EmployeeId: employeeId,
+                    CustomDate: $('#customDate').val(),
+                    LocationId: $('#customLocationId').val(),
+                    StartTime: $('#customStartTime').val(),
+                    EndTime: $('#customEndTime').val()
+                };
+
+                var $button = $(this);
+                $button.prop('disabled', true);
+
+                $.post('@Url.Action("AddCustomTimeTableAjax", "EmployeeList", new { area = "HR" })', payload)
+                    .done(function (result) {
+                        if (!result || result.statusCode !== 200) {
+                            showCustomTimeError(result && result.statusMessage ? result.statusMessage : 'Failed to add custom time table.');
+                            return;
+                        }
+
+                        $('#customDate').val('');
+                        $('#customLocationId').val('0');
+                        $('#customStartTime').val('');
+                        $('#customEndTime').val('');
+                        reloadCustomTimeTable();
+                    })
+                    .fail(function (xhr) {
+                        var message = xhr.responseJSON && xhr.responseJSON.statusMessage
+                            ? xhr.responseJSON.statusMessage
+                            : 'Failed to add custom time table.';
+                        showCustomTimeError(message);
+                    })
+                    .always(function () {
+                        $button.prop('disabled', false);
+                    });
+            });
+
+            $('#customTimeTable').on('click', '.btn-delete-custom', function () {
+                if (!confirm('Are you sure you want to delete selected custom time table?')) {
+                    return;
+                }
+
+                showCustomTimeError('');
+
+                var token = $('input[name="__RequestVerificationToken"]').val();
+                var id = $(this).data('id');
+
+                $.post('@Url.Action("DeleteCustomTimeTableAjax", "EmployeeList", new { area = "HR" })', {
+                    __RequestVerificationToken: token,
+                    id: id
+                }).done(function (result) {
+                    if (!result || result.statusCode !== 200) {
+                        showCustomTimeError(result && result.statusMessage ? result.statusMessage : 'Failed to delete custom time table.');
+                        return;
+                    }
+
+                    reloadCustomTimeTable();
+                }).fail(function (xhr) {
+                    var message = xhr.responseJSON && xhr.responseJSON.statusMessage
+                        ? xhr.responseJSON.statusMessage
+                        : 'Failed to delete custom time table.';
+                    showCustomTimeError(message);
+                });
+            });
+        })(jQuery);
+    </script>
+}
+
+@functions {
+    private Microsoft.AspNetCore.Html.IHtmlContent Checkbox(
+        string name,
+        string label,
+        bool value,
+        string? disabled,
+        string? id = null)
+    {
+        var checkedText = value ? "checked" : "";
+        var disabledText = string.IsNullOrWhiteSpace(disabled) ? "" : "disabled";
+        var idAttr = string.IsNullOrWhiteSpace(id) ? "" : $"id=\"{id}\"";
+
+        var html =
+            $"<div class=\"employee-check-card\">" +
+                $"<div class=\"form-check form-switch\">" +
+                    $"<input class=\"form-check-input\" type=\"checkbox\" name=\"{name}\" value=\"true\" {checkedText} {disabledText} {idAttr} />" +
+                    $"<input type=\"hidden\" name=\"{name}\" value=\"false\" />" +
+                    $"<label class=\"form-check-label\">{label}</label>" +
+                $"</div>" +
+            $"</div>";
+
+        return new Microsoft.AspNetCore.Html.HtmlString(html);
+    }
+
+    private Microsoft.AspNetCore.Html.IHtmlContent Money(
+        string name,
+        string label,
+        decimal value,
+        string? disabled)
+    {
+        var disabledText = string.IsNullOrWhiteSpace(disabled) ? "" : "disabled";
+
+        var html =
+            $"<div class=\"col-xl-3 col-md-6\">" +
+                $"<label class=\"form-label admin-form-label\">{label}</label>" +
+                $"<input type=\"number\" step=\"0.01\" name=\"{name}\" value=\"{value:0.##}\" class=\"form-control\" {disabledText} />" +
+            $"</div>";
+
+        return new Microsoft.AspNetCore.Html.HtmlString(html);
+    }
+
+    private Microsoft.AspNetCore.Html.IHtmlContent SelectStatic(
+        string name,
+        string? selectedValue,
+        IEnumerable<string> values,
+        string? disabled)
+    {
+        var disabledText = string.IsNullOrWhiteSpace(disabled) ? "" : "disabled";
+
+        var options =
+            $"<option value=\"\" {(string.IsNullOrWhiteSpace(selectedValue) ? "selected" : "")}>- Please Select -</option>";
+
+        foreach (var item in values)
+        {
+            var selected = string.Equals(item, selectedValue, StringComparison.OrdinalIgnoreCase)
+                ? "selected"
+                : "";
+
+            options += $"<option value=\"{item}\" {selected}>{item}</option>";
+        }
+
+        var html =
+            $"<select name=\"{name}\" class=\"form-select\" {disabledText}>" +
+                options +
+            $"</select>";
+
+        return new Microsoft.AspNetCore.Html.HtmlString(html);
+    }
+}

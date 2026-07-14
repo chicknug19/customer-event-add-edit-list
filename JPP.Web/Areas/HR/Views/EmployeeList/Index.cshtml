@@ -1,0 +1,964 @@
+﻿@model JPP.Models.HR.EmployeeList.Responses.EmployeeListIndexViewModel
+
+@{
+    ViewData["Title"] = "Employee List";
+    ViewData["PageTitle"] = "Employee List";
+    ViewData["PageSubtitle"] = "Manage HR employee master data";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div ng-app="employeeListApp"
+     ng-controller="EmployeeListController"
+     ng-cloak>
+
+    @Html.AntiForgeryToken()
+
+    <div class="admin-page-header mb-4">
+        <div>
+            <span class="admin-eyebrow">HR Module</span>
+            <h3>Employee List</h3>
+            <p>
+                Manage employee master data including employee number, name, department, role,
+                phone number, supervisor, HR category, and employee status.
+            </p>
+        </div>
+
+        <div class="admin-page-actions">
+            <a asp-area="HR"
+               asp-controller="EmployeeList"
+               asp-action="ExportPdf"
+               class="btn btn-soft">
+                <i class="bi bi-filetype-pdf me-2"></i>
+                To PDF
+            </a>
+
+            <a asp-area="HR"
+               asp-controller="EmployeeList"
+               asp-action="ExportExcel"
+               class="btn btn-soft">
+                <i class="bi bi-file-earmark-excel me-2"></i>
+                To Excel
+            </a>
+
+            <a asp-area="HR"
+               asp-controller="EmployeeList"
+               asp-action="Add"
+               class="btn btn-main">
+                <i class="bi bi-plus-lg me-2"></i>
+                Add
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["InfoMessage"] != null)
+    {
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            @TempData["InfoMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="alert alert-success alert-dismissible fade show" role="alert" ng-if="alert.type === 'success'">
+        <span ng-bind="alert.message"></span>
+        <button type="button" class="btn-close" ng-click="clearAlert()"></button>
+    </div>
+
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" ng-if="alert.type === 'danger'">
+        <span ng-bind="alert.message"></span>
+        <button type="button" class="btn-close" ng-click="clearAlert()"></button>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-xl-4 col-md-6">
+            <div class="crm-card stat-card">
+                <div class="stat-icon icon-primary">
+                    <i class="bi bi-people"></i>
+                </div>
+                <h3 ng-bind="summary.totalEmployee"></h3>
+                <p>Total Employees</p>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6">
+            <div class="crm-card stat-card">
+                <div class="stat-icon icon-success">
+                    <i class="bi bi-person-check"></i>
+                </div>
+                <h3 ng-bind="summary.activeEmployee"></h3>
+                <p>Active Employees</p>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-6">
+            <div class="crm-card stat-card">
+                <div class="stat-icon icon-danger">
+                    <i class="bi bi-person-dash"></i>
+                </div>
+                <h3 ng-bind="summary.inactiveEmployee"></h3>
+                <p>Inactive Employees</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="crm-card mb-4">
+        <div class="section-title">
+            <h5>Filter Employee</h5>
+        </div>
+
+        <form ng-submit="searchEmployees()">
+            <div class="row g-3 align-items-end">
+                <div class="col-xl-6 col-md-6">
+                    <label class="form-label admin-form-label">Keyword</label>
+                    <div class="admin-input-icon">
+                        <i class="bi bi-search"></i>
+                        <input type="text"
+                               ng-model="filter.keyword"
+                               class="form-control"
+                               placeholder="Search by Employee ID, emp no, name, department, role, phone, supervisor, category, or email" />
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <label class="form-label admin-form-label">Status</label>
+                    <select class="form-select" ng-model="filter.status">
+                        <option value="All">All</option>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+
+                <div class="col-xl-3 col-md-12 d-flex gap-2">
+                    <button type="submit"
+                            class="btn btn-main flex-fill"
+                            ng-disabled="isBusy()">
+                        <i class="bi bi-search me-2"></i>
+                        Search
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-soft"
+                            ng-click="resetFilter()"
+                            ng-disabled="isBusy()">
+                        Reset
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="crm-card store-table-card">
+        <div class="store-table-header">
+            <div>
+                <h5>Employee Data</h5>
+                <p>
+                    Showing
+                    <span ng-bind="loadedCount"></span>
+                    of
+                    <span ng-bind="summary.totalEmployee"></span>
+                    employee record(s)
+                </p>
+            </div>
+
+            <button type="button"
+                    class="btn btn-soft btn-sm"
+                    ng-click="loadEmployees(true)"
+                    ng-disabled="isBusy()">
+                <i class="bi bi-arrow-clockwise me-1" ng-class="{ 'store-spin': isBusy() }"></i>
+                Refresh
+            </button>
+        </div>
+
+        <div class="store-table-loading-container">
+            <div class="store-loading-overlay" ng-if="isLoading">
+                <div class="store-loading-box">
+                    <div class="spinner-border text-secondary" role="status"></div>
+                    <strong>Loading employee data...</strong>
+                    <span>Please wait while the table is being updated.</span>
+                </div>
+            </div>
+
+            <div class="table-responsive store-table-wrapper store-table-scroll"
+                 employee-infinite-scroll="loadMoreEmployees()"
+                 scroll-disabled="!hasMore || isBusy()">
+
+                <table class="table store-table align-middle">
+                    <thead>
+                        <tr>
+                            <th class="text-center action-col">Action</th>
+
+                            <th class="sortable-th">
+                                <button type="button"
+                                        class="store-sort-button"
+                                        ng-class="{ 'active': isSorted('Id') }"
+                                        ng-click="changeSort('Id')">
+                                    ID
+                                    <i class="bi" ng-class="getSortIcon('Id')"></i>
+                                </button>
+                            </th>
+
+                            <th class="sortable-th">
+                                <button type="button"
+                                        class="store-sort-button"
+                                        ng-class="{ 'active': isSorted('Number') }"
+                                        ng-click="changeSort('Number')">
+                                    Emp No.
+                                    <i class="bi" ng-class="getSortIcon('Number')"></i>
+                                </button>
+                            </th>
+
+                            <th class="sortable-th">
+                                <button type="button"
+                                        class="store-sort-button"
+                                        ng-class="{ 'active': isSorted('DisplayName') }"
+                                        ng-click="changeSort('DisplayName')">
+                                    Name
+                                    <i class="bi" ng-class="getSortIcon('DisplayName')"></i>
+                                </button>
+                            </th>
+
+                            <th class="sortable-th">
+                                <button type="button"
+                                        class="store-sort-button"
+                                        ng-class="{ 'active': isSorted('Department') }"
+                                        ng-click="changeSort('Department')">
+                                    Department
+                                    <i class="bi" ng-class="getSortIcon('Department')"></i>
+                                </button>
+                            </th>
+
+                            <th class="sortable-th">
+                                <button type="button"
+                                        class="store-sort-button"
+                                        ng-class="{ 'active': isSorted('RoleName') }"
+                                        ng-click="changeSort('RoleName')">
+                                    Role
+                                    <i class="bi" ng-class="getSortIcon('RoleName')"></i>
+                                </button>
+                            </th>
+
+                            <th class="sortable-th">
+                                <button type="button"
+                                        class="store-sort-button"
+                                        ng-class="{ 'active': isSorted('HPNum') }"
+                                        ng-click="changeSort('HPNum')">
+                                    HPNum
+                                    <i class="bi" ng-class="getSortIcon('HPNum')"></i>
+                                </button>
+                            </th>
+
+                            <th class="sortable-th">
+                                <button type="button"
+                                        class="store-sort-button"
+                                        ng-class="{ 'active': isSorted('SupervisorDisplayName') }"
+                                        ng-click="changeSort('SupervisorDisplayName')">
+                                    Supervisor
+                                    <i class="bi" ng-class="getSortIcon('SupervisorDisplayName')"></i>
+                                </button>
+                            </th>
+
+                            <th class="sortable-th">
+                                <button type="button"
+                                        class="store-sort-button"
+                                        ng-class="{ 'active': isSorted('HRCategory') }"
+                                        ng-click="changeSort('HRCategory')">
+                                    HRCategory
+                                    <i class="bi" ng-class="getSortIcon('HRCategory')"></i>
+                                </button>
+                            </th>
+
+                            <th class="sortable-th">
+                                <button type="button"
+                                        class="store-sort-button"
+                                        ng-class="{ 'active': isSorted('EmailAddress') }"
+                                        ng-click="changeSort('EmailAddress')">
+                                    Email
+                                    <i class="bi" ng-class="getSortIcon('EmailAddress')"></i>
+                                </button>
+                            </th>
+
+                            <th class="sortable-th">
+                                <button type="button"
+                                        class="store-sort-button"
+                                        ng-class="{ 'active': isSorted('Inactive') }"
+                                        ng-click="changeSort('Inactive')">
+                                    Status
+                                    <i class="bi" ng-class="getSortIcon('Inactive')"></i>
+                                </button>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr ng-repeat="employee in employees track by employee.id">
+                            <td data-label="Action" class="text-center action-sticky">
+                                <div class="table-action-icons">
+                                    <a ng-href="{{ getDetailUrl(employee.id) }}"
+                                       class="btn-action-icon btn-view"
+                                       title="View">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+
+                                    <a ng-href="{{ getEditUrl(employee.id) }}"
+                                       class="btn-action-icon btn-edit"
+                                       title="Edit">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+
+                                    <button type="button"
+                                            class="btn-action-icon btn-delete"
+                                            title="Delete"
+                                            ng-if="!employee.inactive"
+                                            ng-click="openDeleteConfirmation(employee)"
+                                            ng-disabled="isBusy()">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+
+                                    <button type="button"
+                                            class="btn-action-icon btn-disabled"
+                                            title="Delete unavailable"
+                                            ng-if="employee.inactive"
+                                            disabled>
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </div>
+                            </td>
+
+                            <td data-label="ID">
+                                <span class="store-code-badge" ng-bind="employee.id"></span>
+                            </td>
+
+                            <td data-label="Emp No.">
+                                <span ng-bind="employee.number || '-' "></span>
+                            </td>
+
+                            <td data-label="Name">
+                                <div class="store-location-box">
+                                    <div class="store-location-icon">
+                                        <i class="bi bi-person-badge"></i>
+                                    </div>
+                                    <div>
+                                        <strong ng-bind="employee.displayName || '-' "></strong>
+                                        <span ng-bind="employee.emailAddress || 'Employee' "></span>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td data-label="Department" ng-bind="employee.department || '-' "></td>
+                            <td data-label="Role" ng-bind="employee.roleName || '-' "></td>
+                            <td data-label="HPNum" ng-bind="employee.hpNum || '-' "></td>
+                            <td data-label="Supervisor" ng-bind="employee.supervisorDisplayName || '-' "></td>
+                            <td data-label="HRCategory" ng-bind="employee.hrCategory || '-' "></td>
+                            <td data-label="Email" ng-bind="employee.emailAddress || '-' "></td>
+                            <td data-label="Status">
+                                <span class="status-pill status-deleted" ng-if="employee.inactive">
+                                    <i class="bi bi-person-dash me-1"></i>
+                                    Inactive
+                                </span>
+
+                                <span class="status-pill status-active" ng-if="!employee.inactive">
+                                    <i class="bi bi-person-check me-1"></i>
+                                    Active
+                                </span>
+                            </td>
+                        </tr>
+
+                        <tr ng-if="isLoadingMore">
+                            <td colspan="11">
+                                <div class="store-infinite-loader">
+                                    <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+                                    <span>Loading more employees...</span>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr ng-if="!isLoading && !isLoadingMore && employees.length > 0 && !hasMore">
+                            <td colspan="11">
+                                <div class="store-end-list">
+                                    All employee data has been loaded.
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr ng-if="!isLoading && employees.length === 0">
+                            <td colspan="11">
+                                <div class="admin-empty-state">
+                                    <div class="admin-empty-icon">
+                                        <i class="bi bi-person-badge"></i>
+                                    </div>
+                                    <h5>No employee data found</h5>
+                                    <p>Try changing the keyword or status filter.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="delete-confirm-backdrop"
+         ng-if="deleteModal.visible"
+         ng-click="closeDeleteConfirmation()">
+
+        <div class="delete-confirm-modal"
+             ng-click="$event.stopPropagation()">
+
+            <div class="delete-confirm-header">
+                <div class="delete-confirm-icon">
+                    <i class="bi bi-trash3"></i>
+                </div>
+
+                <div>
+                    <h5>Delete Employee?</h5>
+                    <p>This action will mark the employee as inactive.</p>
+                </div>
+
+                <button type="button"
+                        class="delete-confirm-close"
+                        ng-click="closeDeleteConfirmation()"
+                        ng-disabled="isDeleting">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+
+            <div class="delete-confirm-body">
+                <div class="delete-store-preview">
+                    <div class="delete-store-avatar">
+                        <i class="bi bi-person-badge"></i>
+                    </div>
+
+                    <div class="delete-store-info">
+                        <strong ng-bind="deleteModal.employee.displayName || '-'"></strong>
+
+                        <div>
+                            <span>ID #{{ deleteModal.employee.id }}</span>
+                            <span ng-if="deleteModal.employee.number">
+                                Emp No: {{ deleteModal.employee.number }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="delete-store-detail-grid">
+                    <div>
+                        <label>Department</label>
+                        <strong ng-bind="deleteModal.employee.department || '-'"></strong>
+                    </div>
+
+                    <div>
+                        <label>Role</label>
+                        <strong ng-bind="deleteModal.employee.roleName || '-'"></strong>
+                    </div>
+                </div>
+
+                <div class="delete-warning-box">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <span>
+                        Are you sure you want to delete this employee? BIZ_Employee,
+                        HR_EmployeeProperties, and HR_LeaveSummary will be marked inactive.
+                    </span>
+                </div>
+
+                <div class="delete-error-box" ng-if="deleteModal.errorMessage">
+                    <i class="bi bi-x-circle"></i>
+                    <span ng-bind="deleteModal.errorMessage"></span>
+                </div>
+
+            </div>
+
+            <div class="delete-confirm-actions">
+                <button type="button"
+                        class="btn btn-soft"
+                        ng-click="closeDeleteConfirmation()"
+                        ng-disabled="isDeleting">
+                    Cancel
+                </button>
+
+                <button type="button"
+                        class="btn btn-delete-confirm"
+                        ng-click="confirmDeleteEmployee()"
+                        ng-disabled="isDeleting">
+                    <span class="spinner-border spinner-border-sm me-2"
+                          ng-if="isDeleting"></span>
+
+                    <i class="bi bi-trash3 me-2"
+                       ng-if="!isDeleting"></i>
+
+                    <span ng-if="!isDeleting">Yes, Delete Employee</span>
+                    <span ng-if="isDeleting">Deleting...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        window.employeeListConfig = {
+            getEmployeeListUrl: '@Url.Action("GetEmployeeList", "EmployeeList", new { area = "HR" })',
+            deleteUrl: '@Url.Action("DeleteAjax", "EmployeeList", new { area = "HR" })',
+            detailUrlTemplate: '@Url.Action("Detail", "EmployeeList", new { area = "HR", id = "__id__" })',
+            editUrlTemplate: '@Url.Action("Edit", "EmployeeList", new { area = "HR", id = "__id__" })',
+            initialFilter: {
+                keyword: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Keyword)),
+                status: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Status)),
+                sortColumn: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.SortColumn)),
+                sortDirection: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.SortDirection))
+            },
+            pageSize: @Model.PageSize
+        };
+    </script>
+
+    <script>
+        (function () {
+            'use strict';
+
+            angular
+                .module('employeeListApp', [])
+                .directive('employeeInfiniteScroll', employeeInfiniteScroll)
+                .controller('EmployeeListController', EmployeeListController);
+
+            employeeInfiniteScroll.$inject = ['$parse', '$timeout'];
+
+            function employeeInfiniteScroll($parse, $timeout) {
+                return {
+                    restrict: 'A',
+                    link: function (scope, element, attrs) {
+                        var callback = $parse(attrs.employeeInfiniteScroll);
+
+                        var disabledGetter = attrs.scrollDisabled
+                            ? $parse(attrs.scrollDisabled)
+                            : null;
+
+                        function onScroll() {
+                            if (disabledGetter && disabledGetter(scope)) {
+                                return;
+                            }
+
+                            var el = element[0];
+                            var scrollTop = el.scrollTop;
+                            var clientHeight = el.clientHeight;
+                            var scrollHeight = el.scrollHeight;
+                            var threshold = 140;
+
+                            if (scrollTop + clientHeight >= scrollHeight - threshold) {
+                                scope.$applyAsync(function () {
+                                    callback(scope);
+                                });
+                            }
+                        }
+
+                        element.on('scroll', onScroll);
+
+                        scope.$on('$destroy', function () {
+                            element.off('scroll', onScroll);
+                        });
+
+                        $timeout(onScroll, 300);
+                    }
+                };
+            }
+
+            EmployeeListController.$inject = ['$scope', '$http', '$timeout'];
+
+            function EmployeeListController($scope, $http, $timeout) {
+                var config = window.employeeListConfig || {};
+
+                $scope.filter = angular.copy(config.initialFilter || {
+                    keyword: '',
+                    status: 'All',
+                    sortColumn: 'DisplayName',
+                    sortDirection: 'ASC'
+                });
+
+                $scope.sort = {
+                    column: $scope.filter.sortColumn || 'DisplayName',
+                    direction: $scope.filter.sortDirection || 'ASC'
+                };
+
+                $scope.employees = [];
+
+                $scope.summary = {
+                    totalEmployee: 0,
+                    activeEmployee: 0,
+                    inactiveEmployee: 0
+                };
+
+                $scope.page = 1;
+                $scope.pageSize = config.pageSize || 20;
+                $scope.loadedCount = 0;
+                $scope.hasMore = true;
+
+                $scope.isLoading = false;
+                $scope.isLoadingMore = false;
+                $scope.isDeleting = false;
+
+                $scope.deleteModal = {
+                    visible: false,
+                    employee: null,
+                    errorMessage: ''
+                };
+
+                $scope.alert = {
+                    type: '',
+                    message: ''
+                };
+
+                $scope.loadEmployees = loadEmployees;
+                $scope.loadMoreEmployees = loadMoreEmployees;
+                $scope.searchEmployees = searchEmployees;
+                $scope.resetFilter = resetFilter;
+                $scope.openDeleteConfirmation = openDeleteConfirmation;
+                $scope.closeDeleteConfirmation = closeDeleteConfirmation;
+                $scope.confirmDeleteEmployee = confirmDeleteEmployee;
+                $scope.clearAlert = clearAlert;
+                $scope.getInitial = getInitial;
+                $scope.getDetailUrl = getDetailUrl;
+                $scope.getEditUrl = getEditUrl;
+                $scope.isBusy = isBusy;
+
+                $scope.changeSort = changeSort;
+                $scope.isSorted = isSorted;
+                $scope.getSortIcon = getSortIcon;
+
+                loadEmployees(true);
+
+                function loadEmployees(reset) {
+                    reset = reset === true;
+
+                    if (reset) {
+                        $scope.page = 1;
+                        $scope.hasMore = true;
+                        $scope.loadedCount = 0;
+                        $scope.employees = [];
+                        $scope.isLoading = true;
+                    } else {
+                        if (!$scope.hasMore || isBusy()) {
+                            return;
+                        }
+
+                        $scope.isLoadingMore = true;
+                    }
+
+                    return $http.get(config.getEmployeeListUrl, {
+                        params: {
+                            Keyword: $scope.filter.keyword || '',
+                            Status: $scope.filter.status || 'All',
+                            Page: $scope.page,
+                            PageSize: $scope.pageSize,
+                            SortColumn: $scope.sort.column,
+                            SortDirection: $scope.sort.direction
+                        }
+                    }).then(function (response) {
+                        var result = response.data || {};
+
+                        if (result.statusCode !== 200 && result.StatusCode !== 200) {
+                            showAlert(
+                                'danger',
+                                result.statusMessage ||
+                                result.StatusMessage ||
+                                'Failed to load employee data.'
+                            );
+                            return;
+                        }
+
+                        var data = result.data || result.Data || {};
+                        var summary = data.summary || data.Summary || {};
+                        var pagedEmployees = data.employees || data.Employees || {};
+                        var newEmployees = pagedEmployees.items || pagedEmployees.Items || [];
+
+                        if (reset) {
+                            $scope.employees = newEmployees;
+                        } else {
+                            Array.prototype.push.apply($scope.employees, newEmployees);
+                        }
+
+                        $scope.summary.totalEmployee = summary.totalEmployee || summary.TotalEmployee || 0;
+                        $scope.summary.activeEmployee = summary.activeEmployee || summary.ActiveEmployee || 0;
+                        $scope.summary.inactiveEmployee = summary.inactiveEmployee || summary.InactiveEmployee || 0;
+
+                        $scope.loadedCount =
+                            pagedEmployees.loadedRecords ||
+                            pagedEmployees.LoadedRecords ||
+                            $scope.employees.length;
+
+                        $scope.hasMore =
+                            pagedEmployees.hasMore === true ||
+                            pagedEmployees.HasMore === true;
+
+                        if ($scope.hasMore) {
+                            $scope.page =
+                                (pagedEmployees.page || pagedEmployees.Page || $scope.page) + 1;
+                        }
+                    }).catch(function (error) {
+                        if (error.status === 401) {
+                            var redirectUrl = error.data && error.data.redirectUrl
+                                ? error.data.redirectUrl
+                                : '/Account/Login';
+
+                            window.location.href = redirectUrl;
+                            return;
+                        }
+
+                        var message = getAjaxErrorMessage(error, 'Failed to load employee data.');
+
+                        showAlert('danger', message);
+                    }).finally(function () {
+                        $scope.isLoading = false;
+                        $scope.isLoadingMore = false;
+                    });
+                }
+
+                function loadMoreEmployees() {
+                    return loadEmployees(false);
+                }
+
+                function searchEmployees() {
+                    if (isBusy()) {
+                        return;
+                    }
+
+                    clearAlert();
+                    return loadEmployees(true);
+                }
+
+                function resetFilter() {
+                    if (isBusy()) {
+                        return;
+                    }
+
+                    clearAlert();
+
+                    $scope.filter.keyword = '';
+                    $scope.filter.status = 'All';
+
+                    $scope.sort.column = 'DisplayName';
+                    $scope.sort.direction = 'ASC';
+
+                    return loadEmployees(true);
+                }
+
+                function changeSort(column) {
+                    if (isBusy()) {
+                        return;
+                    }
+
+                    clearAlert();
+
+                    if ($scope.sort.column === column) {
+                        $scope.sort.direction = $scope.sort.direction === 'ASC'
+                            ? 'DESC'
+                            : 'ASC';
+                    } else {
+                        $scope.sort.column = column;
+                        $scope.sort.direction = 'ASC';
+                    }
+
+                    return loadEmployees(true);
+                }
+
+                function isSorted(column) {
+                    return $scope.sort.column === column;
+                }
+
+                function getSortIcon(column) {
+                    if (!isSorted(column)) {
+                        return 'bi-arrow-down-up';
+                    }
+
+                    return $scope.sort.direction === 'ASC'
+                        ? 'bi-caret-up-fill'
+                        : 'bi-caret-down-fill';
+                }
+
+                function openDeleteConfirmation(employee) {
+                    if (!employee || !employee.id) {
+                        return;
+                    }
+
+                    if (employee.inactive) {
+                        showAlert('danger', 'This employee cannot be deleted because it is already inactive.');
+                        return;
+                    }
+
+                    clearAlert();
+
+                    $scope.deleteModal.employee = employee;
+                    $scope.deleteModal.errorMessage = '';
+                    $scope.deleteModal.visible = true;
+                }
+
+                function closeDeleteConfirmation() {
+                    if ($scope.isDeleting) {
+                        return;
+                    }
+
+                    $scope.deleteModal.visible = false;
+                    $scope.deleteModal.employee = null;
+                    $scope.deleteModal.errorMessage = '';
+                }
+
+                function confirmDeleteEmployee() {
+                    var employee = $scope.deleteModal.employee;
+
+                    if (!employee || !employee.id) {
+                        closeDeleteConfirmation();
+                        return;
+                    }
+
+                    $scope.isDeleting = true;
+                    $scope.deleteModal.errorMessage = '';
+                    clearAlert();
+
+                    var tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
+                    var token = tokenElement ? tokenElement.value : '';
+
+                    var body = new URLSearchParams();
+                    body.append('id', employee.id);
+
+                    return $http.post(config.deleteUrl, body.toString(), {
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                            'RequestVerificationToken': token
+                        }
+                    }).then(function (response) {
+                        var result = response.data || {};
+
+                        if (result.statusCode !== 200 && result.StatusCode !== 200) {
+                            var failedMessage =
+                                result.statusMessage ||
+                                result.StatusMessage ||
+                                'Failed to delete employee.';
+
+                            $scope.deleteModal.errorMessage = failedMessage;
+                            return;
+                        }
+
+                        var successMessage =
+                            result.statusMessage ||
+                            result.StatusMessage ||
+                            'Employee has been deleted successfully.';
+
+                        $scope.deleteModal.visible = false;
+                        $scope.deleteModal.employee = null;
+                        $scope.deleteModal.errorMessage = '';
+
+                        return loadEmployees(true).then(function () {
+                            showAlert('success', successMessage);
+                        });
+
+                    }).catch(function (error) {
+                        if (error.status === 401) {
+                            var redirectUrl = error.data && error.data.redirectUrl
+                                ? error.data.redirectUrl
+                                : '/Account/Login';
+
+                            window.location.href = redirectUrl;
+                            return;
+                        }
+
+                        var message = getAjaxErrorMessage(error, 'Failed to delete employee.');
+
+                        $scope.deleteModal.errorMessage = message;
+                    }).finally(function () {
+                        $scope.isDeleting = false;
+                    });
+                }
+
+                function getAjaxErrorMessage(error, defaultMessage) {
+                    defaultMessage = defaultMessage || 'Request failed.';
+
+                    if (!error) {
+                        return defaultMessage;
+                    }
+
+                    if (error.data) {
+                        if (error.data.statusMessage) {
+                            return error.data.statusMessage;
+                        }
+
+                        if (error.data.StatusMessage) {
+                            return error.data.StatusMessage;
+                        }
+
+                        if (error.data.message) {
+                            return error.data.message;
+                        }
+
+                        if (typeof error.data === 'string') {
+                            return error.data;
+                        }
+                    }
+
+                    if (error.status === 400) {
+                        return 'Invalid request. ' + defaultMessage;
+                    }
+
+                    if (error.status === 500) {
+                        return 'Server error. ' + defaultMessage;
+                    }
+
+                    return defaultMessage;
+                }
+
+                function isBusy() {
+                    return $scope.isLoading || $scope.isLoadingMore || $scope.isDeleting;
+                }
+
+                function showAlert(type, message) {
+                    $scope.alert.type = type;
+                    $scope.alert.message = message;
+
+                    if (type === 'success') {
+                        $timeout(function () {
+                            clearAlert();
+                        }, 3500);
+                    }
+                }
+
+                function clearAlert() {
+                    $scope.alert.type = '';
+                    $scope.alert.message = '';
+                }
+
+                function getInitial(value) {
+                    if (!value) {
+                        return '-';
+                    }
+
+                    return value.substring(0, 1).toUpperCase();
+                }
+
+                function getDetailUrl(id) {
+                    return replaceId(config.detailUrlTemplate, id);
+                }
+
+                function getEditUrl(id) {
+                    return replaceId(config.editUrlTemplate, id);
+                }
+
+                function replaceId(template, id) {
+                    return (template || '').replace('__id__', encodeURIComponent(id));
+                }
+            }
+        })();
+    </script>
+}

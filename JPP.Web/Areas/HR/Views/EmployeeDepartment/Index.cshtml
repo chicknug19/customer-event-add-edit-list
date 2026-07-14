@@ -1,0 +1,104 @@
+@model JPP.Models.HR.EmployeeDepartment.Responses.EmployeeDepartmentIndexViewModel
+@{
+    ViewData["Title"] = "Employee Department";
+    ViewData["PageTitle"] = "Employee Department";
+    ViewData["PageSubtitle"] = "Manage employee department master data";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div ng-app="employeeDepartmentApp" ng-controller="EmployeeDepartmentController" ng-cloak>
+    @Html.AntiForgeryToken()
+
+    <div class="admin-page-header mb-4">
+        <div>
+            <span class="admin-eyebrow">HR Module</span>
+            <h3>Employee Department</h3>
+            <p>Manage department code, department name, and active status.</p>
+        </div>
+        <div class="admin-page-actions">
+            <a asp-area="HR" asp-controller="EmployeeDepartment" asp-action="Add" class="btn btn-main">
+                <i class="bi bi-plus-lg me-2"></i>Add
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">@TempData["SuccessMessage"]<button class="btn-close" data-bs-dismiss="alert"></button></div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">@TempData["ErrorMessage"]<button class="btn-close" data-bs-dismiss="alert"></button></div>
+    }
+
+    <div class="alert alert-success alert-dismissible fade show" ng-if="alert.type === 'success'">
+        <span ng-bind="alert.message"></span><button class="btn-close" ng-click="clearAlert()"></button>
+    </div>
+    <div class="alert alert-danger alert-dismissible fade show" ng-if="alert.type === 'danger'">
+        <span ng-bind="alert.message"></span><button class="btn-close" ng-click="clearAlert()"></button>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-4"><div class="crm-card stat-card"><div class="stat-icon icon-primary"><i class="bi bi-diagram-3"></i></div><h3 ng-bind="summary.totalDepartment"></h3><p>Total Departments</p></div></div>
+        <div class="col-md-4"><div class="crm-card stat-card"><div class="stat-icon icon-success"><i class="bi bi-check-circle"></i></div><h3 ng-bind="summary.activeDepartment"></h3><p>Active Departments</p></div></div>
+        <div class="col-md-4"><div class="crm-card stat-card"><div class="stat-icon icon-danger"><i class="bi bi-x-circle"></i></div><h3 ng-bind="summary.inactiveDepartment"></h3><p>Inactive Departments</p></div></div>
+    </div>
+
+    <div class="crm-card mb-4">
+        <div class="section-title"><h5>Filter Department</h5></div>
+        <form ng-submit="search()">
+            <div class="row g-3 align-items-end">
+                <div class="col-lg-6"><label class="form-label admin-form-label">Keyword</label><input class="form-control" ng-model="filter.keyword" placeholder="Search by ID, code, or department name" /></div>
+                <div class="col-lg-3"><label class="form-label admin-form-label">Status</label><select class="form-select" ng-model="filter.status"><option value="All">All</option><option value="Active">Active</option><option value="Inactive">Inactive</option></select></div>
+                <div class="col-lg-3 d-flex gap-2"><button class="btn btn-main flex-fill" ng-disabled="busy"><i class="bi bi-search me-2"></i>Search</button><button type="button" class="btn btn-soft" ng-click="reset()" ng-disabled="busy">Reset</button></div>
+            </div>
+        </form>
+    </div>
+
+    <div class="crm-card store-table-card">
+        <div class="store-table-header"><div><h5>Department Data</h5><p>Showing <span ng-bind="loadedCount"></span> of <span ng-bind="summary.totalDepartment"></span> record(s)</p></div><button class="btn btn-soft btn-sm" ng-click="load(true)" ng-disabled="busy"><i class="bi bi-arrow-clockwise me-1"></i>Refresh</button></div>
+        <div class="store-table-loading-container">
+            <div class="store-loading-overlay" ng-if="isLoading"><div class="store-loading-box"><div class="spinner-border text-secondary"></div><strong>Loading department data...</strong></div></div>
+            <div class="table-responsive store-table-wrapper store-table-scroll" department-scroll="loadMore()">
+                <table class="table store-table align-middle">
+                    <thead><tr><th class="text-center action-col">Action</th><th ng-click="sort('Id')">ID</th><th ng-click="sort('Code')">Code</th><th ng-click="sort('Name')">Department</th><th ng-click="sort('Inactive')">Status</th><th ng-click="sort('LastUpdated')">Last Updated</th></tr></thead>
+                    <tbody>
+                        <tr ng-repeat="item in departments track by item.id">
+                            <td class="text-center text-nowrap">
+                                <a class="btn btn-sm btn-light border" ng-href="@Url.Action("Edit", "EmployeeDepartment", new { area = "HR" })?id={{item.id}}" title="Edit"><i class="bi bi-pencil"></i></a>
+                                <button class="btn btn-sm btn-light border text-danger" ng-click="remove(item)" title="Delete"><i class="bi bi-trash"></i></button>
+                            </td>
+                            <td ng-bind="item.id"></td><td ng-bind="item.code"></td><td ng-bind="item.name"></td>
+                            <td><span class="badge" ng-class="item.inactive ? 'text-bg-secondary' : 'text-bg-success'" ng-bind="item.inactive ? 'Inactive' : 'Active'"></span></td>
+                            <td ng-bind="formatDate(item.lastUpdated)"></td>
+                        </tr>
+                        <tr ng-if="!isLoading && departments.length === 0"><td colspan="6" class="text-center py-5 text-muted">No department data found.</td></tr>
+                    </tbody>
+                </table>
+                <div class="text-center py-3" ng-if="isLoadingMore"><div class="spinner-border spinner-border-sm"></div> Loading more...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+(function () {
+    'use strict';
+    angular.module('employeeDepartmentApp', [])
+    .directive('departmentScroll', function () { return { link: function(scope, element, attrs) { element.on('scroll', function() { if (element[0].scrollTop + element[0].clientHeight >= element[0].scrollHeight - 80) scope.$apply(attrs.departmentScroll); }); } }; })
+    .controller('EmployeeDepartmentController', ['$scope', '$http', function ($scope, $http) {
+        var config = { listUrl: '@Url.Action("GetEmployeeDepartments", "EmployeeDepartment", new { area = "HR" })', deleteUrl: '@Url.Action("DeleteAjax", "EmployeeDepartment", new { area = "HR" })' };
+        $scope.departments=[]; $scope.loadedCount=0; $scope.summary={totalDepartment:0,activeDepartment:0,inactiveDepartment:0}; $scope.filter={keyword:@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Keyword)),status:'@Model.Status'};
+        $scope.page=1; $scope.pageSize=@Model.PageSize; $scope.sortColumn='@Model.SortColumn'; $scope.sortDirection='@Model.SortDirection'; $scope.hasMore=true; $scope.busy=false; $scope.isLoading=false; $scope.isLoadingMore=false; $scope.alert={};
+        $scope.clearAlert=function(){ $scope.alert={}; };
+        $scope.load=function(reset){ if($scope.busy || (!reset && !$scope.hasMore)) return; if(reset){$scope.page=1;$scope.departments=[];$scope.hasMore=true;$scope.isLoading=true;}else{$scope.isLoadingMore=true;} $scope.busy=true; $scope.clearAlert();
+            $http.get(config.listUrl,{params:{Keyword:$scope.filter.keyword||'',Status:$scope.filter.status,Page:$scope.page,PageSize:$scope.pageSize,SortColumn:$scope.sortColumn,SortDirection:$scope.sortDirection}}).then(function(r){var d=r.data.data; $scope.summary=d.summary; $scope.departments=$scope.departments.concat(d.departments.items||[]); $scope.loadedCount=$scope.departments.length; $scope.hasMore=d.departments.hasMore; if($scope.hasMore)$scope.page++;},function(r){$scope.alert={type:'danger',message:(r.data&&r.data.statusMessage)||'Failed to load department data.'};}).finally(function(){$scope.busy=false;$scope.isLoading=false;$scope.isLoadingMore=false;}); };
+        $scope.search=function(){$scope.load(true);}; $scope.reset=function(){$scope.filter={keyword:'',status:'All'};$scope.sortColumn='Name';$scope.sortDirection='ASC';$scope.load(true);}; $scope.loadMore=function(){$scope.load(false);};
+        $scope.sort=function(c){if($scope.sortColumn===c)$scope.sortDirection=$scope.sortDirection==='ASC'?'DESC':'ASC';else{$scope.sortColumn=c;$scope.sortDirection='ASC';}$scope.load(true);};
+        $scope.remove=function(item){if(!confirm('Proceed to delete department "'+item.name+'"?'))return; var token=document.querySelector('input[name="__RequestVerificationToken"]').value; var body='id='+encodeURIComponent(item.id)+'&__RequestVerificationToken='+encodeURIComponent(token); $http({method:'POST',url:config.deleteUrl,data:body,headers:{'Content-Type':'application/x-www-form-urlencoded'}}).then(function(r){$scope.alert={type:'success',message:r.data.statusMessage};$scope.load(true);},function(r){$scope.alert={type:'danger',message:(r.data&&r.data.statusMessage)||'Failed to delete department.'};});};
+        $scope.formatDate=function(v){return v?new Date(v).toLocaleString():'';}; $scope.load(true);
+    }]);
+})();
+</script>
+}

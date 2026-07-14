@@ -1,0 +1,57 @@
+@{
+    var pageTitle = ViewData["PageTitle"] ?? ViewData["Title"] ?? "Dashboard CRM";
+    var pageSubtitle = ViewData["PageSubtitle"] ?? "Monitor lead, customer, pipeline";
+
+    var userName = User?.Identity?.IsAuthenticated == true
+        ? User.Identity.Name
+        : "Admin";
+
+    var firstInitial = string.IsNullOrWhiteSpace(userName)
+        ? "A"
+        : userName.Substring(0, 1).ToUpper();
+}
+
+<header class="crm-topbar">
+
+    <div class="topbar-left">
+
+        <button type="button" class="sidebar-toggle" id="btnSidebar">
+            <i class="bi bi-list"></i>
+        </button>
+
+        <div class="page-title">
+            <h4>@pageTitle</h4>
+            <span>@pageSubtitle</span>
+        </div>
+
+    </div>
+
+    <div class="topbar-actions">
+
+        <div class="user-profile">
+            <div class="user-avatar">
+                @firstInitial
+            </div>
+
+            <div class="user-info">
+                <strong>@userName</strong>
+                <span>Super Admin</span>
+            </div>
+        </div>
+
+        <form method="post"
+              action="@Url.Action("Logout", "Account", new { area = "" })"
+              class="logout-form">
+            @Html.AntiForgeryToken()
+
+            <button type="submit"
+                    class="btn-logout-top"
+                    title="Logout">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Logout</span>
+            </button>
+        </form>
+
+    </div>
+
+</header>

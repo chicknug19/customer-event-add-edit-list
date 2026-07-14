@@ -1,0 +1,64 @@
+@model JPP.Models.HR.EmployeeDepartment.Responses.EmployeeDepartmentFormViewModel
+@{
+    ViewData["Title"] = Model.IsEdit ? "Edit Employee Department" : "Add Employee Department";
+    ViewData["PageTitle"] = ViewData["Title"];
+    ViewData["PageSubtitle"] = "Maintain employee department master data";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="admin-page-header mb-4">
+    <div>
+        <span class="admin-eyebrow">HR Module</span>
+        <h3>@ViewData["Title"]</h3>
+        <p>Enter the department code, department name, and status.</p>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="crm-card">
+    <form asp-area="HR" asp-controller="EmployeeDepartment" asp-action="Save" method="post">
+        @Html.AntiForgeryToken()
+        <input asp-for="Form.Id" type="hidden" />
+        <input asp-for="Form.SubmitAction" type="hidden" id="submitAction" />
+
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <label asp-for="Form.Code" class="form-label admin-form-label">Code</label>
+                <input asp-for="Form.Code" class="form-control" maxlength="50" autocomplete="off" />
+                <span asp-validation-for="Form.Code" class="text-danger"></span>
+            </div>
+            <div class="col-lg-8">
+                <label asp-for="Form.Name" class="form-label admin-form-label">Department</label>
+                <input asp-for="Form.Name" class="form-control" maxlength="150" autocomplete="off" />
+                <span asp-validation-for="Form.Name" class="text-danger"></span>
+            </div>
+            <div class="col-12">
+                <div class="form-check form-switch">
+                    <input asp-for="Form.Inactive" class="form-check-input" />
+                    <label asp-for="Form.Inactive" class="form-check-label">Inactive</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 mt-4 pt-3 border-top">
+            <button type="submit" class="btn btn-main" onclick="document.getElementById('submitAction').value='Save'">
+                <i class="bi bi-check-lg me-2"></i>Save
+            </button>
+            <button type="submit" class="btn btn-soft" onclick="document.getElementById('submitAction').value='SaveAndClose'">
+                <i class="bi bi-check2-circle me-2"></i>Save and Close
+            </button>
+            <a asp-area="HR" asp-controller="EmployeeDepartment" asp-action="Index" class="btn btn-light border">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>

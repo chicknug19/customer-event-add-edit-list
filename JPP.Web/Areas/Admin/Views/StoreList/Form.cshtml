@@ -1,0 +1,510 @@
+﻿@model JPP.Models.Admin.StoreList.Responses.StoreDetailViewModel
+
+@{
+    ViewData["Title"] = Model.PageTitle;
+    ViewData["PageTitle"] = Model.PageTitle;
+    ViewData["PageSubtitle"] = Model.IsEditMode ? "Update store master data" : "Create new store master data";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var form = Model.Form;
+}
+
+<div ng-app="storeListFormApp"
+     ng-controller="StoreListFormController"
+     ng-cloak>
+
+    <div class="admin-page-header mb-4">
+        <div>
+            <span class="admin-eyebrow">Admin</span>
+            <h3>@Model.PageTitle</h3>
+            <p>
+                Manage store detail information including code, address, person in charge, database connection, and publishing status.
+            </p>
+        </div>
+
+        <div class="admin-page-actions">
+            <a asp-area="Admin"
+               asp-controller="StoreList"
+               asp-action="Index"
+               class="btn btn-soft">
+                <i class="bi bi-arrow-left me-2"></i>
+                Back to List
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="alert alert-success alert-dismissible fade show" role="alert" ng-if="alert.type === 'success'">
+        <span ng-bind="alert.message"></span>
+        <button type="button" class="btn-close" ng-click="clearAlert()"></button>
+    </div>
+
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" ng-if="alert.type === 'danger'">
+        <span ng-bind="alert.message"></span>
+        <button type="button" class="btn-close" ng-click="clearAlert()"></button>
+    </div>
+
+    <div class="crm-card store-detail-card position-relative">
+        <div class="store-loading-overlay store-form-loading" ng-if="isSaving">
+            <div class="store-loading-box">
+                <div class="spinner-border text-secondary" role="status"></div>
+                <strong>Processing store data...</strong>
+                <span>Please wait until the save process is complete.</span>
+            </div>
+        </div>
+
+        <form id="storeListForm"
+              name="storeListForm"
+              ng-submit="submitForm('Save')"
+              autocomplete="off"
+              novalidate>
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" name="Id" value="@form.Id" />
+            <input type="hidden" id="SubmitMode" name="SubmitMode" value="{{ submitMode }}" />
+
+            <div class="store-detail-toolbar">
+                <div>
+                    <h5>Store Detail</h5>
+                    <p>
+                        @(Model.IsEditMode ? "Edit existing store information." : "Fill in the form to add a new store.")
+                    </p>
+                </div>
+
+                <div class="store-detail-actions">
+                    <button type="button"
+                            class="btn btn-main"
+                            ng-click="submitForm('Save')"
+                            ng-disabled="isSaving">
+                        <span class="spinner-border spinner-border-sm me-2" ng-if="isSaving && submitMode === 'Save'"></span>
+                        <i class="bi bi-save me-2" ng-if="!(isSaving && submitMode === 'Save')"></i>
+                        Save
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-soft"
+                            ng-click="submitForm('SaveAndClose')"
+                            ng-disabled="isSaving">
+                        <span class="spinner-border spinner-border-sm me-2" ng-if="isSaving && submitMode === 'SaveAndClose'"></span>
+                        <i class="bi bi-check2-circle me-2" ng-if="!(isSaving && submitMode === 'SaveAndClose')"></i>
+                        Save And Close
+                    </button>
+
+                    <a asp-area="Admin"
+                       asp-controller="StoreList"
+                       asp-action="Index"
+                       class="btn btn-outline-secondary store-btn-cancel"
+                       ng-click="blockWhenSaving($event)"
+                       ng-class="{ 'disabled': isSaving }">
+                        <i class="bi bi-x-lg me-2"></i>
+                        Cancel
+                    </a>
+                </div>
+            </div>
+
+            <div class="store-form-section">
+                <div class="section-title">
+                    <h5>Basic Information</h5>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <label class="form-label admin-form-label">
+                            Code <span class="text-danger">*</span>
+                        </label>
+                        <input type="text"
+                               name="Code"
+                               value="@form.Code"
+                               maxlength="4"
+                               class="form-control"
+                               placeholder="Code" />
+                        @Html.ValidationMessage("Code", null, new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="col-xl-5 col-lg-8 col-md-6">
+                        <label class="form-label admin-form-label">
+                            Store Name <span class="text-danger">*</span>
+                        </label>
+                        <input type="text"
+                               name="StoreName"
+                               value="@form.StoreName"
+                               class="form-control"
+                               placeholder="Store Name" />
+                        @Html.ValidationMessage("StoreName", null, new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="col-xl-4 col-lg-6 col-md-6">
+                        <label class="form-label admin-form-label">Person In Charge</label>
+                        <select name="InChargeId"
+                                class="form-select"
+                        @(Model.CanChangeInCharge ? "" : "disabled")>
+                            @foreach (var employee in Model.Employees)
+                            {
+                                if (employee.Value == form.InChargeId)
+                                {
+                                    <option value="@employee.Value" selected>@employee.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@employee.Value">@employee.Text</option>
+                                }
+                            }
+                        </select>
+
+                        @if (!Model.CanChangeInCharge)
+                        {
+                            <input type="hidden" name="InChargeId" value="@form.InChargeId" />
+                        }
+                    </div>
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <label class="form-label admin-form-label">BIZ Reg No.</label>
+                        <input type="text"
+                               name="BizRegNo"
+                               value="@form.BizRegNo"
+                               class="form-control"
+                               placeholder="BIZ Reg No." />
+                    </div>
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <label class="form-label admin-form-label">Published</label>
+                        <div class="store-switch-box">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   id="IsPublished"
+                                   name="IsPublished"
+                                   value="true"
+                            @(form.IsPublished ? "checked" : "") />
+                            <input type="hidden" name="IsPublished" value="false" />
+                            <label class="form-check-label" for="IsPublished">
+                                Published
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <label class="form-label admin-form-label">Last Updated</label>
+                        <input type="text"
+                               value="@Model.LastUpdatedText"
+                               class="form-control"
+                               readonly />
+                    </div>
+                </div>
+            </div>
+
+            <div class="store-form-section">
+                <div class="section-title">
+                    <h5>Address Information</h5>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <label class="form-label admin-form-label">Block / House No.</label>
+                        <input type="text"
+                               name="BlockHouseNo"
+                               value="@form.BlockHouseNo"
+                               class="form-control"
+                               placeholder="Block / House No." />
+                    </div>
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <label class="form-label admin-form-label">Unit No</label>
+                        <input type="text"
+                               name="UnitNo"
+                               value="@form.UnitNo"
+                               class="form-control"
+                               placeholder="Unit No" />
+                    </div>
+
+                    <div class="col-xl-6 col-lg-8 col-md-12">
+                        <label class="form-label admin-form-label">Address 1</label>
+                        <input type="text"
+                               name="Address1"
+                               value="@form.Address1"
+                               class="form-control"
+                               placeholder="Address 1" />
+                    </div>
+
+                    <div class="col-xl-6 col-lg-8 col-md-12">
+                        <label class="form-label admin-form-label">Address 2</label>
+                        <input type="text"
+                               name="Address2"
+                               value="@form.Address2"
+                               class="form-control"
+                               placeholder="Address 2" />
+                    </div>
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <label class="form-label admin-form-label">City</label>
+                        <input type="text"
+                               name="City"
+                               value="@form.City"
+                               class="form-control"
+                               placeholder="City" />
+                    </div>
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <label class="form-label admin-form-label">State</label>
+                        <input type="text"
+                               name="State"
+                               value="@form.State"
+                               class="form-control"
+                               placeholder="State" />
+                    </div>
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <label class="form-label admin-form-label">Country</label>
+                        <input type="text"
+                               name="Country"
+                               value="@form.Country"
+                               class="form-control"
+                               placeholder="Country" />
+                    </div>
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <label class="form-label admin-form-label">Postal Code</label>
+                        <input type="text"
+                               name="PostalCode"
+                               value="@form.PostalCode"
+                               class="form-control"
+                               placeholder="Postal Code" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="store-form-section">
+                <div class="section-title">
+                    <h5>Contact Information</h5>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <label class="form-label admin-form-label">Phone</label>
+                        <input type="text"
+                               name="Phone"
+                               value="@form.Phone"
+                               class="form-control"
+                               placeholder="Phone" />
+                    </div>
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <label class="form-label admin-form-label">Fax</label>
+                        <input type="text"
+                               name="Fax"
+                               value="@form.Fax"
+                               class="form-control"
+                               placeholder="Fax" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="store-form-section">
+                <div class="section-title">
+                    <h5>Connection Information</h5>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <label class="form-label admin-form-label">IP Address</label>
+                        <input type="text"
+                               name="IpAddress"
+                               value="@form.IpAddress"
+                               class="form-control"
+                               placeholder="IP Address" />
+                    </div>
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <label class="form-label admin-form-label">Port No.</label>
+                        <input type="text"
+                               name="PortNo"
+                               value="@form.PortNo"
+                               class="form-control"
+                               placeholder="Port No." />
+                    </div>
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <label class="form-label admin-form-label">DB Name</label>
+                        <input type="text"
+                               name="DbName"
+                               value="@form.DbName"
+                               class="form-control"
+                               placeholder="DB Name" />
+                    </div>
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <label class="form-label admin-form-label">DB Login</label>
+                        <input type="text"
+                               name="DbLogin"
+                               value="@form.DbLogin"
+                               class="form-control"
+                               placeholder="DB Login" />
+                    </div>
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <label class="form-label admin-form-label">DB Password</label>
+                        <input type="password"
+                               name="DbPassword"
+                               value="@form.DbPassword"
+                               class="form-control"
+                               placeholder="DB Password" />
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        window.storeListFormConfig = {
+            saveUrl: '@Url.Action("SaveAjax", "StoreList", new { area = "Admin" })'
+        };
+    </script>
+
+    <script>
+        (function () {
+            'use strict';
+
+            angular
+                .module('storeListFormApp', [])
+                .controller('StoreListFormController', StoreListFormController);
+
+            StoreListFormController.$inject = ['$scope', '$http', '$timeout', '$window'];
+
+            function StoreListFormController($scope, $http, $timeout, $window) {
+                var config = window.storeListFormConfig || {};
+
+                $scope.isSaving = false;
+                $scope.isRedirecting = false;
+                $scope.submitMode = 'Save';
+                $scope.alert = {
+                    type: '',
+                    message: ''
+                };
+
+                $scope.submitForm = submitForm;
+                $scope.clearAlert = clearAlert;
+                $scope.blockWhenSaving = blockWhenSaving;
+
+                function submitForm(mode) {
+                    if ($scope.isSaving) {
+                        return;
+                    }
+
+                    var form = document.getElementById('storeListForm');
+
+                    if (!form) {
+                        showAlert('danger', 'Store form was not found.');
+                        return;
+                    }
+
+                    $scope.submitMode = mode || 'Save';
+                    clearAlert();
+
+                    var submitModeElement = document.getElementById('SubmitMode');
+
+                    if (submitModeElement) {
+                        submitModeElement.value = $scope.submitMode;
+                    }
+
+                    var formData = new FormData(form);
+                    formData.set('SubmitMode', $scope.submitMode);
+
+                    var tokenElement = form.querySelector('input[name="__RequestVerificationToken"]');
+                    var token = tokenElement ? tokenElement.value : '';
+
+                    $scope.isSaving = true;
+
+                    return $http.post(config.saveUrl, formData, {
+                        headers: {
+                            'Content-Type': undefined,
+                            'RequestVerificationToken': token
+                        },
+                        transformRequest: angular.identity
+                    }).then(function (response) {
+                        var result = response.data || {};
+
+                        if (result.statusCode !== 200) {
+                            showAlert('danger', result.statusMessage || 'Failed to save store.');
+                            return;
+                        }
+
+                        showAlert('success', result.statusMessage || 'Store has been saved successfully.');
+
+                        var redirectUrl = result.data && result.data.redirectUrl
+                            ? result.data.redirectUrl
+                            : '';
+
+                        if (redirectUrl) {
+                            $scope.isRedirecting = true;
+
+                            $timeout(function () {
+                                $window.location.href = redirectUrl;
+                            }, 500);
+                        }
+                    }).catch(function (error) {
+                        if (error.status === 401) {
+                            var loginRedirectUrl = error.data && error.data.redirectUrl
+                                ? error.data.redirectUrl
+                                : '/Account/Login';
+
+                            $scope.isRedirecting = true;
+                            $window.location.href = loginRedirectUrl;
+                            return;
+                        }
+
+                        var message = 'Failed to save store.';
+
+                        if (error.data && error.data.statusMessage) {
+                            message = error.data.statusMessage;
+                        }
+
+                        showAlert('danger', message);
+                    }).finally(function () {
+                        if (!$scope.isRedirecting) {
+                            $scope.isSaving = false;
+                        }
+                    });
+                }
+
+                function blockWhenSaving(event) {
+                    if ($scope.isSaving && event) {
+                        event.preventDefault();
+                    }
+                }
+
+                function showAlert(type, message) {
+                    $scope.alert.type = type;
+                    $scope.alert.message = message;
+
+                    if (type === 'success') {
+                        $timeout(function () {
+                            clearAlert();
+                        }, 3500);
+                    }
+                }
+
+                function clearAlert() {
+                    $scope.alert.type = '';
+                    $scope.alert.message = '';
+                }
+            }
+        })();
+    </script>
+}

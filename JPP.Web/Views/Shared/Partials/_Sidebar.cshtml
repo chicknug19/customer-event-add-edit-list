@@ -1,0 +1,310 @@
+﻿@{
+    var currentArea = Convert.ToString(ViewContext.RouteData.Values["area"]);
+    var currentController = Convert.ToString(ViewContext.RouteData.Values["controller"]);
+    var currentAction = Convert.ToString(ViewContext.RouteData.Values["action"]);
+
+    var isDashboardActive = string.IsNullOrWhiteSpace(currentArea)
+        && string.Equals(currentController, "Home", StringComparison.OrdinalIgnoreCase)
+        && string.Equals(currentAction, "Index", StringComparison.OrdinalIgnoreCase);
+
+    var isAdminScopeActive = string.Equals(currentArea, "Admin", StringComparison.OrdinalIgnoreCase);
+
+    var isStoreListActive = isAdminScopeActive
+        && string.Equals(currentController, "StoreList", StringComparison.OrdinalIgnoreCase);
+
+    var isHRScopeActive = string.Equals(currentArea, "HR", StringComparison.OrdinalIgnoreCase);
+
+    var isEmployeeListActive = isHRScopeActive
+        && string.Equals(currentController, "EmployeeList", StringComparison.OrdinalIgnoreCase);
+
+    var isEmployeeDepartmentActive = isHRScopeActive
+        && string.Equals(currentController, "EmployeeDepartment", StringComparison.OrdinalIgnoreCase);
+}
+
+<aside class="crm-sidebar" id="sidebar">
+
+    <div class="sidebar-brand sidebar-brand-logo">
+        <a asp-controller="Home" asp-action="Index" class="brand-image-link">
+            <img src="~/images/logo-default-258x116-1.png.webp"
+                 alt="CRM Admin Logo"
+                 class="brand-image" />
+        </a>
+    </div>
+
+    <div class="sidebar-scroll">
+
+        <div class="menu-label">Overview</div>
+
+        <a asp-area=""
+           asp-controller="Home"
+           asp-action="Index"
+           class="menu-link @(isDashboardActive ? "active" : "")">
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard</span>
+        </a>
+
+        <div class="menu-label">Admin</div>
+
+        <button class="menu-toggle @(isAdminScopeActive ? "active" : "")"
+                data-bs-toggle="collapse"
+                data-bs-target="#AdminAdminMenu"
+                aria-expanded="@(isAdminScopeActive.ToString().ToLower())">
+            <i class="bi bi-person-gear"></i>
+            <span>Admin</span>
+            <i class="bi bi-chevron-right menu-arrow"></i>
+        </button>
+
+        <div class="collapse @(isAdminScopeActive ? "show" : "")" id="AdminAdminMenu">
+            <div class="submenu">
+                <a asp-area="Admin"
+                   asp-controller="StoreList"
+                   asp-action="Index"
+                   class="@(isStoreListActive ? "active" : "")">Store List</a>
+
+                <a href="javascript:void(0);">Reason Codes</a>
+                <a href="javascript:void(0);">Audit Log</a>
+            </div>
+        </div>
+
+        <div class="menu-label">POS</div>
+        
+        <button class="menu-toggle" data-bs-toggle="collapse" data-bs-target="#POSSalesMenu">
+            <i class="bi bi-cart-check"></i>
+            <span>Sales</span>
+            <i class="bi bi-chevron-right menu-arrow"></i>
+        </button>
+
+        <div class="collapse" id="POSSalesMenu">
+            <div class="submenu">
+                <a href="javascript:void(0);">Sales Journal</a>
+            </div>
+        </div>
+
+        <div class="menu-label">Outlet</div>
+
+        <button class="menu-toggle" data-bs-toggle="collapse" data-bs-target="#OutletStockMenu">
+            <i class="bi bi-clipboard-check"></i>
+            <span>Stock Count</span>
+            <i class="bi bi-chevron-right menu-arrow"></i>
+        </button>
+
+        <div class="collapse" id="OutletStockMenu">
+            <div class="submenu">
+                <a href="javascript:void(0);">Stock OH</a>
+                <a href="javascript:void(0);">Stock Adjustment</a>
+                <a href="javascript:void(0);">Internal Consumption</a>
+            </div>
+        </div>
+
+        <button class="menu-toggle" data-bs-toggle="collapse" data-bs-target="#OutletTransferMenu">
+            <i class="bi bi-arrow-left-right"></i>
+            <span>Transfer</span>
+            <i class="bi bi-chevron-right menu-arrow"></i>
+        </button>
+
+        <div class="collapse" id="OutletTransferMenu">
+            <div class="submenu">
+                <a href="javascript:void(0);">Pending Receive</a>
+            </div>
+        </div>
+
+        <button class="menu-toggle" data-bs-toggle="collapse" data-bs-target="#OutletLD2211Menu">
+            <i class="bi bi-file-earmark-bar-graph"></i>
+            <span>LD2211</span>
+            <i class="bi bi-chevron-right menu-arrow"></i>
+        </button>
+
+        <div class="collapse" id="OutletLD2211Menu">
+            <div class="submenu">
+                <a href="javascript:void(0);">Report</a>
+            </div>
+        </div>
+
+        <div class="menu-label">Issue Tracker</div>
+
+        <button class="menu-toggle" data-bs-toggle="collapse" data-bs-target="#IssueTrackerProjectMenu">
+            <i class="bi bi-kanban"></i>
+            <span>Projects</span>
+            <i class="bi bi-chevron-right menu-arrow"></i>
+        </button>
+
+        <div class="collapse" id="IssueTrackerProjectMenu">
+            <div class="submenu">
+                <a href="javascript:void(0);">Project List</a>
+                <a href="javascript:void(0);">Category</a>
+                <a href="javascript:void(0);">Members</a>
+                <a href="javascript:void(0);">Milestones</a>
+                <a href="javascript:void(0);">Status</a>
+                <a href="javascript:void(0);">Members</a>
+            </div>
+        </div>
+
+        <button class="menu-toggle" data-bs-toggle="collapse" data-bs-target="#IssueTrackerIssueMenu">
+            <i class="bi bi-bug"></i>
+            <span>Issue</span>
+            <i class="bi bi-chevron-right menu-arrow"></i>
+        </button>
+
+        <div class="collapse" id="IssueTrackerIssueMenu">
+            <div class="submenu">
+                <a href="javascript:void(0);">Summary</a>
+                <a href="javascript:void(0);">Journal</a>
+                <a href="javascript:void(0);">Issue List</a>
+                <a href="javascript:void(0);">Queries List</a>
+            </div>
+        </div>
+
+        <div class="menu-label">AMS</div>
+
+        <button class="menu-toggle" data-bs-toggle="collapse" data-bs-target="#AMSGeneralMenu">
+            <i class="bi bi-hdd-stack"></i>
+            <span>General</span>
+            <i class="bi bi-chevron-right menu-arrow"></i>
+        </button>
+
+        <div class="collapse" id="AMSGeneralMenu">
+            <div class="submenu">
+                <a href="javascript:void(0);">Asset List</a>
+                <a href="javascript:void(0);">Deleted List</a>
+                <a href="javascript:void(0);">Asset Tag Summary</a>
+            </div>
+        </div>
+
+        <div class="menu-label">HR</div>
+
+        <button class="menu-toggle @(isHRScopeActive ? "active" : "")"
+                data-bs-toggle="collapse"
+                data-bs-target="#HRAdminMenu"
+                aria-expanded="@(isHRScopeActive.ToString().ToLower())">
+            <i class="bi bi-people"></i>
+            <span>HR Admin</span>
+            <i class="bi bi-chevron-right menu-arrow"></i>
+        </button>
+
+        <div class="collapse @(isHRScopeActive ? "show" : "")" id="HRAdminMenu">
+            <div class="submenu">
+                <a asp-area="HR"
+                   asp-controller="EmployeeList"
+                   asp-action="Index"
+                   class="@(isEmployeeListActive ? "active" : "")">Employee List</a>
+                <a asp-area="HR"
+                   asp-controller="EmployeeDepartment"
+                   asp-action="Index"
+                   class="@(isEmployeeDepartmentActive ? "active" : "")">Department</a>
+                <a href="javascript:void(0);">Role</a>
+                <a href="javascript:void(0);">Time Category</a>
+                <a href="javascript:void(0);">Calendar</a>
+            </div>
+        </div>
+
+        <button class="menu-toggle" data-bs-toggle="collapse" data-bs-target="#HRLeaveMenu">
+            <i class="bi bi-person-dash"></i>
+            <span>Leave</span>
+            <i class="bi bi-chevron-right menu-arrow"></i>
+        </button>
+
+        <div class="collapse" id="HRLeaveMenu">
+            <div class="submenu">
+                <a href="javascript:void(0);">Application Status</a>
+                <a href="javascript:void(0);">Application</a>
+                <a href="javascript:void(0);">Employee Leave Log</a>
+                <a href="javascript:void(0);">Yearly Leave Summary</a>
+                <a href="javascript:void(0);">Leave Type</a>
+            </div>
+        </div>
+
+        <button class="menu-toggle" data-bs-toggle="collapse" data-bs-target="#HRMovementMenu">
+            <i class="bi bi-person-walking"></i>
+            <span>Movement</span>
+            <i class="bi bi-chevron-right menu-arrow"></i>
+        </button>
+
+        <div class="collapse" id="HRMovementMenu">
+            <div class="submenu">
+                <a href="javascript:void(0);">Movement Status</a>
+                <a href="javascript:void(0);">Register Movement</a>
+                <a href="javascript:void(0);">Movement Log</a>
+                <a href="javascript:void(0);">Clock Log</a>
+                <a href="javascript:void(0);">Time Sheet</a>
+            </div>
+        </div>
+
+        <button class="menu-toggle" data-bs-toggle="collapse" data-bs-target="#HRClaimMenu">
+            <i class="bi bi-receipt"></i>
+            <span>Claims</span>
+            <i class="bi bi-chevron-right menu-arrow"></i>
+        </button>
+
+        <div class="collapse" id="HRClaimMenu">
+            <div class="submenu">
+                <a href="javascript:void(0);">List</a>
+                <a href="javascript:void(0);">Application</a>
+            </div>
+        </div>
+
+        <button class="menu-toggle" data-bs-toggle="collapse" data-bs-target="#HRIncentiveMenu">
+            <i class="bi bi-trophy"></i>
+            <span>Incentive</span>
+            <i class="bi bi-chevron-right menu-arrow"></i>
+        </button>
+
+        <div class="collapse" id="HRIncentiveMenu">
+            <div class="submenu">
+                <a href="javascript:void(0);">Individual</a>
+                <a href="javascript:void(0);">Treatment Count</a>
+            </div>
+        </div>
+
+        <button class="menu-toggle" data-bs-toggle="collapse" data-bs-target="#HRCertificateMenu">
+            <i class="bi bi-patch-check"></i>
+            <span>Certificate</span>
+            <i class="bi bi-chevron-right menu-arrow"></i>
+        </button>
+
+        <div class="collapse" id="HRCertificateMenu">
+            <div class="submenu">
+                <a href="javascript:void(0);">Certificate Type</a>
+                <a href="javascript:void(0);">Certificate List</a>
+                <a href="javascript:void(0);">Certificate Expiry</a>
+            </div>
+        </div>
+
+        <div class="menu-label">CRM</div>
+
+        <button class="menu-toggle" data-bs-toggle="collapse" data-bs-target="#CRMCustomerMenu">
+            <i class="bi bi-person-lines-fill"></i>
+            <span>Customer</span>
+            <i class="bi bi-chevron-right menu-arrow"></i>
+        </button>
+
+        <div class="collapse" id="CRMCustomerMenu">
+            <div class="submenu">
+                <a href="javascript:void(0);">Active List</a>
+                <a href="javascript:void(0);">Deleted List</a>
+                <a href="javascript:void(0);">Birth Month</a>
+                <a href="javascript:void(0);">Acc Owing</a>
+                <a href="javascript:void(0);">Appointment</a>
+            </div>
+        </div>
+
+        <div class="menu-label">Inventory</div>
+
+        <button class="menu-toggle" data-bs-toggle="collapse" data-bs-target="#CRMCustomerMenu">
+            <i class="bi bi-person-lines-fill"></i>
+            <span>Customer</span>
+            <i class="bi bi-chevron-right menu-arrow"></i>
+        </button>
+
+        <div class="collapse" id="CRMCustomerMenu">
+            <div class="submenu">
+                <a href="javascript:void(0);">Active List</a>
+                <a href="javascript:void(0);">Deleted List</a>
+                <a href="javascript:void(0);">Birth Month</a>
+                <a href="javascript:void(0);">Acc Owing</a>
+                <a href="javascript:void(0);">Appointment</a>
+            </div>
+        </div>
+
+    </div>
+
+</aside>
