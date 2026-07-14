@@ -20,7 +20,6 @@ project.fragment.lock.json
 artifacts/
 
 # ASP.NET / IIS
-appsettings.Development.json
 appsettings.Local.json
 secrets.json
 
