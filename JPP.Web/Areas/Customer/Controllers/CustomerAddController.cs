@@ -1,93 +1,87 @@
-using Microsoft.AspNetCore.Mvc;
-using JPP.Web.Controllers;
-using JPP.Models.Customer.Responses;
 using JPP.Models.Customer.Request;
+using JPP.Models.Customer.Responses;
+using JPP.Models.Shared.Responses;
+using JPP.Services.Interfaces;
+using JPP.Web.Controllers;
+using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace JPP.Web.Areas.Admin.Controllers
+namespace JPP.Web.Areas.Customer.Controllers
 {
-    [Area("Admin")]
-    public class CustomerListController : BaseController
+    [Area("Customer")]
+    public class CustomerAddController : BaseController
     {
         protected override bool RequireLogin => true;
 
-        public IActionResult CustomerAddPage()
+        private readonly ICustomerService _customerService;
+
+        public CustomerAddController(ICustomerService customerService)
+        {
+            _customerService = customerService;
+        }
+
+        [HttpGet]
+        public IActionResult Index()
         {
             return View();
         }
 
         [HttpGet]
-        public IActionResult Add()
+        public IActionResult CustomerAddPage()
         {
+            // 1. Kita buat model kosong untuk halaman Add
             var model = new CustomerDetailViewModel
             {
-                Form = new CustomerRequest
-                {
-                    ID = 0,
-                    Title = "Ms",
-                    FirstName = "Jane",
-                    MiddleName = "A.",
-                    LastName = "Tester",
-                    IdentityNo = "S7654321B",
-                    DOB = DateTime.Today.AddYears(-28),
-                    MaritalStatus = "Single",
-                    Gender = "Female",
-                    Nation = "SG",
-                    Occupation = "Designer",
-                    PhoneNumber = "91234567",
-                    EmailAddress = "jane.tester@example.com",
-                    BlockHouseNo = "12",
-                    UnitNo = "01-02",
-                    Address1 = "1 Example St",
-                    City = "Singapore",
-                    Country = "Singapore",
-                    Zip = "123456",
-                    CategoryID = 1,
-                    StoreID = 1,
-                    AcceptSMS = true,
-                    AcceptMailEmail = false
-                },
+                Form = new CustomerRequest(), // Form kosong untuk diisi user
                 IsReadOnly = false
             };
 
-            return View("Add", model);
+            // 2. Kita kirim model tersebut ke View
+            return View("CustomerAddPage", model);
         }
 
-        [HttpGet]
-        public IActionResult Edit(int id)
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveAjax(CustomerRequest request)
         {
-            var model = new CustomerDetailViewModel
+            if (!ModelState.IsValid)
             {
-                Form = new CustomerRequest
-                {
-                    ID = id,
-                    Title = "Mr",
-                    FirstName = "John",
-                    MiddleName = "",
-                    LastName = "Doe",
-                    IdentityNo = "S1234567A",
-                    DOB = DateTime.Today.AddYears(-34),
-                    MaritalStatus = "Married",
-                    Gender = "Male",
-                    Nation = "SG",
-                    Occupation = "Developer",
-                    PhoneNumber = "98765432",
-                    EmailAddress = "john.doe@example.com",
-                    BlockHouseNo = "99",
-                    UnitNo = "10-11",
-                    Address1 = "10 Demo Rd",
-                    City = "Singapore",
-                    Country = "Singapore",
-                    Zip = "654321",
-                    CategoryID = 2,
-                    StoreID = 3,
-                    AcceptSMS = false,
-                    AcceptMailEmail = true
-                },
-                IsReadOnly = false
-            };
+                var errors = string.Join(" ", ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage));
 
-            return View("Edit", model);
+                return BadRequest(BaseResult.Fail(
+                    statusMessage: string.IsNullOrWhiteSpace(errors) ? "Data tidak valid." : errors,
+                    statusCode: 400));
+            }
+
+            try
+            {
+                var result = await _customerService.AddCustomerAsync(request);
+
+                if (result.StatusCode != 200)
+                {
+                    return BadRequest(BaseResult.Fail(
+                        statusMessage: result.StatusMessage,
+                        statusCode: result.StatusCode));
+                }
+
+                return Json(BaseResult<object>.Ok(
+                    data: new { id = result.Data, redirectUrl = Url.Action(nameof(Index)) },
+                    statusMessage: result.StatusMessage));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, BaseResult.Fail(
+                    statusMessage: $"Terjadi kesalahan sistem: {ex.Message}",
+                    statusCode: 500));
+            }
         }
+
+
+
     }
 }
