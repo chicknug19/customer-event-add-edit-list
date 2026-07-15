@@ -3,11 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace JPP.Models.Customer.Responses.CustomerDto
+namespace JPP.Data.Entities
 {
-    public class CustomerDto
+    [Table("BIZ_Customer")]
+    public class BIZCustomer
     {
+        [Key]
+        public int ID { get; set; }
+        public Guid UID { get; set; } = Guid.NewGuid();
+        public DateTime? DateCreated { get; set; }
+        public DateTime? LastUpdated { get; set; }
+        public bool Inactive { get; set; } 
         public string? Title { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string? MiddleName { get; set; }

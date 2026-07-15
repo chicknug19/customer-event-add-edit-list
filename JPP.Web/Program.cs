@@ -1,4 +1,5 @@
-﻿using JPP.Data.DataAccess;
+﻿using Microsoft.EntityFrameworkCore;
+using JPP.Data.DataAccess;
 using JPP.Data.Interfaces;
 using JPP.Data.Repositories;
 using JPP.Services.Interfaces;
@@ -28,6 +29,9 @@ builder.Services.AddSingleton<ICrmDbConnectionFactory>(
     new CrmDbConnectionFactory(crmConnectionString)
 );
 
+builder.Services.AddDbContext<JPP.Data.AppDbContext.AppDbContext>(options =>
+    options.UseSqlServer(crmConnectionString));
+
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddSession(options =>
@@ -50,6 +54,9 @@ builder.Services.AddScoped<IEmployeeListService, EmployeeListService>();
 
 builder.Services.AddScoped<IEmployeeDepartmentRepository, EmployeeDepartmentRepository>();
 builder.Services.AddScoped<IEmployeeDepartmentService, EmployeeDepartmentService>();
+
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 
 builder.Services.AddScoped<IOtpService, CellboxOtpService>();

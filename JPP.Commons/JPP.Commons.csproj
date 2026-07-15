@@ -15,6 +15,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.33" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.33" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\JPP.Models\JPP.Models.csproj" />
   </ItemGroup>
 
