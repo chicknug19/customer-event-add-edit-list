@@ -1,15 +1,22 @@
+using System;
+using System.Threading.Tasks;
+using JPP.Data.Interfaces;
 using JPP.Models.Customer.Responses;
 using JPP.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace JPP.Services.Services
 {
-    public class CustomerService : ICustomerListService
+    public class CustomerListService : ICustomerListService
     {
-        private readonly ILogger<CustomerService> _logger;
+        private readonly ICustomerListRepository _customerListRepository;
+        private readonly ILogger<CustomerListService> _logger;
 
-        public CustomerService(ILogger<CustomerService> logger)
+        public CustomerListService(
+            ICustomerListRepository customerListRepository, 
+            ILogger<CustomerListService> logger)
         {
+            _customerListRepository = customerListRepository;
             _logger = logger;
         }
 
@@ -17,18 +24,9 @@ namespace JPP.Services.Services
         {
             try
             {
+                var data = await _customerListRepository.GetCustomerListAsync();
                 
-                // var customers = await _customerRepository.GetAllAsync();
-                // var customerListDtos = customers.Select(c => new CustomerListDto
-                // {
-                //     CustomerID = c.CustomerID,
-                //     FullName = $"{c.FirstName} {c.LastName}".Trim(),
-                //     Address1 = c.Address1,
-                //     PhoneNumber = c.PhoneNumber
-                // }).ToList();
-
-                var mockData = new List<CustomerListDto>();
-                return CustomerServiceResult.Ok(mockData, "Success");
+                return CustomerServiceResult.Ok(data, "Success");
             }
             catch (Exception ex)
             {
