@@ -4,11 +4,11 @@ using Microsoft.Extensions.Logging;
 
 namespace JPP.Services.Services
 {
-    public class CustomerService : ICustomerListService
+    public class CustomerListService : ICustomerListService
     {
         private readonly ILogger<CustomerService> _logger;
 
-        public CustomerService(ILogger<CustomerService> logger)
+        public CustomerListService(ILogger<CustomerService> logger)
         {
             _logger = logger;
         }

@@ -48,6 +48,7 @@ namespace JPP.Data.Repositories
               AND Username = @Username";
 
             using var conn = _db.Create();
+            conn.Open();
 
             return await conn.QuerySingleOrDefaultAsync<BIZEmployee>(
                 sql,

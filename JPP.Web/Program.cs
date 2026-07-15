@@ -29,9 +29,6 @@ builder.Services.AddSingleton<ICrmDbConnectionFactory>(
     new CrmDbConnectionFactory(crmConnectionString)
 );
 
-builder.Services.AddDbContext<JPP.Data.AppDbContext.AppDbContext>(options =>
-    options.UseSqlServer(crmConnectionString));
-
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddSession(options =>
@@ -58,6 +55,7 @@ builder.Services.AddScoped<IEmployeeDepartmentService, EmployeeDepartmentService
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 
+builder.Services.AddScoped<ICustomerListService, CustomerListService>();
 
 builder.Services.AddScoped<IOtpService, CellboxOtpService>();
 builder.Services.AddScoped<IAccountEmailService, AccountEmailService>();
