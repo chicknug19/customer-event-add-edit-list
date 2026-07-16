@@ -16,18 +16,7 @@ namespace JPP.Data.Repositories
             _crmDbConnectionFactory = crmDbConnectionFactory;
         }
 
-        public async Task<bool> IdentityNoExistsAsync(string identityNo)
-        {
-            if (string.IsNullOrWhiteSpace(identityNo)) return false;
-
-            const string sql = @"
-                SELECT COUNT(1) 
-                FROM BIZ_Customer 
-                WHERE IdentityNo = @IdentityNo";
-
-            using var conn = _crmDbConnectionFactory.Create();
-            return await conn.ExecuteScalarAsync<int>(sql, new { IdentityNo = identityNo.Trim() }) > 0;
-        }
+        // FUNGSI IDENTITY NO DIHAPUS DARI SINI
 
         public async Task<bool> EmailExistsAsync(string email)
         {
@@ -42,23 +31,22 @@ namespace JPP.Data.Repositories
             return await conn.ExecuteScalarAsync<int>(sql, new { EmailAddress = email.Trim() }) > 0;
         }
 
-        // Ubah BIZCustomer menjadi CustomerRequest di baris ini 👇
         public async Task<int> CreateCustomerAsync(CustomerRequest request)
         {
+            // SQL Disesuaikan hanya untuk field yang ada
+            // Saya tetap memasukkan UID, DateCreated, LastUpdated, Inactive untuk standar database
             const string sql = @"
                 INSERT INTO BIZ_Customer
                 (
-                    UID, DateCreated, LastUpdated, Inactive, Title, FirstName, MiddleName, LastName, 
-                    IdentityNo, DOB, MaritalStatus, Gender, Race, Nation, Occupation, PhoneNumber, 
-                    HPNum, EmailAddress, [Password], Password_WEB, BlockHouseNo, UnitNo, Address1, 
-                    Address2, City, State, Country, Zip, CategoryID, StoreID, AcceptSMS, AcceptMailEmail
+                    UID, DateCreated, LastUpdated, Inactive, 
+                    FirstName, MiddleName, LastName, 
+                    PhoneNumber, PhoneNumber2, EmailAddress, Address1, Address2
                 )
                 VALUES
                 (
-                    @UID, GETDATE(), GETDATE(), @Inactive, @Title, @FirstName, @MiddleName, @LastName, 
-                    @IdentityNo, @DOB, @MaritalStatus, @Gender, @Race, @Nation, @Occupation, @PhoneNumber, 
-                    @HPNum, @EmailAddress, @Password, @Password_WEB, @BlockHouseNo, @UnitNo, @Address1, 
-                    @Address2, @City, @State, @Country, @Zip, @CategoryID, @StoreID, @AcceptSMS, @AcceptMailEmail
+                    NEWID(), GETDATE(), GETDATE(), 0, 
+                    @FirstName, @MiddleName, @LastName, 
+                    @PhoneNumber, @PhoneNumber2, @EmailAddress, @Address1, @Address2
                 );
 
                 SELECT CAST(SCOPE_IDENTITY() AS INT);";
@@ -67,36 +55,14 @@ namespace JPP.Data.Repositories
 
             var newId = await conn.ExecuteScalarAsync<int>(sql, new
             {
-                UID = Guid.NewGuid(),
-                Inactive = false,
-                Title = request.Title,
                 FirstName = request.FirstName?.Trim() ?? string.Empty,
                 MiddleName = request.MiddleName?.Trim(),
                 LastName = request.LastName?.Trim(),
-                IdentityNo = request.IdentityNo?.Trim() ?? string.Empty,
-                DOB = request.DOB,
-                MaritalStatus = request.MaritalStatus,
-                Gender = request.Gender,
-                Race = request.Race,
-                Nation = request.Nation,
-                Occupation = request.Occupation,
-                PhoneNumber = request.PhoneNumber,
-                HPNum = request.HPNum,
+                PhoneNumber = request.PhoneNumber?.Trim() ?? string.Empty,
+                PhoneNumber2 = request.PhoneNumber2?.Trim(),
                 EmailAddress = request.EmailAddress?.Trim(),
-                Password = request.Password ?? string.Empty,
-                Password_WEB = request.Password_WEB,
-                BlockHouseNo = request.BlockHouseNo,
-                UnitNo = request.UnitNo,
-                Address1 = request.Address1,
-                Address2 = request.Address2,
-                City = request.City,
-                State = request.State,
-                Country = request.Country,
-                Zip = request.Zip,
-                CategoryID = request.CategoryID,
-                StoreID = request.StoreID,
-                AcceptSMS = request.AcceptSMS,
-                AcceptMailEmail = request.AcceptMailEmail
+                Address1 = request.Address1?.Trim() ?? string.Empty,
+                Address2 = request.Address2?.Trim()
             });
 
             return newId;

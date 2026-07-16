@@ -10,11 +10,8 @@ namespace JPP.Data.Interfaces
 {
     public interface ICustomerRepository
     {
-        Task<bool> IdentityNoExistsAsync(string identityNo);
-
         Task<bool> EmailExistsAsync(string email);
 
-        // Kunci 2: Pastikan tipe parameternya adalah CustomerRequest
         Task<int> CreateCustomerAsync(CustomerRequest request);
     }
 }

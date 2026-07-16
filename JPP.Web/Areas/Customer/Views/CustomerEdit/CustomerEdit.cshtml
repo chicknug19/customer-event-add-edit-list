@@ -12,7 +12,7 @@
 
 <div class="admin-page-header mb-4">
     <div>
-        <span class="admin-eyebrow">Admin Module</span>
+        <span class="admin-eyebrow">Customer Module</span>
         <h3>@Model.PageTitle</h3>
         <p>
             Manage customer account and personal information.
@@ -20,9 +20,7 @@
     </div>
 
     <div class="admin-page-actions">
-        <a asp-area="Admin"
-           asp-controller="CustomerList"
-           asp-action="Index"
+        <a href="/Customer/CustomerList/Index"
            class="btn btn-soft">
             <i class="bi bi-arrow-left me-2"></i>
             Back to List
@@ -54,8 +52,9 @@
     </div>
 }
 
-<form asp-area="Admin"
-      asp-controller="CustomerList"
+<!-- PERBAIKAN: Arahkan ke Area Customer, Controller CustomerAdd, Action Save -->
+<form asp-area="Customer"
+      asp-controller="CustomerAdd"
       asp-action="Save"
       method="post"
       id="customerForm">
@@ -68,8 +67,8 @@
     <div class="employee-form-shell">
         <div class="employee-toolbar crm-card mb-4">
             <div>
-                <h5>@Model.DisplayName</h5>
-                <p>@($"Customer ID: {form.ID}")</p>
+                <h5>@(Model.IsEditMode? Model.DisplayName: "New Customer")</h5>
+                <p>@(Model.IsEditMode ? $"Customer ID: {form.ID}" : "Complete the customer data below.")</p>
             </div>
 
             <div class="employee-toolbar-actions">
@@ -92,181 +91,68 @@
                     </button>
                 }
 
-                <a asp-area="Admin"
-                   asp-controller="CustomerList"
-                   asp-action="Index"
+                <a href="/Customer/CustomerList/Index"
                    class="btn btn-soft">
                     Cancel
                 </a>
             </div>
         </div>
 
+        <!-- PERBAIKAN: Hanya menampilkan 8 kolom yang ada di Database/Model -->
         <div class="crm-card mb-4">
             <div class="section-title">
-                <h5>Customer Account & Personal Information</h5>
-                <p>Customer master information and personal details.</p>
+                <h5>Personal Information</h5>
+                <p>Customer basic personal details.</p>
             </div>
 
             <div class="row g-3">
-                <div class="col-xl-3 col-md-6">
-                    <label class="form-label admin-form-label">Title</label>
-                    <input type="text" name="Title" value="@form.Title" class="form-control" @disabled />
-                </div>
-
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-4 col-md-6">
                     <label class="form-label admin-form-label">First Name <span class="text-danger">*</span></label>
                     <input type="text" name="FirstName" value="@form.FirstName" class="form-control" @disabled />
                 </div>
 
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-4 col-md-6">
                     <label class="form-label admin-form-label">Middle Name</label>
                     <input type="text" name="MiddleName" value="@form.MiddleName" class="form-control" @disabled />
                 </div>
 
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-4 col-md-6">
                     <label class="form-label admin-form-label">Last Name</label>
                     <input type="text" name="LastName" value="@form.LastName" class="form-control" @disabled />
                 </div>
+            </div>
+        </div>
 
-                <div class="col-xl-3 col-md-6">
-                    <label class="form-label admin-form-label">Identity Number <span class="text-danger">*</span></label>
-                    <input type="text" name="IdentityNo" value="@form.IdentityNo" class="form-control" @disabled />
-                </div>
+        <div class="crm-card mb-4">
+            <div class="section-title">
+                <h5>Contact & Address Information</h5>
+                <p>Customer contact and residential details.</p>
+            </div>
 
-                <div class="col-xl-3 col-md-6">
-                    <label class="form-label admin-form-label">Date of Birth <span class="text-danger">*</span></label>
-                    <input type="date" name="DOB" value="@(form.DOB != default ? form.DOB.ToString("yyyy-MM-dd") : "")" class="form-control" @disabled />
-                </div>
-
-                <div class="col-xl-3 col-md-6">
-                    <label class="form-label admin-form-label">Marital Status</label>
-                    <select name="MaritalStatus" class="form-select" @disabled>
-                        <option value="" selected="@(string.IsNullOrWhiteSpace(form.MaritalStatus))">- Please Select -</option>
-                        <option value="Single" selected="@(form.MaritalStatus == "Single")">Single</option>
-                        <option value="Married" selected="@(form.MaritalStatus == "Married")">Married</option>
-                        <option value="Divorced" selected="@(form.MaritalStatus == "Divorced")">Divorced</option>
-                        <option value="Widowed" selected="@(form.MaritalStatus == "Widowed")">Widowed</option>
-                    </select>
-                </div>
-
-                <div class="col-xl-3 col-md-6">
-                    <label class="form-label admin-form-label">Gender</label>
-                    <select name="Gender" class="form-select" @disabled>
-                        <option value="" selected="@(string.IsNullOrWhiteSpace(form.Gender))">- Please Select -</option>
-                        <option value="Male" selected="@(form.Gender == "Male")">Male</option>
-                        <option value="Female" selected="@(form.Gender == "Female")">Female</option>
-                    </select>
-                </div>
-
-                <div class="col-xl-3 col-md-6">
-                    <label class="form-label admin-form-label">Race</label>
-                    <input type="text" name="Race" value="@form.Race" class="form-control" @disabled />
-                </div>
-
-                <div class="col-xl-3 col-md-6">
-                    <label class="form-label admin-form-label">Nation</label>
-                    <input type="text" name="Nation" value="@form.Nation" class="form-control" @disabled />
-                </div>
-
-                <div class="col-xl-3 col-md-6">
-                    <label class="form-label admin-form-label">Occupation</label>
-                    <input type="text" name="Occupation" value="@form.Occupation" class="form-control" @disabled />
-                </div>
-
-                <div class="col-xl-3 col-md-6">
-                    <label class="form-label admin-form-label">Phone Number</label>
+            <div class="row g-3">
+                <div class="col-xl-4 col-md-6">
+                    <label class="form-label admin-form-label">Phone Number <span class="text-danger">*</span></label>
                     <input type="text" name="PhoneNumber" value="@form.PhoneNumber" class="form-control" @disabled />
                 </div>
 
-                <div class="col-xl-3 col-md-6">
-                    <label class="form-label admin-form-label">HP No.</label>
-                    <input type="text" name="HPNum" value="@form.HPNum" class="form-control" @disabled />
+                <div class="col-xl-4 col-md-6">
+                    <label class="form-label admin-form-label">Phone Number 2</label>
+                    <input type="text" name="PhoneNumber2" value="@form.PhoneNumber2" class="form-control" @disabled />
                 </div>
 
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-4 col-md-6">
                     <label class="form-label admin-form-label">Email Address</label>
                     <input type="email" name="EmailAddress" value="@form.EmailAddress" class="form-control" @disabled />
                 </div>
 
-                <div class="col-xl-3 col-md-6">
-                    <label class="form-label admin-form-label">Password (leave blank to keep)</label>
-                    <input type="password" name="Password" value="" class="form-control" autocomplete="new-password" @disabled />
-                </div>
-            </div>
-        </div>
-
-        <div class="crm-card">
-            <div class="section-title">
-                <h5>Address Information</h5>
-                <p>Customer residential and mailing address details.</p>
-            </div>
-
-            <div class="row g-3">
-                <div class="col-xl-3 col-md-6">
-                    <label class="form-label admin-form-label">Block/House No.</label>
-                    <input type="text" name="BlockHouseNo" value="@form.BlockHouseNo" class="form-control" @disabled />
-                </div>
-
-                <div class="col-xl-3 col-md-6">
-                    <label class="form-label admin-form-label">Unit No.</label>
-                    <input type="text" name="UnitNo" value="@form.UnitNo" class="form-control" @disabled />
-                </div>
-
-                <div class="col-xl-3 col-md-6">
-                    <label class="form-label admin-form-label">Address 1</label>
+                <div class="col-xl-6 col-md-12">
+                    <label class="form-label admin-form-label">Address 1 <span class="text-danger">*</span></label>
                     <input type="text" name="Address1" value="@form.Address1" class="form-control" @disabled />
                 </div>
 
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-6 col-md-12">
                     <label class="form-label admin-form-label">Address 2</label>
                     <input type="text" name="Address2" value="@form.Address2" class="form-control" @disabled />
-                </div>
-
-                <div class="col-xl-3 col-md-6">
-                    <label class="form-label admin-form-label">City</label>
-                    <input type="text" name="City" value="@form.City" class="form-control" @disabled />
-                </div>
-
-                <div class="col-xl-3 col-md-6">
-                    <label class="form-label admin-form-label">State</label>
-                    <input type="text" name="State" value="@form.State" class="form-control" @disabled />
-                </div>
-
-                <div class="col-xl-3 col-md-6">
-                    <label class="form-label admin-form-label">Country</label>
-                    <input type="text" name="Country" value="@form.Country" class="form-control" @disabled />
-                </div>
-
-                <div class="col-xl-3 col-md-6">
-                    <label class="form-label admin-form-label">Zip/Postal Code</label>
-                    <input type="text" name="Zip" value="@form.Zip" class="form-control" @disabled />
-                </div>
-            </div>
-        </div>
-
-        <div class="crm-card">
-            <div class="section-title">
-                <h5>Additional Information</h5>
-                <p>Customer preferences and system settings.</p>
-            </div>
-
-            <div class="row g-3">
-                <div class="col-xl-3 col-md-6">
-                    <label class="form-label admin-form-label">Category</label>
-                    <input type="number" name="CategoryID" value="@form.CategoryID" class="form-control" @disabled />
-                </div>
-
-                <div class="col-xl-3 col-md-6">
-                    <label class="form-label admin-form-label">Store</label>
-                    <input type="number" name="StoreID" value="@form.StoreID" class="form-control" @disabled />
-                </div>
-
-                <div class="col-xl-3 col-md-6 d-flex align-items-end">
-                    @Checkbox("AcceptSMS", "Accept SMS", form.AcceptSMS ?? false, disabled)
-                </div>
-
-                <div class="col-xl-3 col-md-6 d-flex align-items-end">
-                    @Checkbox("AcceptMailEmail", "Accept Email", form.AcceptMailEmail ?? false, disabled)
                 </div>
             </div>
         </div>
@@ -278,6 +164,7 @@
         border: 0;
         border-radius: 18px;
         box-shadow: 0 12px 35px rgba(49, 55, 69, .08);
+        padding: 1.5rem;
     }
 
     .employee-toolbar {
@@ -288,16 +175,16 @@
         padding: 1.25rem;
     }
 
-    .employee-toolbar h5 {
-        margin: 0;
-        font-weight: 700;
-        color: #313745;
-    }
+        .employee-toolbar h5 {
+            margin: 0;
+            font-weight: 700;
+            color: #313745;
+        }
 
-    .employee-toolbar p {
-        margin: .25rem 0 0;
-        color: #7b8190;
-    }
+        .employee-toolbar p {
+            margin: .25rem 0 0;
+            color: #7b8190;
+        }
 
     .employee-toolbar-actions {
         display: flex;
@@ -310,24 +197,17 @@
         margin-bottom: 1.5rem;
     }
 
-    .section-title h5 {
-        margin: 0 0 0.5rem;
-        font-weight: 700;
-        color: #313745;
-    }
+        .section-title h5 {
+            margin: 0 0 0.5rem;
+            font-weight: 700;
+            color: #313745;
+        }
 
-    .section-title p {
-        margin: 0;
-        color: #7b8190;
-        font-size: 0.9rem;
-    }
-
-    .employee-check-card {
-        padding: .75rem 1rem;
-        border: 1px solid #edf0f5;
-        border-radius: 14px;
-        background: #fbfcfe;
-    }
+        .section-title p {
+            margin: 0;
+            color: #7b8190;
+            font-size: 0.9rem;
+        }
 
     .btn-main-outline {
         border: 1px solid #313745;
@@ -335,10 +215,10 @@
         background: #fff;
     }
 
-    .btn-main-outline:hover {
-        background: #313745;
-        color: #fff;
-    }
+        .btn-main-outline:hover {
+            background: #313745;
+            color: #fff;
+        }
 
     @@media (max-width: 768px) {
         .employee-toolbar {
@@ -376,29 +256,4 @@
             });
         })(jQuery);
     </script>
-}
-
-@functions {
-    private Microsoft.AspNetCore.Html.IHtmlContent Checkbox(
-        string name,
-        string label,
-        bool value,
-        string? disabled,
-        string? id = null)
-    {
-        var checkedText = value ? "checked" : "";
-        var disabledText = string.IsNullOrWhiteSpace(disabled) ? "" : "disabled";
-        var idAttr = string.IsNullOrWhiteSpace(id) ? "" : $"id=\"{id}\"";
-
-        var html =
-            $"<div class=\"employee-check-card\">" +
-                $"<div class=\"form-check form-switch\">" +
-                    $"<input class=\"form-check-input\" type=\"checkbox\" name=\"{name}\" value=\"true\" {checkedText} {disabledText} {idAttr} />" +
-                    $"<input type=\"hidden\" name=\"{name}\" value=\"false\" />" +
-                    $"<label class=\"form-check-label\">{label}</label>" +
-                $"</div>" +
-            $"</div>";
-
-        return new Microsoft.AspNetCore.Html.HtmlString(html);
-    }
 }
