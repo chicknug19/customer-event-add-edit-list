@@ -304,7 +304,8 @@
                         }
                     }).then(function (response) {
                         var payload = response.data || {};
-                        $scope.customers = payload.data || [];
+                        allCustomers = payload.data || [];
+                        $scope.customers = allCustomers;
 
                         $scope.isLoading = false;
                     }).catch(function () {
