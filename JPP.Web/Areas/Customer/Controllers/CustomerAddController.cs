@@ -4,6 +4,7 @@ using JPP.Models.Shared.Responses;
 using JPP.Services.Interfaces;
 using JPP.Web.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,13 +14,16 @@ namespace JPP.Web.Areas.Customer.Controllers
     [Area("Customer")]
     public class CustomerAddController : BaseController
     {
+
         protected override bool RequireLogin => true;
 
         private readonly ICustomerService _customerService;
+        private readonly IEventService _eventService;
 
-        public CustomerAddController(ICustomerService customerService)
+        public CustomerAddController(ICustomerService customerService, IEventService eventService)
         {
             _customerService = customerService;
+            _eventService = eventService;
         }
 
         [HttpGet]
@@ -29,16 +33,21 @@ namespace JPP.Web.Areas.Customer.Controllers
         }
 
         [HttpGet]
-        public IActionResult CustomerAddPage()
+        public async Task<IActionResult> CustomerAddPage() 
         {
-            // 1. Kita buat model kosong untuk halaman Add
+            var events = await _eventService.GetDropdownListAsync();
+
             var model = new CustomerDetailViewModel
             {
-                Form = new CustomerRequest(), // Form kosong untuk diisi user
-                IsReadOnly = false
+                Form = new CustomerRequest(),
+                IsReadOnly = false,
+                EventOptions = events.Select(e => new SelectListItem
+                {
+                    Value = e.Id.ToString(),
+                    Text = $"{e.Code} - {e.Name}"
+                })
             };
 
-            // 2. Kita kirim model tersebut ke View
             return View("CustomerAddPage", model);
         }
 
@@ -59,25 +68,21 @@ namespace JPP.Web.Areas.Customer.Controllers
                 return View("CustomerAddPage", model);
             }
 
-            // Panggil Service untuk menyimpan ke database
             var result = await _customerService.AddCustomerAsync(form);
 
             if (result.StatusCode == 200)
             {
                 TempData["SuccessMessage"] = "Customer berhasil disimpan!";
 
-                // Jika user menekan tombol "Save And Close", kembali ke halaman List
                 if (SubmitMode == "SaveAndClose")
                 {
                     return RedirectToAction("Index", "CustomerList", new { area = "Customer" });
                 }
 
-                // Jika hanya menekan "Save", tetap di halaman ini dan reset form (atau bisa redirect ke mode Edit nantinya)
                 return RedirectToAction("CustomerAddPage");
             }
             else
             {
-                // Jika gagal simpan (misal KTP duplikat)
                 TempData["ErrorMessage"] = result.StatusMessage;
 
                 var model = new CustomerDetailViewModel

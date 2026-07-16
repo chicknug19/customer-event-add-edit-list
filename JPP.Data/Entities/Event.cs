@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace JPP.Data.Entities
 {
-    [Table("Event")]
+    [Table("BIZ_CustomerEvent")]
     public class Event
     {
         [Key]

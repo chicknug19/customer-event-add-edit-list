@@ -13,7 +13,6 @@ namespace JPP.Services.Interfaces
 {
     public interface ICustomerService
     {
-        // Fungsi ini akan mengembalikan Response standar yang berisi ID Customer baru (int)
         Task<BaseResult<int>> AddCustomerAsync(CustomerRequest request);
     }
 }

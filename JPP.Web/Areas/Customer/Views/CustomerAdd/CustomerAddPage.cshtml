@@ -150,6 +150,21 @@
                     <label class="form-label admin-form-label">Address 2</label>
                     <input type="text" name="Address2" value="@form.Address2" class="form-control" @disabled />
                 </div>
+
+                <div class="col-xl-4 col-md-6">
+                    <label class="form-label admin-form-label">Event</label>
+                    <select name="EventId" class="form-select" @disabled>
+                        <option value="">- Please Select Event -</option>
+
+                        @if (Model.EventOptions != null && Model.EventOptions.Any())
+                        {
+                            foreach (var item in Model.EventOptions)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
             </div>
         </div>
     </div>

@@ -22,5 +22,6 @@ namespace JPP.Models.Customer.Request
         [Required(ErrorMessage = "Address is required")]
         public string Address1 { get; set; } = string.Empty;
         public string? Address2 { get; set; }
+        public int? EventId { get; set; }
     }
 }

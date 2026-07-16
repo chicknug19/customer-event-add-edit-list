@@ -16,7 +16,6 @@ namespace JPP.Data.Repositories
             _crmDbConnectionFactory = crmDbConnectionFactory;
         }
 
-        // FUNGSI IDENTITY NO DIHAPUS DARI SINI
 
         public async Task<bool> EmailExistsAsync(string email)
         {
@@ -33,23 +32,19 @@ namespace JPP.Data.Repositories
 
         public async Task<int> CreateCustomerAsync(CustomerRequest request)
         {
-            // SQL Disesuaikan hanya untuk field yang ada
-            // Saya tetap memasukkan UID, DateCreated, LastUpdated, Inactive untuk standar database
             const string sql = @"
                 INSERT INTO BIZ_Customer
                 (
                     UID, DateCreated, LastUpdated, Inactive, 
                     FirstName, MiddleName, LastName, 
-                    PhoneNumber, PhoneNumber2, EmailAddress, Address1, Address2
+                    PhoneNumber, PhoneNumber2, EmailAddress, Address1, Address2, EventId /* Tambahkan ini */
                 )
                 VALUES
                 (
                     NEWID(), GETDATE(), GETDATE(), 0, 
                     @FirstName, @MiddleName, @LastName, 
-                    @PhoneNumber, @PhoneNumber2, @EmailAddress, @Address1, @Address2
-                );
-
-                SELECT CAST(SCOPE_IDENTITY() AS INT);";
+                    @PhoneNumber, @PhoneNumber2, @EmailAddress, @Address1, @Address2, @EventId /* Tambahkan ini */
+                );";
 
             using var conn = _crmDbConnectionFactory.Create();
 
@@ -62,7 +57,8 @@ namespace JPP.Data.Repositories
                 PhoneNumber2 = request.PhoneNumber2?.Trim(),
                 EmailAddress = request.EmailAddress?.Trim(),
                 Address1 = request.Address1?.Trim() ?? string.Empty,
-                Address2 = request.Address2?.Trim()
+                Address2 = request.Address2?.Trim(),
+                EventId = request.EventId
             });
 
             return newId;
