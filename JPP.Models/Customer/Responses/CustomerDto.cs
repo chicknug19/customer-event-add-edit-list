@@ -23,7 +23,7 @@ namespace JPP.Models.Customer.Responses.CustomerDto
         public string? PhoneNumber { get; set; }
         public string? HPNum { get; set; }
         public string? EmailAddress { get; set; }
-        public string Password { get; set; } = string.Empty;
+        public string? Password { get; set; } = string.Empty;
         public string? Password_WEB { get; set; }
         public string? BlockHouseNo { get; set; }
         public string? UnitNo { get; set; }

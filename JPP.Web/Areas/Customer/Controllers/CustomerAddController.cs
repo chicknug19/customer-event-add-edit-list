@@ -45,39 +45,47 @@ namespace JPP.Web.Areas.Customer.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SaveAjax(CustomerRequest request)
+        public async Task<IActionResult> Save(CustomerRequest form, string SubmitMode)
         {
             if (!ModelState.IsValid)
             {
-                var errors = string.Join(" ", ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage));
+                TempData["ErrorMessage"] = "Mohon periksa kembali kelengkapan data Anda.";
 
-                return BadRequest(BaseResult.Fail(
-                    statusMessage: string.IsNullOrWhiteSpace(errors) ? "Data tidak valid." : errors,
-                    statusCode: 400));
+                var model = new CustomerDetailViewModel
+                {
+                    Form = form,
+                    IsReadOnly = false
+                };
+                return View("CustomerAddPage", model);
             }
 
-            try
-            {
-                var result = await _customerService.AddCustomerAsync(request);
+            // Panggil Service untuk menyimpan ke database
+            var result = await _customerService.AddCustomerAsync(form);
 
-                if (result.StatusCode != 200)
+            if (result.StatusCode == 200)
+            {
+                TempData["SuccessMessage"] = "Customer berhasil disimpan!";
+
+                // Jika user menekan tombol "Save And Close", kembali ke halaman List
+                if (SubmitMode == "SaveAndClose")
                 {
-                    return BadRequest(BaseResult.Fail(
-                        statusMessage: result.StatusMessage,
-                        statusCode: result.StatusCode));
+                    return RedirectToAction("Index", "CustomerList", new { area = "Customer" });
                 }
 
-                return Json(BaseResult<object>.Ok(
-                    data: new { id = result.Data, redirectUrl = Url.Action(nameof(Index)) },
-                    statusMessage: result.StatusMessage));
+                // Jika hanya menekan "Save", tetap di halaman ini dan reset form (atau bisa redirect ke mode Edit nantinya)
+                return RedirectToAction("CustomerAddPage");
             }
-            catch (Exception ex)
+            else
             {
-                return StatusCode(500, BaseResult.Fail(
-                    statusMessage: $"Terjadi kesalahan sistem: {ex.Message}",
-                    statusCode: 500));
+                // Jika gagal simpan (misal KTP duplikat)
+                TempData["ErrorMessage"] = result.StatusMessage;
+
+                var model = new CustomerDetailViewModel
+                {
+                    Form = form,
+                    IsReadOnly = false
+                };
+                return View("CustomerAddPage", model);
             }
         }
 
