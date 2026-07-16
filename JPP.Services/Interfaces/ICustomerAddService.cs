@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace JPP.Services.Interfaces
 {
-    public interface ICustomerService
+    public interface ICustomerAddService
     {
         Task<BaseResult<int>> AddCustomerAsync(CustomerRequest request);
     }

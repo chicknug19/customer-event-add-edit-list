@@ -65,6 +65,9 @@ builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IOtpService, CellboxOtpService>();
 builder.Services.AddScoped<IAccountEmailService, AccountEmailService>();
 
+builder.Services.AddScoped<ICustomerEditRepository, CustomerEditRepository>();
+builder.Services.AddScoped<ICustomerEditService, CustomerEditService>();
+
 
 var app = builder.Build();
 

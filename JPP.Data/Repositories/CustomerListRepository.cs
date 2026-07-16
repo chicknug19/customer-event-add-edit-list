@@ -25,6 +25,7 @@ namespace JPP.Data.Repositories
             const string sql = @"
                 SELECT
                     ID AS CustomerID,
+                    EventId,
                     ISNULL(FirstName, '') + ' ' + ISNULL(MiddleName, '') + ' ' + ISNULL(LastName, ' ') AS FullName,
                     Address1,
                     PhoneNumber

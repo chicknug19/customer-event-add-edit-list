@@ -8,7 +8,7 @@ using JPP.Models.Customer.Request;
 
 namespace JPP.Data.Interfaces
 {
-    public interface ICustomerRepository
+    public interface ICustomerAddRepository
     {
         Task<bool> EmailExistsAsync(string email);
 

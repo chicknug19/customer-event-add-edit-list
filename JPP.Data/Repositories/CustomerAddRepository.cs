@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace JPP.Data.Repositories
 {
-    public class CustomerRepository : ICustomerRepository
+    public class CustomerRepository : ICustomerAddRepository
     {
         private readonly ICrmDbConnectionFactory _crmDbConnectionFactory;
 

@@ -114,10 +114,24 @@
             <table class="table align-middle">
                 <thead>
                     <tr>
-                        <th>Full Name</th>
-                        <th>Address</th>
-                        <th>Phone Number</th>
-                        <th class="text-end">Action</th>
+                        <th class="sortable-th">
+                            FullName
+                        </th>
+
+                        <th class="sortable-th">
+                            <button type="button"
+                                    class="store-sort-button"
+                                    ng-class="{ 'active': isSorted('address1') }"
+                                    ng-click="changeSort('address1')">
+                                Address
+                                <i class="bi" ng-class="getSortIcon('address1')"></i>
+                            </button>
+                        </th>
+
+                        <th class="sortable-th">
+                            Phone
+                        </th>
+                        <th class="text-center action-col">Action</th>
                     </tr>
                 </thead>
 
@@ -132,13 +146,20 @@
                         </td>
 
                         <td data-label="Phone Number">
-                            <span ng-bind="customer.phoneNumber || '-'"></span>
+                            <span class="store-phone" ng-if="customer.phoneNumber">
+                                <i class="bi bi-telephone me-1"></i>
+                                <span ng-bind="customer.phoneNumber"></span>
+                            </span>
+
+                            <span class="text-muted" ng-if="!customer.phoneNumber">-</span>
                         </td>
 
-                        <td class="text-end">
-                            <div class="d-flex gap-2 justify-content-end">
-                                <a href="#" class="btn btn-soft btn-sm">
-                                    Edit
+                        <td class="text-center action-sticky" data-label="Action">
+                            <div class="table-action-icons">
+                                <a href="/Customer/CustomerEdit/Edit?id={{ customer.customerID }}" 
+                                class="btn-action-icon btn-edit"
+                                title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
                                 </a>
                             </div>
                         </td>
@@ -264,6 +285,14 @@
                     keyword: ''
                 };
 
+                $scope.sort = {
+                    column: 'fullName',
+                    direction: 'ASC'
+                };
+
+                $scope.changeSort = changeSort;
+                $scope.isSorted = isSorted;
+                $scope.getSortIcon = getSortIcon;
                 $scope.customers = [];
                 $scope.isLoading = false;
                 $scope.isDeleting = false;
@@ -326,7 +355,49 @@
                         });
                     }
 
+                    allCustomers = allCustomers || [];
                     $scope.customers = filtered;
+                    applyCustomerSort();
+                }
+
+                function changeSort(column) {
+                    if ($scope.sort.column === column) {
+                        $scope.sort.direction = ($scope.sort.direction === 'ASC') ? 'DESC' : 'ASC';
+                    } else {
+                        $scope.sort.column = column;
+                        $scope.sort.direction = 'ASC';
+                    }
+
+                    applyCustomerSort();
+                }
+
+                function isSorted(column) {
+                    return $scope.sort.column === column;
+                }
+
+                function getSortIcon(column) {
+                    if (!isSorted(column)) {
+                        return 'bi-arrow-down-up';
+                    }
+
+                    return $scope.sort.direction === 'ASC'
+                        ? 'bi-arrow-up'
+                        : 'bi-arrow-down';
+                }
+
+                function applyCustomerSort() {
+                    var sorted = angular.copy(allCustomers || []);
+
+                    sorted.sort(function (a, b) {
+                        var left = (a[$scope.sort.column] || '').toString().toLowerCase();
+                        var right = (b[$scope.sort.column] || '').toString().toLowerCase();
+
+                        if (left < right) return $scope.sort.direction === 'ASC' ? -1 : 1;
+                        if (left > right) return $scope.sort.direction === 'ASC' ? 1 : -1;
+                        return 0;
+                    });
+
+                    $scope.customers = sorted;
                 }
 
                 function searchCustomers() {

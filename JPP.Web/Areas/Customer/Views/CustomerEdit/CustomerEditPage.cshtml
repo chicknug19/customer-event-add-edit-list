@@ -52,10 +52,8 @@
     </div>
 }
 
-<!-- PERBAIKAN: Arahkan ke Area Customer, Controller CustomerAdd, Action Save -->
-<form asp-area="Customer"
-      asp-controller="CustomerAdd"
-      asp-action="Save"
+<!-- Save form untuk halaman edit -->
+<form action="@Url.Action("Save", "CustomerEdit", new { area = "Customer" })"
       method="post"
       id="customerForm">
 
@@ -68,7 +66,6 @@
         <div class="employee-toolbar crm-card mb-4">
             <div>
                 <h5>@(Model.IsEditMode? Model.DisplayName: "New Customer")</h5>
-                <p>@(Model.IsEditMode ? $"Customer ID: {form.ID}" : "Complete the customer data below.")</p>
             </div>
 
             <div class="employee-toolbar-actions">

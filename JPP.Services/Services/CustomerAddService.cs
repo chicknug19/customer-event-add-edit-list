@@ -9,7 +9,7 @@ namespace JPP.Services.Services
 {
     public class CustomerAddService : ICustomerService
     {
-        private readonly ICustomerRepository _customerRepository;
+        private readonly ICustomerAddRepository _customerRepository;
 
         public CustomerAddService(ICustomerRepository customerRepository)
         {
