@@ -60,10 +60,18 @@ namespace JPP.Web.Areas.Customer.Controllers
             {
                 TempData["ErrorMessage"] = "Mohon periksa kembali kelengkapan data Anda.";
 
+                var events = await _eventService.GetDropdownListAsync();
+
                 var model = new CustomerDetailViewModel
                 {
                     Form = form,
-                    IsReadOnly = false
+                    IsReadOnly = false,
+
+                    EventOptions = events.Select(e => new SelectListItem
+                    {
+                        Value = e.Id.ToString(),
+                        Text = $"{e.Code} - {e.Name}"
+                    })
                 };
                 return View("CustomerAddPage", model);
             }
@@ -85,10 +93,17 @@ namespace JPP.Web.Areas.Customer.Controllers
             {
                 TempData["ErrorMessage"] = result.StatusMessage;
 
+                var events = await _eventService.GetDropdownListAsync();
+
                 var model = new CustomerDetailViewModel
                 {
                     Form = form,
-                    IsReadOnly = false
+                    IsReadOnly = false,
+                    EventOptions = events.Select(e => new SelectListItem
+                    {
+                        Value = e.Id.ToString(),
+                        Text = $"{e.Code} - {e.Name}"
+                    })
                 };
                 return View("CustomerAddPage", model);
             }
