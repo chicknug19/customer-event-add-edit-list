@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using JPP.Web.Controllers;
 using JPP.Services.Interfaces;
+using JPP.Models.Customer.Request;
 
 namespace JPP.Web.Areas.Customer.Controllers
 {
@@ -26,11 +27,11 @@ namespace JPP.Web.Areas.Customer.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCustomerList()
+        public async Task<IActionResult> GetCustomerList([FromQuery] CustomerListFilterRequest filter)
         {
             try
             {
-                var result = await _customerListService.GetCustomerListAsync();
+                var result = await _customerListService.GetCustomerListAsync(filter);
 
                 return Json(result);
             }
