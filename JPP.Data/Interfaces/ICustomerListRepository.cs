@@ -11,7 +11,7 @@ namespace JPP.Data.Interfaces
 {
     public interface ICustomerListRepository
     {
-    Task<List<CustomerListDto>> GetCustomerListAsync();
+    Task<List<CustomerListDto>> GetCustomerListAsync(CustomerListFilterRequest filter);
     }
     
 }
