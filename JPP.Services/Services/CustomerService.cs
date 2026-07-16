@@ -20,27 +20,15 @@ namespace JPP.Services.Services
         {
             try
             {
-                // 1. Validasi IdentityNo
-                if (!string.IsNullOrWhiteSpace(request.IdentityNo))
-                {
-                    bool isIdentityExist = await _customerRepository.IdentityNoExistsAsync(request.IdentityNo);
-                    if (isIdentityExist)
-                    {
-                        return BaseResult<int>.Fail("Identity Number sudah terdaftar di sistem.", 400);
-                    }
-                }
-
-                // 2. Validasi Email Address
                 if (!string.IsNullOrWhiteSpace(request.EmailAddress))
                 {
                     bool isEmailExist = await _customerRepository.EmailExistsAsync(request.EmailAddress);
                     if (isEmailExist)
                     {
-                        return BaseResult<int>.Fail("Email Address sudah digunakan oleh customer lain.", 400);
+                        return BaseResult<int>.Fail("Email sudah terdaftar.", 400);
                     }
                 }
 
-                // 3. Simpan data ke Database
                 var newId = await _customerRepository.CreateCustomerAsync(request);
 
                 return BaseResult<int>.Ok(newId, "Customer berhasil ditambahkan.", 200);
