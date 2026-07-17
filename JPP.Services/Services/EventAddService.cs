@@ -1,5 +1,5 @@
 ﻿using JPP.Data.Interfaces;
-using JPP.Models.Event.Request;
+using JPP.Models.Event.Responses;
 using JPP.Models.Shared.Responses;
 using JPP.Services.Interfaces;
 using System;
@@ -19,7 +19,7 @@ namespace JPP.Services.Services
             _eventAddRepo = eventAddRepo;
         }
 
-        public async Task<BaseResult<int>> AddEventAsync(EventRequestDto request)
+        public async Task<BaseResult<int>> AddEventAsync(EventDto request)
         {
             try
             {

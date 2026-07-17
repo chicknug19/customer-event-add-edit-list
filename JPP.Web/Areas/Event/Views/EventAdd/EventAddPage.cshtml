@@ -47,7 +47,7 @@
 @if (!ViewData.ModelState.IsValid)
 {
     <div class="alert alert-danger" role="alert">
-        <strong>Please check your entry.</strong>
+        <strong>Please check your input.</strong>
         <div asp-validation-summary="All"></div>
     </div>
 }
@@ -95,7 +95,6 @@
             </div>
         </div>
 
-        <!-- 1 Card Utama untuk Form Input Event -->
         <div class="crm-card mb-4">
             <div class="section-title">
                 <h5>Event Information</h5>
@@ -105,12 +104,12 @@
             <div class="row g-4">
                 <div class="col-xl-4 col-md-5">
                     <label class="form-label admin-form-label">Event Code <span class="text-danger">*</span></label>
-                    <input type="text" name="Code" value="@form.Code" class="form-control" placeholder="e.g. EVT-001" required @disabled />
+                    <input type="text" name="Code" value="@form.Code" class="form-control" placeholder="e.g. EVT-001" @disabled />
                 </div>
 
                 <div class="col-xl-8 col-md-7">
                     <label class="form-label admin-form-label">Event Name <span class="text-danger">*</span></label>
-                    <input type="text" name="Name" value="@form.Name" class="form-control" placeholder="Enter event name" required @disabled />
+                    <input type="text" name="Name" value="@form.Name" class="form-control" placeholder="Enter event name"@disabled />
                 </div>
 
                 <div class="col-12">
@@ -119,7 +118,6 @@
                 </div>
             </div>
         </div>
-        <!-- AKHIR DARI 1 CARD -->
     </div>
 </form>
 

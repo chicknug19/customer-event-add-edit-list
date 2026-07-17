@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JPP.Models.Event.Request
+namespace JPP.Models.Event.Responses
 {
-    public class EventRequestDto
+    public class EventDto
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;

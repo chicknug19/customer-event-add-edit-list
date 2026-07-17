@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JPP.Models.Event.Request;
 
 namespace JPP.Models.Event.Responses
 {
     public class EventDetailViewModel
     {
-        public EventRequestDto Form { get; set; } = new();
+        public EventDto Form { get; set; } = new();
         public bool IsReadOnly { get; set; }
         public bool IsEditMode => Form.Id > 0;
 
