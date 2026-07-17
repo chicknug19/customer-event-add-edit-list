@@ -14,12 +14,12 @@
     <div class="admin-page-header mb-4">
         <div>
             <span class="admin-eyebrow">Admin</span>
-            <h3>Customer List</h3>
-            <p>Manage customer master data including name, address, and phone number.</p>
+            <h3>Event List</h3>
+            <p>Manage event master data including name, code, and description.</p>
         </div>
 
         <div class="admin-page-actions">
-            <a href="/Customer/CustomerAdd/CustomerAddPage"
+            <a href="/Event/EventAdd/EventAddPage"
                class="btn btn-main">
                 <i class="bi bi-plus-lg me-2"></i>
                 Add
@@ -55,7 +55,7 @@
 
     <div class="crm-card mb-4">
         <div class="section-title">
-            <h5>Filter Customer</h5>
+            <h5>Filter Event</h5>
         </div>
 
         <form ng-submit="searchEvents()">
@@ -67,7 +67,7 @@
                         <input type="text"
                                ng-model="filter.keyword"
                                class="form-control"
-                               placeholder="Search by name, address, or phone" />
+                               placeholder="Search by event name, code, or description" />
                     </div>
                 </div>
 
@@ -93,11 +93,11 @@
     <div class="crm-card">
         <div class="store-table-header">
             <div>
-                <h5>Customer Data</h5>
+                <h5>Event Data</h5>
                 <p>
                     Showing
                     <span ng-bind="events.length"></span>
-                    customer record(s)
+                    event record(s)
                 </p>
             </div>
 
@@ -142,7 +142,7 @@
 
                         <td class="text-center action-sticky" data-label="Action">
                             <div class="table-action-icons">
-                                <a href="/Customer/CustomerEdit/Edit?id={{ customer.customerID }}"
+                                <a href="/Event/EventEdit/EventEditPage?id={{ event.eventId }}"
                                    class="btn-action-icon btn-edit"
                                    title="Edit">
                                     <i class="bi bi-pencil-square"></i>
@@ -177,8 +177,8 @@
                 </div>
 
                 <div>
-                    <h5>Delete Customer?</h5>
-                    <p>This action will remove the customer record.</p>
+                    <h5>Delete Event?</h5>
+                    <p>This action will remove the event record.</p>
                 </div>
 
                 <button type="button"
@@ -192,14 +192,14 @@
             <div class="delete-confirm-body">
                 <div class="delete-store-preview">
                     <div class="delete-store-avatar">
-                        <i class="bi bi-person"></i>
+                        <i class="bi bi-calendar-event"></i>
                     </div>
 
                     <div class="delete-store-info">
-                        <strong ng-bind="deleteModal.customer.fullName || '-'"></strong>
+                        <strong ng-bind="deleteModal.event.eventName || '-'"></strong>
                         <div>
-                            <span ng-if="deleteModal.customer.address1">
-                                {{ deleteModal.customer.address1 }}
+                            <span ng-if="deleteModal.event.code">
+                                {{ deleteModal.event.code }}
                             </span>
                         </div>
                     </div>
@@ -208,7 +208,7 @@
                 <div class="delete-warning-box">
                     <i class="bi bi-exclamation-triangle"></i>
                     <span>
-                        Are you sure you want to delete this customer?
+                        Are you sure you want to delete this event?
                     </span>
                 </div>
 
@@ -228,13 +228,13 @@
 
                 <button type="button"
                         class="btn btn-delete-confirm"
-                        ng-click="confirmDeleteCustomer()"
+                        ng-click="confirmDeleteEvent()"
                         ng-disabled="isDeleting">
                     <span class="spinner-border spinner-border-sm me-2"
                           ng-if="isDeleting"></span>
                     <i class="bi bi-trash3 me-2"
                        ng-if="!isDeleting"></i>
-                    <span ng-if="!isDeleting">Yes, Delete Customer</span>
+                    <span ng-if="!isDeleting">Yes, Delete Event</span>
                     <span ng-if="isDeleting">Deleting...</span>
                 </button>
             </div>
@@ -262,7 +262,7 @@
                 };
 
                 $scope.sort = {
-                    column: 'EventName',
+                    column: 'eventName',
                     direction: 'ASC'
                 };
 
@@ -275,7 +275,7 @@
 
                 $scope.deleteModal = {
                     visible: false,
-                    customer: null,
+                    event: null,
                     errorMessage: ''
                 };
 
@@ -289,13 +289,13 @@
                 $scope.resetFilter = resetFilter;
                 $scope.openDeleteConfirmation = openDeleteConfirmation;
                 $scope.closeDeleteConfirmation = closeDeleteConfirmation;
-                $scope.confirmDeleteCustomer = confirmDeleteCustomer;
+                $scope.confirmDeleteEvent = confirmDeleteEvent;
                 $scope.clearAlert = clearAlert;
                 $scope.isBusy = isBusy;
 
                 loadEvents(true);
 
-                function loadEvents(reset) {
+                function loadEvents() {
                     $scope.isLoading = true;
                     clearAlert();
 
@@ -308,13 +308,14 @@
                     }).then(function (response) {
                         var payload = response.data || {};
                         allEvents = payload.data || [];
-                        $scope.events = allEvents;
 
+                        applyEventsFilter();
                         $scope.isLoading = false;
                     }).catch(function () {
+                        allEvents = [];
                         $scope.events = [];
                         $scope.isLoading = false;
-                        showAlert('danger', 'Failed to load customer data.');
+                        showAlert('danger', 'Failed to load event data.');
                     });
                 }
 
@@ -324,14 +325,13 @@
                     if ($scope.filter.keyword) {
                         var keyword = $scope.filter.keyword.toLowerCase();
 
-                        filtered = allEvents.filter(function (c) {
-                            return (c.fullName || '').toLowerCase().includes(keyword) ||
-                                   (c.address1 || '').toLowerCase().includes(keyword) ||
-                                   (c.phoneNumber || '').toLowerCase().includes(keyword);
+                        filtered = allEvents.filter(function (e) {
+                            return (e.eventName || '').toLowerCase().includes(keyword) ||
+                                   (e.code || '').toLowerCase().includes(keyword) ||
+                                   (e.description || '').toLowerCase().includes(keyword);
                         });
                     }
 
-                    allEvents = allEvents || [];
                     $scope.events = filtered;
                     applyEventsSort();
                 }
@@ -362,7 +362,7 @@
                 }
 
                 function applyEventsSort() {
-                    var sorted = angular.copy(allEvents || []);
+                    var sorted = angular.copy($scope.events || []);
 
                     sorted.sort(function (a, b) {
                         var left = (a[$scope.sort.column] || '').toString().toLowerCase();
@@ -395,13 +395,13 @@
                     applyEventsFilter();
                 }
 
-                function openDeleteConfirmation(customer) {
-                    if (!customer || !customer.customerID) {
+                function openDeleteConfirmation(event) {
+                    if (!event || !event.eventId) {
                         return;
                     }
 
                     clearAlert();
-                    $scope.deleteModal.customer = customer;
+                    $scope.deleteModal.event = event;
                     $scope.deleteModal.errorMessage = '';
                     $scope.deleteModal.visible = true;
                 }
@@ -412,14 +412,14 @@
                     }
 
                     $scope.deleteModal.visible = false;
-                    $scope.deleteModal.customer = null;
+                    $scope.deleteModal.event = null;
                     $scope.deleteModal.errorMessage = '';
                 }
 
-                function confirmDeleteCustomer() {
-                    var customer = $scope.deleteModal.customer;
+                function confirmDeleteEvent() {
+                    var eventToDelete = $scope.deleteModal.event;
 
-                    if (!customer || !customer.customerID) {
+                    if (!eventToDelete || !eventToDelete.eventId) {
                         closeDeleteConfirmation();
                         return;
                     }
@@ -428,9 +428,12 @@
                     $scope.deleteModal.errorMessage = '';
                     clearAlert();
 
+                    // NOTE: this is currently a client-side-only mock delete (no API call).
+                    // Wire this up to a real DELETE endpoint, e.g.:
+                    // $http.delete('/Event/EventList/DeleteEvent', { params: { id: eventToDelete.eventId } })
                     $timeout(function () {
-                        var index = allEvents.findIndex(function (c) {
-                            return c.customerID === customer.customerID;
+                        var index = allEvents.findIndex(function (e) {
+                            return e.eventId === eventToDelete.eventId;
                         });
 
                         if (index > -1) {
@@ -439,9 +442,9 @@
 
                         applyEventsFilter();
 
-                        var successMessage = 'Customer has been deleted successfully.';
+                        var successMessage = 'Event has been deleted successfully.';
                         $scope.deleteModal.visible = false;
-                        $scope.deleteModal.customer = null;
+                        $scope.deleteModal.event = null;
                         $scope.deleteModal.errorMessage = '';
                         $scope.isDeleting = false;
 
