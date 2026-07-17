@@ -36,7 +36,6 @@ namespace JPP.Web.Areas.Customer.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["ErrorMessage"] = "Mohon lengkapi data wajib.";
                 return View("EventAddPage", new EventDetailViewModel { Form = form, IsReadOnly = false });
             }
 
