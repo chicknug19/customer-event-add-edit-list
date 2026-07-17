@@ -114,7 +114,7 @@
             <table class="table align-middle">
                 <thead>
                     <tr>
-                        <th>Event Id</th>
+                        <th>No</th>
                         <th>Event Name</th>
                         <th>Code</th>
                         <th>Description</th>
@@ -125,7 +125,7 @@
                 <tbody>
                     <tr ng-repeat="event in events track by event.eventId">
                         <td data-label="Event Id">
-                            <span ng-bind="event.eventId || '-'"></span>
+                            <span ng-bind="$index + 1"></span>
                         </td>
 
                         <td data-label="Event Name">
