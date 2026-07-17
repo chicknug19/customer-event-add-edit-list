@@ -22,7 +22,7 @@
             <a href="/Event/EventAdd/EventAddPage"
                class="btn btn-main">
                 <i class="bi bi-plus-lg me-2"></i>
-                Add Event
+                Add
             </a>
         </div>
     </div>
@@ -114,47 +114,30 @@
             <table class="table align-middle">
                 <thead>
                     <tr>
-                        <th class="sortable-th">
-                            <button type="button"
-                                    class="store-sort-button"
-                                    ng-class="{ 'active': isSorted('code') }"
-                                    ng-click="changeSort('code')">
-                                Event Code
-                                <i class="bi" ng-class="getSortIcon('code')"></i>
-                            </button>
-                        </th>
-
-                        <th class="sortable-th">
-                            <button type="button"
-                                    class="store-sort-button"
-                                    ng-class="{ 'active': isSorted('name') }"
-                                    ng-click="changeSort('name')">
-                                Event Name
-                                <i class="bi" ng-class="getSortIcon('name')"></i>
-                            </button>
-                        </th>
-
-                        <th class="sortable-th">
-                            Description
-                        </th>
-
-                        <th class="text-center action-col">Action</th>
+                        <th>Event Id</th>
+                        <th>Event Name</th>
+                        <th>Code</th>
+                        <th>Description</th>
+                        <th class="text-end">Action</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    <!-- PERBAIKAN: Looping menggunakan 'event in events' -->
-                    <tr ng-repeat="event in events track by event.id">
-                        <td data-label="Event Code">
-                            <span class="badge bg-light text-dark border" ng-bind="event.code || '-'"></span>
+                    <tr ng-repeat="event in events track by event.eventId">
+                        <td data-label="Event Id">
+                            <span ng-bind="event.eventId || '-'"></span>
                         </td>
 
                         <td data-label="Event Name">
-                            <strong ng-bind="event.name || '-'"></strong>
+                            <span ng-bind="event.eventName || '-'"></span>
+                        </td>
+
+                        <td data-label="Code">
+                            <span ng-bind="event.code || '-'"></span>
                         </td>
 
                         <td data-label="Description">
-                            <span class="text-muted" ng-bind="event.description || '-'"></span>
+                            <span ng-bind="event.description || '-'"></span>
                         </td>
 
                         <td class="text-center action-sticky" data-label="Action">
@@ -164,33 +147,15 @@
                                    title="Edit">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
-
-                                <button type="button"
-                                        class="btn-action-icon btn-delete"
-                                        title="Delete"
-                                        ng-click="openDeleteConfirmation(event)"
-                                        ng-disabled="isBusy()">
-                                    <i class="bi bi-trash3"></i>
-                                </button>
                             </div>
                         </td>
                     </tr>
 
                     <tr ng-if="events.length === 0 && !isLoading">
-                        <td colspan="4">
+                        <td colspan="5">
                             <div class="admin-empty-state">
-                                <i class="bi bi-calendar-x"></i>
+                                <i class="bi bi-inbox"></i>
                                 <h5>No events found</h5>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <tr ng-if="isLoading">
-                        <td colspan="4">
-                            <div class="text-center py-4">
-                                <div class="spinner-border text-secondary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
                             </div>
                         </td>
                     </tr>
@@ -199,7 +164,6 @@
         </div>
     </div>
 
-    <!-- Modal Delete -->
     <div class="delete-confirm-backdrop"
          ng-if="deleteModal.visible"
          ng-click="closeDeleteConfirmation()">
@@ -276,6 +240,7 @@
             </div>
         </div>
     </div>
+
 </div>
 
 @section Scripts {
@@ -283,7 +248,6 @@
         (function () {
             'use strict';
 
-            // PERBAIKAN: Menggunakan eventListApp
             angular
                 .module('eventListApp', [])
                 .controller('EventListController', EventListController);
@@ -335,7 +299,6 @@
                     $scope.isLoading = true;
                     clearAlert();
 
-                    // PERBAIKAN: Endpoint diarahkan ke EventListController yang ada di Area Event
                     $http.get('/Event/EventList/GetEventList', {
                         params: {
                             keyword: $scope.filter.keyword,
@@ -392,7 +355,10 @@
                     if (!isSorted(column)) {
                         return 'bi-arrow-down-up';
                     }
-                    return $scope.sort.direction === 'ASC' ? 'bi-arrow-up' : 'bi-arrow-down';
+
+                    return $scope.sort.direction === 'ASC'
+                        ? 'bi-arrow-up'
+                        : 'bi-arrow-down';
                 }
 
                 function applyEventsSort() {
@@ -420,7 +386,10 @@
                 }
 
                 function resetFilter() {
-                    if (isBusy()) return;
+                    if (isBusy()) {
+                        return;
+                    }
+
                     clearAlert();
                     $scope.filter.keyword = '';
                     applyEventsFilter();
@@ -438,7 +407,9 @@
                 }
 
                 function closeDeleteConfirmation() {
-                    if ($scope.isDeleting) return;
+                    if ($scope.isDeleting) {
+                        return;
+                    }
 
                     $scope.deleteModal.visible = false;
                     $scope.deleteModal.event = null;
