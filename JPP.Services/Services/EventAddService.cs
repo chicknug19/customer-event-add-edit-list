@@ -1,11 +1,9 @@
 ﻿using JPP.Data.Interfaces;
+using JPP.Models.Event.Request;
 using JPP.Models.Event.Responses;
 using JPP.Models.Shared.Responses;
 using JPP.Services.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace JPP.Services.Services
@@ -19,14 +17,15 @@ namespace JPP.Services.Services
             _eventAddRepo = eventAddRepo;
         }
 
-<<<<<<< HEAD
         public async Task<BaseResult<int>> AddEventAsync(EventRequestDto request)
-=======
-        public async Task<BaseResult<int>> AddEventAsync(EventDto request)
->>>>>>> 99d27c86a2ad63032b8978fefbfac2e9ce4e7788
         {
             try
             {
+                if (request == null)
+                {
+                    return BaseResult<int>.Fail("Data event tidak valid.", 400);
+                }
+
                 if (!string.IsNullOrWhiteSpace(request.Code))
                 {
                     bool isCodeExist = await _eventAddRepo.CodeExistsAsync(request.Code);
@@ -36,7 +35,14 @@ namespace JPP.Services.Services
                     }
                 }
 
-                var newId = await _eventAddRepo.CreateEventAsync(request);
+                var newId = await _eventAddRepo.CreateEventAsync(new EventDto
+                {
+                    Id = request.Id,
+                    Name = request.Name,
+                    Code = request.Code,
+                    Description = request.Description
+                });
+
                 return BaseResult<int>.Ok(newId, "Event berhasil ditambahkan.", 200);
             }
             catch (Exception ex)

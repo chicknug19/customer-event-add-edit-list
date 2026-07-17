@@ -31,7 +31,13 @@ namespace JPP.Services.Services
 
             return new EventDetailViewModel
             {
-                Form = eventData,
+                Form = new EventRequestDto
+                {
+                    Id = eventData.Id,
+                    Name = eventData.Name,
+                    Code = eventData.Code,
+                    Description = eventData.Description
+                },
                 IsReadOnly = false
             };
         }

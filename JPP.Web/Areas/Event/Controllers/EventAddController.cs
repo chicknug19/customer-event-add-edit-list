@@ -1,4 +1,5 @@
-﻿using JPP.Models.Event.Responses;
+﻿using JPP.Models.Event.Request;
+using JPP.Models.Event.Responses;
 using JPP.Services.Interfaces;
 using JPP.Web.Controllers;
 using Microsoft.AspNetCore.Mvc;
@@ -23,11 +24,7 @@ namespace JPP.Web.Areas.Customer.Controllers
         {
             var model = new EventDetailViewModel
             {
-<<<<<<< HEAD
                 Form = new EventRequestDto(),
-=======
-                Form = new EventDto(),
->>>>>>> 99d27c86a2ad63032b8978fefbfac2e9ce4e7788
                 IsReadOnly = false
             };
 
@@ -36,11 +33,7 @@ namespace JPP.Web.Areas.Customer.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-<<<<<<< HEAD
         public async Task<IActionResult> Save(EventRequestDto form, string SubmitMode)
-=======
-        public async Task<IActionResult> Save(EventDto form, string SubmitMode)
->>>>>>> 99d27c86a2ad63032b8978fefbfac2e9ce4e7788
         {
             if (!ModelState.IsValid)
             {

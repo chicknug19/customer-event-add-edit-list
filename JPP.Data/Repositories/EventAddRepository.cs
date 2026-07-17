@@ -28,7 +28,7 @@ namespace JPP.Data.Repositories
             return await conn.ExecuteScalarAsync<int>(sql, new { Code = code.Trim() }) > 0;
         }
 
-        public async Task<int> CreateEventAsync(EventRequestDto request)
+        public async Task<int> CreateEventAsync(EventDto request)
         {
             const string sql = @"
                 INSERT INTO BIZ_CustomerEvent (Name, Code, Description)

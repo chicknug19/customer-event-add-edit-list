@@ -13,7 +13,7 @@
 
     <div class="admin-page-header mb-4">
         <div>
-            <span class="admin-eyebrow">Admin</span>
+            <span class="admin-eyebrow">Event</span>
             <h3>Event List</h3>
             <p>Manage event master data including name, code, and description.</p>
         </div>
@@ -118,7 +118,7 @@
                         <th>Event Name</th>
                         <th>Code</th>
                         <th>Description</th>
-                        <th class="text-end">Action</th>
+                        <th class="text-center">Action</th>
                     </tr>
                 </thead>
 
@@ -140,11 +140,12 @@
                             <span ng-bind="event.description || '-'"></span>
                         </td>
 
-                        <td class="text-center action-sticky" data-label="Action">
-                            <div class="table-action-icons">
+
+                        <td class="text-center" data-label="Action">
+                            <div class="d-flex justify-content-center">
                                 <a href="/Event/EventEdit/EventEditPage?id={{ event.eventId }}"
-                                   class="btn-action-icon btn-edit"
-                                   title="Edit">
+                                    class="btn-action-icon btn-edit"
+                                    title="Edit">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
                             </div>
