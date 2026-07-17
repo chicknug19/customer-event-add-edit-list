@@ -105,16 +105,19 @@
                 <div class="col-xl-4 col-md-5">
                     <label class="form-label admin-form-label">Event Code <span class="text-danger">*</span></label>
                     <input type="text" name="Code" value="@form.Code" class="form-control" placeholder="e.g. EVT-001" @disabled />
+                    @Html.ValidationMessage("Code", "", new { @class = "text-danger small mt-1 d-block" })
                 </div>
 
                 <div class="col-xl-8 col-md-7">
                     <label class="form-label admin-form-label">Event Name <span class="text-danger">*</span></label>
                     <input type="text" name="Name" value="@form.Name" class="form-control" placeholder="Enter event name"@disabled />
+                    @Html.ValidationMessage("Name", "", new { @class = "text-danger small mt-1 d-block" })
                 </div>
 
                 <div class="col-12">
-                    <label class="form-label admin-form-label">Description</label>
+                    <label class="form-label admin-form-label">Description <span class="text-danger">*</span> </label>
                     <textarea name="Description" class="form-control" rows="4" placeholder="Enter detailed description about this event..." @disabled>@form.Description</textarea>
+                    @Html.ValidationMessage("Description", "", new { @class = "text-danger small mt-1 d-block" })
                 </div>
             </div>
         </div>

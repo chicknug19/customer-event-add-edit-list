@@ -58,7 +58,6 @@ namespace JPP.Web.Areas.Customer.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["ErrorMessage"] = "Mohon periksa kembali kelengkapan data Anda.";
 
                 var events = await _eventService.GetDropdownListAsync();
 
@@ -80,7 +79,7 @@ namespace JPP.Web.Areas.Customer.Controllers
 
             if (result.StatusCode == 200)
             {
-                TempData["SuccessMessage"] = "Customer berhasil disimpan!";
+                TempData["SuccessMessage"] = "Customer successfully saved!";
 
                 if (SubmitMode == "SaveAndClose")
                 {

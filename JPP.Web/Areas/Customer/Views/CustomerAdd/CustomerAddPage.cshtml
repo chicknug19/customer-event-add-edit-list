@@ -95,7 +95,6 @@
             </div>
         </div>
 
-        <!-- DIMULAI DARI SINI: Semuanya digabung ke dalam 1 Card -->
         <div class="crm-card mb-4">
             <div class="section-title">
                 <h5>Customer Information</h5>
@@ -103,10 +102,10 @@
             </div>
 
             <div class="row g-4">
-                <!-- Baris 1: Nama -->
                 <div class="col-xl-4 col-md-6">
                     <label class="form-label admin-form-label">First Name <span class="text-danger">*</span></label>
                     <input type="text" name="FirstName" value="@form.FirstName" class="form-control" @disabled />
+                    @Html.ValidationMessage("FirstName", "", new { @class = "text-danger small mt-1 d-block" })
                 </div>
 
                 <div class="col-xl-4 col-md-6">
@@ -123,10 +122,10 @@
                     <hr class="text-muted opacity-25 my-1" />
                 </div>
 
-                <!-- Baris 2: Kontak & Event -->
                 <div class="col-xl-4 col-md-6">
                     <label class="form-label admin-form-label">Phone Number <span class="text-danger">*</span></label>
                     <input type="text" name="PhoneNumber" value="@form.PhoneNumber" class="form-control" @disabled />
+                    @Html.ValidationMessage("PhoneNumber", "", new { @class = "text-danger small mt-1 d-block" })
                 </div>
 
                 <div class="col-xl-4 col-md-6">
@@ -137,12 +136,13 @@
                 <div class="col-xl-4 col-md-6">
                     <label class="form-label admin-form-label">Email Address</label>
                     <input type="email" name="EmailAddress" value="@form.EmailAddress" class="form-control" @disabled />
+                    @Html.ValidationMessage("EmailAddress", "", new { @class = "text-danger small mt-1 d-block" })
                 </div>
 
-                <!-- Baris 3: Alamat -->
                 <div class="col-xl-6 col-md-12">
                     <label class="form-label admin-form-label">Address 1 <span class="text-danger">*</span></label>
                     <input type="text" name="Address1" value="@form.Address1" class="form-control" @disabled />
+                    @Html.ValidationMessage("Address1", "", new { @class = "text-danger small mt-1 d-block" })
                 </div>
 
                 <div class="col-xl-6 col-md-12">
@@ -154,7 +154,6 @@
                     <hr class="text-muted opacity-25 my-1" />
                 </div>
 
-                <!-- Baris 4: Event -->
                 <div class="col-xl-4 col-md-6">
                     <label class="form-label admin-form-label">Event Selection</label>
                     <select name="EventId" class="form-select" @disabled>
@@ -176,12 +175,17 @@
 </form>
 
 <style>
-    .employee-form-shell .crm-card {
-        border: 0;
-        border-radius: 18px;
-        box-shadow: 0 12px 35px rgba(49, 55, 69, .08);
-        padding: 1.75rem;
+    /* PERBAIKAN: Menambahkan ruang kosong (padding) di bawah form agar dropdown punya area untuk membuka ke bawah */
+    .employee-form-shell {
+        padding-bottom: 12rem;
     }
+
+        .employee-form-shell .crm-card {
+            border: 0;
+            border-radius: 18px;
+            box-shadow: 0 12px 35px rgba(49, 55, 69, .08);
+            padding: 1.75rem;
+        }
 
     .employee-toolbar {
         display: flex;
