@@ -8,7 +8,7 @@ namespace JPP.Models.Event.Responses
 {
     public class EventDetailViewModel
     {
-        public EventDto Form { get; set; } = new();
+        public EventRequestDto Form { get; set; } = new();
         public bool IsReadOnly { get; set; }
         public bool IsEditMode => Form.Id > 0;
 

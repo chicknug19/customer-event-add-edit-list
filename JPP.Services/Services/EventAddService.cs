@@ -19,7 +19,11 @@ namespace JPP.Services.Services
             _eventAddRepo = eventAddRepo;
         }
 
+<<<<<<< HEAD
+        public async Task<BaseResult<int>> AddEventAsync(EventRequestDto request)
+=======
         public async Task<BaseResult<int>> AddEventAsync(EventDto request)
+>>>>>>> 99d27c86a2ad63032b8978fefbfac2e9ce4e7788
         {
             try
             {

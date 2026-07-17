@@ -20,7 +20,7 @@
     </div>
 
     <div class="admin-page-actions">
-        <a href="/Customer/CustomerEventList/Index"
+        <a href="@Url.Action("Index", "EventList", new { area = "Event" })"
            class="btn btn-soft">
             <i class="bi bi-arrow-left me-2"></i>
             Back to List
@@ -52,7 +52,7 @@
     </div>
 }
 
-<form action="@Url.Action("Save", "CustomerEventAdd", new { area = "Customer" })"
+<form action="@Url.Action("Save", "EventEdit", new { area = "Event" })"
       method="post"
       id="eventForm">
 
@@ -88,7 +88,7 @@
                     </button>
                 }
 
-                <a href="/Customer/CustomerEventList/Index"
+                <a href="@Url.Action("Index", "EventList", new { area = "Event" })"
                    class="btn btn-soft">
                     Cancel
                 </a>

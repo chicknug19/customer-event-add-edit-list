@@ -10,6 +10,10 @@ namespace JPP.Services.Interfaces
 {
     public interface IEventAddService
     {
+<<<<<<< HEAD
+        Task<BaseResult<int>> AddEventAsync(EventRequestDto request);
+=======
         Task<BaseResult<int>> AddEventAsync(EventDto request);
+>>>>>>> 99d27c86a2ad63032b8978fefbfac2e9ce4e7788
     }
 }

@@ -65,11 +65,16 @@ builder.Services.AddScoped<IEventDropdownService, EventDropdownService>();
 builder.Services.AddScoped<IEventAddRepository, EventAddRepository>();
 builder.Services.AddScoped<IEventAddService, EventAddService>();
 
+<<<<<<< HEAD
+builder.Services.AddScoped<IEventEditRepository, EventEditRepository>();
+builder.Services.AddScoped<IEventEditService, EventEditService>();
+=======
 builder.Services.AddScoped<IEventListRepository, EventListRepository>();
 builder.Services.AddScoped<IEventListService, EventListService>();
 
 builder.Services.AddScoped<IEventListRepository, EventListRepository>();
 builder.Services.AddScoped<IEventListService, EventListService>();
+>>>>>>> 99d27c86a2ad63032b8978fefbfac2e9ce4e7788
 
 builder.Services.AddScoped<IOtpService, CellboxOtpService>();
 builder.Services.AddScoped<IAccountEmailService, AccountEmailService>();

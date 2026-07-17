@@ -139,7 +139,10 @@
                         <td data-label="Description">
                             <span ng-bind="event.description || '-'"></span>
                         </td>
-
+                      
+                        <td class="text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <a ng-href="{{ '/Event/EventEdit/Edit/' + event.eventId }}" class="btn btn-soft btn-sm">Edit</a>
                         <td class="text-center action-sticky" data-label="Action">
                             <div class="table-action-icons">
                                 <a href="/Event/EventEdit/EventEditPage?id={{ event.eventId }}"
