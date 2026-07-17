@@ -22,7 +22,7 @@
             <a href="/Event/EventAdd/EventAddPage"
                class="btn btn-main">
                 <i class="bi bi-plus-lg me-2"></i>
-                Add Event
+                Add
             </a>
         </div>
     </div>
@@ -126,6 +126,9 @@
                     <tr ng-repeat="event in events track by event.eventId">
                         <td data-label="Event Id">
                             <span ng-bind="event.eventId || '-'"></span>
+                    <tr ng-repeat="event in events track by event.eventId">
+                        <td data-label="Event Id">
+                            <span ng-bind="event.eventId || '-'"></span>
                         </td>
 
                         <td data-label="Event Name">
@@ -134,9 +137,15 @@
 
                         <td data-label="Code">
                             <span ng-bind="event.code || '-'"></span>
+                            <span ng-bind="event.eventName || '-'"></span>
+                        </td>
+
+                        <td data-label="Code">
+                            <span ng-bind="event.code || '-'"></span>
                         </td>
 
                         <td data-label="Description">
+                            <span ng-bind="event.description || '-'"></span>
                             <span ng-bind="event.description || '-'"></span>
                         </td>
 
@@ -153,7 +162,9 @@
 
                     <tr ng-if="events.length === 0 && !isLoading">
                         <td colspan="5">
+                        <td colspan="5">
                             <div class="admin-empty-state">
+                                <i class="bi bi-inbox"></i>
                                 <i class="bi bi-inbox"></i>
                                 <h5>No events found</h5>
                             </div>
@@ -240,6 +251,7 @@
             </div>
         </div>
     </div>
+
 
 </div>
 
@@ -359,6 +371,10 @@
                     return $scope.sort.direction === 'ASC'
                         ? 'bi-arrow-up'
                         : 'bi-arrow-down';
+
+                    return $scope.sort.direction === 'ASC'
+                        ? 'bi-arrow-up'
+                        : 'bi-arrow-down';
                 }
 
                 function applyEventsSort() {
@@ -390,6 +406,10 @@
                         return;
                     }
 
+                    if (isBusy()) {
+                        return;
+                    }
+
                     clearAlert();
                     $scope.filter.keyword = '';
                     applyEventsFilter();
@@ -407,6 +427,9 @@
                 }
 
                 function closeDeleteConfirmation() {
+                    if ($scope.isDeleting) {
+                        return;
+                    }
                     if ($scope.isDeleting) {
                         return;
                     }
