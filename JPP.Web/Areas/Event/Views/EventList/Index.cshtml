@@ -5,7 +5,6 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!-- PERBAIKAN: ng-app diubah menjadi eventListApp -->
 <div ng-app="eventListApp"
      ng-controller="EventListController"
      ng-cloak>
@@ -14,13 +13,12 @@
 
     <div class="admin-page-header mb-4">
         <div>
-            <span class="admin-eyebrow">Event Module</span>
+            <span class="admin-eyebrow">Admin</span>
             <h3>Event List</h3>
-            <p>Manage Event master data including code, name, and description.</p>
+            <p>Manage event master data including name, code, and description.</p>
         </div>
 
         <div class="admin-page-actions">
-            <!-- PERBAIKAN: Tombol Add mengarah ke EventAddPage -->
             <a href="/Event/EventAdd/EventAddPage"
                class="btn btn-main">
                 <i class="bi bi-plus-lg me-2"></i>
@@ -69,7 +67,7 @@
                         <input type="text"
                                ng-model="filter.keyword"
                                class="form-control"
-                               placeholder="Search by event code, name, or description" />
+                               placeholder="Search by event name, code, or description" />
                     </div>
                 </div>
 
@@ -161,7 +159,7 @@
 
                         <td class="text-center action-sticky" data-label="Action">
                             <div class="table-action-icons">
-                                <a href="/Event/EventEdit/Edit?id={{ event.id }}"
+                                <a href="/Event/EventEdit/EventEditPage?id={{ event.eventId }}"
                                    class="btn-action-icon btn-edit"
                                    title="Edit">
                                     <i class="bi bi-pencil-square"></i>
@@ -234,10 +232,10 @@
                     </div>
 
                     <div class="delete-store-info">
-                        <strong ng-bind="deleteModal.event.name || '-'"></strong>
+                        <strong ng-bind="deleteModal.event.eventName || '-'"></strong>
                         <div>
                             <span ng-if="deleteModal.event.code">
-                                Code: {{ deleteModal.event.code }}
+                                {{ deleteModal.event.code }}
                             </span>
                         </div>
                     </div>
@@ -300,15 +298,13 @@
                 };
 
                 $scope.sort = {
-                    column: 'name',
+                    column: 'eventName',
                     direction: 'ASC'
                 };
 
                 $scope.changeSort = changeSort;
                 $scope.isSorted = isSorted;
                 $scope.getSortIcon = getSortIcon;
-
-                // PERBAIKAN: Variabel diubah menjadi events
                 $scope.events = [];
                 $scope.isLoading = false;
                 $scope.isDeleting = false;
@@ -335,7 +331,7 @@
 
                 loadEvents(true);
 
-                function loadEvents(reset) {
+                function loadEvents() {
                     $scope.isLoading = true;
                     clearAlert();
 
@@ -349,31 +345,32 @@
                     }).then(function (response) {
                         var payload = response.data || {};
                         allEvents = payload.data || [];
-                        $scope.events = allEvents;
+
+                        applyEventsFilter();
                         $scope.isLoading = false;
                     }).catch(function () {
+                        allEvents = [];
                         $scope.events = [];
                         $scope.isLoading = false;
                         showAlert('danger', 'Failed to load event data.');
                     });
                 }
 
-                function applyEventFilter() {
+                function applyEventsFilter() {
                     var filtered = allEvents;
 
                     if ($scope.filter.keyword) {
                         var keyword = $scope.filter.keyword.toLowerCase();
 
                         filtered = allEvents.filter(function (e) {
-                            return (e.name || '').toLowerCase().includes(keyword) ||
+                            return (e.eventName || '').toLowerCase().includes(keyword) ||
                                    (e.code || '').toLowerCase().includes(keyword) ||
                                    (e.description || '').toLowerCase().includes(keyword);
                         });
                     }
 
-                    allEvents = allEvents || [];
                     $scope.events = filtered;
-                    applyEventSort();
+                    applyEventsSort();
                 }
 
                 function changeSort(column) {
@@ -383,7 +380,8 @@
                         $scope.sort.column = column;
                         $scope.sort.direction = 'ASC';
                     }
-                    applyEventSort();
+
+                    applyEventsSort();
                 }
 
                 function isSorted(column) {
@@ -397,8 +395,8 @@
                     return $scope.sort.direction === 'ASC' ? 'bi-arrow-up' : 'bi-arrow-down';
                 }
 
-                function applyEventSort() {
-                    var sorted = angular.copy(allEvents || []);
+                function applyEventsSort() {
+                    var sorted = angular.copy($scope.events || []);
 
                     sorted.sort(function (a, b) {
                         var left = (a[$scope.sort.column] || '').toString().toLowerCase();
@@ -413,23 +411,28 @@
                 }
 
                 function searchEvents() {
-                    if (isBusy()) return;
+                    if (isBusy()) {
+                        return;
+                    }
+
                     clearAlert();
-                    applyEventFilter();
+                    applyEventsFilter();
                 }
 
                 function resetFilter() {
                     if (isBusy()) return;
                     clearAlert();
                     $scope.filter.keyword = '';
-                    applyEventFilter();
+                    applyEventsFilter();
                 }
 
-                function openDeleteConfirmation(eventItem) {
-                    if (!eventItem || !eventItem.id) return;
+                function openDeleteConfirmation(event) {
+                    if (!event || !event.eventId) {
+                        return;
+                    }
 
                     clearAlert();
-                    $scope.deleteModal.event = eventItem;
+                    $scope.deleteModal.event = event;
                     $scope.deleteModal.errorMessage = '';
                     $scope.deleteModal.visible = true;
                 }
@@ -443,9 +446,9 @@
                 }
 
                 function confirmDeleteEvent() {
-                    var eventItem = $scope.deleteModal.event;
+                    var eventToDelete = $scope.deleteModal.event;
 
-                    if (!eventItem || !eventItem.id) {
+                    if (!eventToDelete || !eventToDelete.eventId) {
                         closeDeleteConfirmation();
                         return;
                     }
@@ -454,17 +457,19 @@
                     $scope.deleteModal.errorMessage = '';
                     clearAlert();
 
-                    // Simulasi API Delete (Ganti dengan $http.post jika sudah ada backend Delete)
+                    // NOTE: this is currently a client-side-only mock delete (no API call).
+                    // Wire this up to a real DELETE endpoint, e.g.:
+                    // $http.delete('/Event/EventList/DeleteEvent', { params: { id: eventToDelete.eventId } })
                     $timeout(function () {
                         var index = allEvents.findIndex(function (e) {
-                            return e.id === eventItem.id;
+                            return e.eventId === eventToDelete.eventId;
                         });
 
                         if (index > -1) {
                             allEvents.splice(index, 1);
                         }
 
-                        applyEventFilter();
+                        applyEventsFilter();
 
                         var successMessage = 'Event has been deleted successfully.';
                         $scope.deleteModal.visible = false;
