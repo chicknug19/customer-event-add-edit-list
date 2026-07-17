@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace JPP.Data.Interfaces
 {
-    public interface IEventRepository
+    public interface IEventDropdownRepository
     {
-        Task<IEnumerable<EventDto>> GetAllEventsAsync();
+        Task<IEnumerable<EventDropdownDto>> GetAllEventsAsync();
     }
 }

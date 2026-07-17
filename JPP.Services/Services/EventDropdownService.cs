@@ -10,16 +10,16 @@ using System.Threading.Tasks;
 
 namespace JPP.Services.Services
 {
-    public class EventService : IEventService
+    public class EventDropdownService : IEventDropdownService
     {
-        private readonly IEventRepository _eventRepo;
+        private readonly IEventDropdownRepository _eventRepo;
 
-        public EventService(IEventRepository eventRepo)
+        public EventDropdownService(IEventDropdownRepository eventRepo)
         {
             _eventRepo = eventRepo;
         }
 
-        public async Task<IEnumerable<EventDto>> GetDropdownListAsync()
+        public async Task<IEnumerable<EventDropdownDto>> GetDropdownListAsync()
         {            
             return await _eventRepo.GetAllEventsAsync();
         }

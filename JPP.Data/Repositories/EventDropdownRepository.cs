@@ -11,21 +11,21 @@ using System.Threading.Tasks;
 
 namespace JPP.Data.Repositories
 {
-    public class EventRepository : IEventRepository
+    public class EventDropdownRepository : IEventDropdownRepository
     {
         private readonly ICrmDbConnectionFactory _connFactory;
 
-        public EventRepository(ICrmDbConnectionFactory connFactory)
+        public EventDropdownRepository(ICrmDbConnectionFactory connFactory)
         {
             _connFactory = connFactory;
         }
 
-        public async Task<IEnumerable<EventDto>> GetAllEventsAsync()
+        public async Task<IEnumerable<EventDropdownDto>> GetAllEventsAsync()
         {
             const string sql = "SELECT Id, Name, Code FROM BIZ_CustomerEvent ORDER BY Name ASC";
 
             using var conn = _connFactory.Create();
-            return await conn.QueryAsync<EventDto>(sql);
+            return await conn.QueryAsync<EventDropdownDto>(sql);
         }
     }
 }

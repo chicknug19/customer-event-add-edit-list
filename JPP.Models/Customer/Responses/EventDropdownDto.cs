@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JPP.Models.Event.Responses
 {
-    public class EventDto
+    public class EventDropdownDto
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;

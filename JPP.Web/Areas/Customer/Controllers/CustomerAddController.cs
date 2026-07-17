@@ -18,9 +18,9 @@ namespace JPP.Web.Areas.Customer.Controllers
         protected override bool RequireLogin => true;
 
         private readonly ICustomerAddService _customerService;
-        private readonly IEventService _eventService;
+        private readonly IEventDropdownService _eventService;
 
-        public CustomerAddController(ICustomerAddService customerService, IEventService eventService)
+        public CustomerAddController(ICustomerAddService customerService, IEventDropdownService eventService)
         {
             _customerService = customerService;
             _eventService = eventService;

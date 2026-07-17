@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace JPP.Services.Services
 {
-    public class CustomerAddService : ICustomerService
+    public class CustomerAddService : ICustomerAddService
     {
         private readonly ICustomerAddRepository _customerRepository;
 
-        public CustomerAddService(ICustomerRepository customerRepository)
+        public CustomerAddService(ICustomerAddRepository customerRepository)
         {
             _customerRepository = customerRepository;
         }

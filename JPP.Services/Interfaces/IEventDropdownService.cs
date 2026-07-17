@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 
 namespace JPP.Services.Interfaces
 {
-    public interface IEventService
+    public interface IEventDropdownService
     {
-        Task<IEnumerable<EventDto>> GetDropdownListAsync();
+        Task<IEnumerable<EventDropdownDto>> GetDropdownListAsync();
     }
 }
