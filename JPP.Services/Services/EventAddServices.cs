@@ -1,5 +1,5 @@
 ﻿using JPP.Data.Interfaces;
-using JPP.Models.Customer.Request;
+using JPP.Models.Event.Request;
 using JPP.Models.Shared.Responses;
 using JPP.Services.Interfaces;
 using System;

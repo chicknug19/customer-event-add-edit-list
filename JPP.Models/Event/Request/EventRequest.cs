@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JPP.Models.Customer.Request
+namespace JPP.Models.Event.Request
 {
     public class EventRequest
     {
