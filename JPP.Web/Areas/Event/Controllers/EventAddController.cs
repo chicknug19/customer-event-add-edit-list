@@ -1,5 +1,4 @@
-﻿using JPP.Models.Customer.Request;
-using JPP.Models.Customer.Responses;
+﻿using JPP.Models.Event.Request;
 using JPP.Models.Event.Responses;
 using JPP.Services.Interfaces;
 using JPP.Web.Controllers;

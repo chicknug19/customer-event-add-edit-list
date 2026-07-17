@@ -1,0 +1,224 @@
+@model JPP.Models.Event.Responses.EventDetailViewModel
+
+@{
+    ViewData["Title"] = Model.PageTitle;
+    ViewData["PageTitle"] = Model.PageTitle;
+    ViewData["PageSubtitle"] = Model.PageSubtitle;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var form = Model.Form;
+    var disabled = Model.IsReadOnly ? "disabled" : null;
+}
+
+<div class="admin-page-header mb-4">
+    <div>
+        <span class="admin-eyebrow">Event Module</span>
+        <h3>@Model.PageTitle</h3>
+        <p>
+            Manage event master data and descriptions.
+        </p>
+    </div>
+
+    <div class="admin-page-actions">
+        <a href="/Customer/CustomerEventList/Index"
+           class="btn btn-soft">
+            <i class="bi bi-arrow-left me-2"></i>
+            Back to List
+        </a>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger" role="alert">
+        <strong>Please check your entry.</strong>
+        <div asp-validation-summary="All"></div>
+    </div>
+}
+
+<form action="@Url.Action("Save", "CustomerEventAdd", new { area = "Customer" })"
+      method="post"
+      id="eventForm">
+
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" name="Id" value="@form.Id" />
+    <input type="hidden" name="SubmitMode" id="SubmitMode" value="Save" />
+
+    <div class="employee-form-shell">
+        <div class="employee-toolbar crm-card mb-4">
+            <div>
+                <h5>@(Model.IsEditMode? form.Name: "New Event")</h5>
+                <p>@(Model.IsEditMode ? $"Event ID: {form.Id}" : "Complete the event data below.")</p>
+            </div>
+
+            <div class="employee-toolbar-actions">
+                @if (!Model.IsReadOnly)
+                {
+                    <button type="submit"
+                            class="btn btn-main"
+                            data-submit-mode="Save">
+                        <span class="spinner-border spinner-border-sm me-2 d-none employee-save-spinner"></span>
+                        <i class="bi bi-save me-2 employee-save-icon"></i>
+                        Save
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-main-outline"
+                            data-submit-mode="SaveAndClose">
+                        <span class="spinner-border spinner-border-sm me-2 d-none employee-save-spinner"></span>
+                        <i class="bi bi-check2-circle me-2 employee-save-icon"></i>
+                        Save And Close
+                    </button>
+                }
+
+                <a href="/Customer/CustomerEventList/Index"
+                   class="btn btn-soft">
+                    Cancel
+                </a>
+            </div>
+        </div>
+
+        <!-- 1 Card Utama untuk Form Input Event -->
+        <div class="crm-card mb-4">
+            <div class="section-title">
+                <h5>Event Information</h5>
+                <p>Define the unique code, name, and description for this event.</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-xl-4 col-md-5">
+                    <label class="form-label admin-form-label">Event Code <span class="text-danger">*</span></label>
+                    <input type="text" name="Code" value="@form.Code" class="form-control" placeholder="e.g. EVT-001" required @disabled />
+                </div>
+
+                <div class="col-xl-8 col-md-7">
+                    <label class="form-label admin-form-label">Event Name <span class="text-danger">*</span></label>
+                    <input type="text" name="Name" value="@form.Name" class="form-control" placeholder="Enter event name" required @disabled />
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label admin-form-label">Description</label>
+                    <textarea name="Description" class="form-control" rows="4" placeholder="Enter detailed description about this event..." @disabled>@form.Description</textarea>
+                </div>
+            </div>
+        </div>
+        <!-- AKHIR DARI 1 CARD -->
+    </div>
+</form>
+
+<style>
+    .employee-form-shell .crm-card {
+        border: 0;
+        border-radius: 18px;
+        box-shadow: 0 12px 35px rgba(49, 55, 69, .08);
+        padding: 1.75rem;
+        background: #fff;
+    }
+
+    .employee-toolbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: center;
+        padding: 1.25rem;
+    }
+
+        .employee-toolbar h5 {
+            margin: 0;
+            font-weight: 700;
+            color: #313745;
+        }
+
+        .employee-toolbar p {
+            margin: .25rem 0 0;
+            color: #7b8190;
+        }
+
+    .employee-toolbar-actions {
+        display: flex;
+        gap: .75rem;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .section-title {
+        margin-bottom: 1.5rem;
+    }
+
+        .section-title h5 {
+            margin: 0 0 0.5rem;
+            font-weight: 700;
+            color: #313745;
+        }
+
+        .section-title p {
+            margin: 0;
+            color: #7b8190;
+            font-size: 0.9rem;
+        }
+
+    .btn-main-outline {
+        border: 1px solid #313745;
+        color: #313745;
+        background: #fff;
+    }
+
+        .btn-main-outline:hover {
+            background: #313745;
+            color: #fff;
+        }
+
+    @@media (max-width: 768px) {
+        .employee-toolbar {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .employee-toolbar-actions {
+            justify-content: flex-start;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        (function ($) {
+            function setSubmitMode(mode) {
+                $('#SubmitMode').val(mode || 'Save');
+            }
+
+            function setSavingState(isSaving) {
+                var $buttons = $('#eventForm button[type="submit"]');
+                $buttons.prop('disabled', isSaving);
+                $('.employee-save-spinner').toggleClass('d-none', !isSaving);
+                $('.employee-save-icon').toggleClass('d-none', isSaving);
+            }
+
+            $('.employee-toolbar-actions button[type="submit"]').on('click', function () {
+                setSubmitMode($(this).data('submit-mode'));
+            });
+
+            $('#eventForm').on('submit', function () {
+                setSavingState(true);
+            });
+        })(jQuery);
+    </script>
+}
