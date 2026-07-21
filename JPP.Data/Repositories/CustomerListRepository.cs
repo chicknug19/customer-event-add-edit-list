@@ -31,7 +31,7 @@ namespace JPP.Data.Repositories
                     c.EventID AS EventId,
                     e.Name AS EventName
                 FROM BIZ_Customer c
-                LEFT JOIN BIZ_CustomerEvent e ON e.Id = c.EventID
+                LEFT JOIN BIZ_Event e ON e.Id = c.EventID
                 WHERE
                     (
                         @Keyword = ''

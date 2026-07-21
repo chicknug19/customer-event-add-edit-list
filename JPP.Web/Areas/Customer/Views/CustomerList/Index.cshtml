@@ -323,21 +323,20 @@
                 }
 
                 function applyCustomerFilter() {
-                    var filtered = allCustomers;
+                    var filtered = allCustomers || [];
 
                     if ($scope.filter.keyword) {
                         var keyword = $scope.filter.keyword.toLowerCase();
 
-                        filtered = allCustomers.filter(function (c) {
+                        filtered = (allCustomers || []).filter(function (c) {
                             return (c.fullName || '').toLowerCase().includes(keyword) ||
                                    (c.address1 || '').toLowerCase().includes(keyword) ||
                                    (c.phoneNumber || '').toLowerCase().includes(keyword);
                         });
                     }
 
-                    allCustomers = allCustomers || [];
                     $scope.customers = filtered;
-                    applyCustomerSort();
+                    applyCustomerSort($scope.customers);
                 }
 
                 function changeSort(column) {
@@ -365,8 +364,8 @@
                         : 'bi-arrow-down';
                 }
 
-                function applyCustomerSort() {
-                    var sorted = angular.copy(allCustomers || []);
+                function applyCustomerSort(items) {
+                    var sorted = angular.copy(items || []);
 
                     sorted.sort(function (a, b) {
                         var left = (a[$scope.sort.column] || '').toString().toLowerCase();

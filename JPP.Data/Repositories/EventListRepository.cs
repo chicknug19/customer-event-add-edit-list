@@ -28,7 +28,7 @@ namespace JPP.Data.Repositories
                     Name AS EventName,
                     Code,
                     Description
-                FROM BIZ_CustomerEvent
+                FROM BIZ_Event
                 WHERE
                     (
                         @Keyword = ''

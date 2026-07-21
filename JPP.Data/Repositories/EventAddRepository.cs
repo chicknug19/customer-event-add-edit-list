@@ -23,7 +23,7 @@ namespace JPP.Data.Repositories
         {
             if (string.IsNullOrWhiteSpace(code)) return false;
 
-            const string sql = "SELECT COUNT(1) FROM BIZ_CustomerEvent WHERE Code = @Code";
+            const string sql = "SELECT COUNT(1) FROM BIZ_Event WHERE Code = @Code";
             using var conn = _connFactory.Create();
             return await conn.ExecuteScalarAsync<int>(sql, new { Code = code.Trim() }) > 0;
         }
@@ -31,7 +31,7 @@ namespace JPP.Data.Repositories
         public async Task<int> CreateEventAsync(EventDto request)
         {
             const string sql = @"
-                INSERT INTO BIZ_CustomerEvent (Name, Code, Description)
+                INSERT INTO BIZ_Event (Name, Code, Description)
                 VALUES (@Name, @Code, @Description);
                 
                 SELECT CAST(SCOPE_IDENTITY() AS INT);";

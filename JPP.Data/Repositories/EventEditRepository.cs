@@ -23,7 +23,7 @@ namespace JPP.Data.Repositories
 
             const string sql = @"
                 SELECT Id, Name, Code, Description
-                FROM BIZ_CustomerEvent
+                FROM BIZ_Event
                 WHERE Id = @Id";
 
             using var conn = _crmDbConnectionFactory.Create();
@@ -39,7 +39,7 @@ namespace JPP.Data.Repositories
 
             const string sql = @"
                 SELECT COUNT(1)
-                FROM BIZ_CustomerEvent
+                FROM BIZ_Event
                 WHERE Code = @Code
                   AND Id <> @ExcludeId";
 
@@ -61,7 +61,7 @@ namespace JPP.Data.Repositories
             }
 
             const string sql = @"
-                UPDATE BIZ_CustomerEvent
+                UPDATE BIZ_Event
                 SET Name = @Name,
                     Code = @Code,
                     Description = @Description

@@ -8,8 +8,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace JPP.Data.Entities
 {
-    [Table("BIZ_CustomerEvent")]
-    public class BIZ_CustomerEvent
+    [Table("BIZ_Event")]
+    public class BIZ_Event
     {
         [Key]
         public int Id { get; set; }

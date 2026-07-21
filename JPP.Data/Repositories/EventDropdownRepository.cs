@@ -22,7 +22,7 @@ namespace JPP.Data.Repositories
 
         public async Task<IEnumerable<EventDropdownDto>> GetAllEventsAsync()
         {
-            const string sql = "SELECT Id, Name, Code FROM BIZ_CustomerEvent ORDER BY Name ASC";
+            const string sql = "SELECT Id, Name, Code FROM BIZ_Event ORDER BY Name ASC";
 
             using var conn = _connFactory.Create();
             return await conn.QueryAsync<EventDropdownDto>(sql);
