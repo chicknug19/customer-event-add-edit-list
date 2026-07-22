@@ -35,9 +35,9 @@ namespace JPP.Data.Repositories
         {
             const string sql = @"
             INSERT INTO BIZ_Customer 
-            (FirstName, MiddleName, LastName, PhoneNumber, EmailAddress, Address1, EventId, StoreId, AccountNumber)
+            (FirstName, MiddleName, LastName, PhoneNumber, EmailAddress, Address1,Age, EventId, StoreId, AccountNumber)
             VALUES 
-            (@FirstName, @MiddleName, @LastName, @PhoneNumber, @EmailAddress, @Address1, @EventId, @StoreId, @AccountNumber);
+            (@FirstName, @MiddleName, @LastName, @PhoneNumber, @EmailAddress, @Address1,@Age, @EventId, @StoreId, @AccountNumber);
     
             SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
@@ -51,9 +51,9 @@ namespace JPP.Data.Repositories
                 PhoneNumber = request.PhoneNumber?.Trim() ?? string.Empty,
                 EmailAddress = request.EmailAddress?.Trim() ?? string.Empty,
                 Address1 = request.Address1?.Trim() ?? string.Empty,
+                Age = request.Age.Value,
                 EventId = request.EventId,
                 StoreId = request.StoreId,
-
                 AccountNumber = request.AccountNumber
             });
 
@@ -78,7 +78,7 @@ namespace JPP.Data.Repositories
 
             // Memanggil Stored Procedure bawaan database
             var accNo = await conn.QuerySingleOrDefaultAsync<string>(
-                "CRM_GetNewCustNo",
+                "CRM_GetNewCustNoBaru",
                 new { strStoreID = storeId.ToString() },
                 commandType: CommandType.StoredProcedure);
 

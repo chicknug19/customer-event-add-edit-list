@@ -148,6 +148,12 @@
                     @Html.ValidationMessage("Address1", "", new { @class = "text-danger small mt-1 d-block" })
                 </div>
 
+                <div class="col-xl-3 col-md-4">
+                    <label class="form-label admin-form-label">Age <span class="text-danger">*</span></label>
+                    <input type="number" name="Age" value="@form.Age" class="form-control" min="0" placeholder="e.g. 25" @disabled />
+                    @Html.ValidationMessage("Age", "", new { @class = "text-danger small mt-1 d-block" })
+                </div>
+
                 @* <div class="col-xl-6 col-md-12">
                     <label class="form-label admin-form-label">Address 2</label>
                     <input type="text" name="Address2" value="@form.Address2" class="form-control" @disabled />
@@ -157,16 +163,14 @@
                     <hr class="text-muted opacity-25 my-1" />
                 </div>
 
-                <!-- EVENT DROPDOWN -->
                 <div class="col-xl-6 col-md-6">
-                    <label class="form-label admin-form-label">Event Selection</label>
+                    <label class="form-label admin-form-label">Event Selection <span class="text-danger">*</span></label>
                     <select name="EventId" class="form-select" @disabled>
                         <option value="">- Please Select Event -</option>
                         @if (Model.EventOptions != null && Model.EventOptions.Any())
                         {
                             foreach (var item in Model.EventOptions)
                             {
-                                <!-- Logika penahan state -->
                                 if (form.EventId != null && item.Value == form.EventId.ToString())
                                 {
                                     <option value="@item.Value" selected>@item.Text</option>
@@ -178,18 +182,17 @@
                             }
                         }
                     </select>
+                    @Html.ValidationMessage("EventId", "", new { @class = "text-danger small mt-1 d-block" })
                 </div>
 
-                <!-- STORE DROPDOWN -->
                 <div class="col-xl-6 col-md-6">
-                    <label class="form-label admin-form-label">Store Selection</label>
+                    <label class="form-label admin-form-label">Store Selection <span class="text-danger">*</span></label>
                     <select name="StoreId" class="form-select" @disabled>
                         <option value="">- Please Select Store -</option>
                         @if (Model.StoreOptions != null && Model.StoreOptions.Any())
                         {
                             foreach (var item in Model.StoreOptions)
                             {
-                                <!-- Logika penahan state -->
                                 if (form.StoreId != null && item.Value == form.StoreId.ToString())
                                 {
                                     <option value="@item.Value" selected>@item.Text</option>
@@ -201,11 +204,12 @@
                             }
                         }
                     </select>
+                    @Html.ValidationMessage("StoreId", "", new { @class = "text-danger small mt-1 d-block" })
                 </div>
 
                 <div class="col-xl-12 col-md-12">
                     <label class="form-label admin-form-label">Account Number</label>
-                    <input type="text" id="AccountNumberPreview" class="form-control bg-light" readonly placeholder="Auto-generated after selecting a Store" />
+                    <input type="text" id="AccountNumberPreview" value="@form.AccountNumber" class="form-control bg-light" readonly placeholder="Auto-generated after selecting a Store" />
                 </div>
 
 
@@ -216,6 +220,7 @@
 
 @section Scripts {
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
     <script>
         (function ($) {
             function setSubmitMode(mode) {
