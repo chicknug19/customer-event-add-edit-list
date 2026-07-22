@@ -33,35 +33,42 @@ namespace JPP.Data.Repositories
         public async Task<int> CreateCustomerAsync(CustomerRequest request)
         {
             const string sql = @"
-                INSERT INTO BIZ_Customer
-                (
-                    UID, DateCreated, LastUpdated, Inactive, 
-                    FirstName, MiddleName, LastName, 
-                    PhoneNumber, PhoneNumber2, EmailAddress, Address1, Address2, EventId /* Tambahkan ini */
-                )
-                VALUES
-                (
-                    NEWID(), GETDATE(), GETDATE(), 0, 
-                    @FirstName, @MiddleName, @LastName, 
-                    @PhoneNumber, @PhoneNumber2, @EmailAddress, @Address1, @Address2, @EventId /* Tambahkan ini */
-                );";
+        INSERT INTO BIZ_Customer 
+        (FirstName, MiddleName, LastName, PhoneNumber, EmailAddress, Address1, EventId, StoreId)
+        VALUES 
+        (@FirstName, @MiddleName, @LastName, @PhoneNumber, @EmailAddress, @Address1, @EventId, @StoreId);
+        
+        SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
             using var conn = _crmDbConnectionFactory.Create();
 
+            // PERBAIKAN: Memastikan semua parameter yang ada di query SQL dikirim ke Dapper
             var newId = await conn.ExecuteScalarAsync<int>(sql, new
             {
                 FirstName = request.FirstName?.Trim() ?? string.Empty,
                 MiddleName = request.MiddleName?.Trim(),
                 LastName = request.LastName?.Trim(),
                 PhoneNumber = request.PhoneNumber?.Trim() ?? string.Empty,
-                PhoneNumber2 = request.PhoneNumber2?.Trim(),
                 EmailAddress = request.EmailAddress?.Trim(),
                 Address1 = request.Address1?.Trim() ?? string.Empty,
-                Address2 = request.Address2?.Trim(),
-                EventId = request.EventId
+                EventId = request.EventId,
+                StoreId = request.StoreId 
             });
 
             return newId;
         }
+
+
+        public async Task<bool> PhoneNumberExistsAsync(string phoneNumber)
+        {
+            if (string.IsNullOrWhiteSpace(phoneNumber)) return false;
+
+            const string sql = "SELECT COUNT(1) FROM BIZ_Customer WHERE PhoneNumber = @PhoneNumber";
+
+            using var conn = _crmDbConnectionFactory.Create();
+            return await conn.ExecuteScalarAsync<int>(sql, new { PhoneNumber = phoneNumber.Trim() }) > 0;
+        }
+
+
     }
 }

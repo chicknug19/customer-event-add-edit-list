@@ -14,16 +14,18 @@ namespace JPP.Web.Areas.Customer.Controllers
     [Area("Customer")]
     public class CustomerAddController : BaseController
     {
-
         protected override bool RequireLogin => true;
 
         private readonly ICustomerAddService _customerService;
         private readonly IEventDropdownService _eventService;
+        private readonly IStoreDropdownService _storeService;
 
-        public CustomerAddController(ICustomerAddService customerService, IEventDropdownService eventService)
+        // 2. Inject di constructor
+        public CustomerAddController(ICustomerAddService customerService, IEventDropdownService eventService, IStoreDropdownService storeService)
         {
             _customerService = customerService;
             _eventService = eventService;
+            _storeService = storeService;
         }
 
         [HttpGet]
@@ -33,9 +35,10 @@ namespace JPP.Web.Areas.Customer.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> CustomerAddPage() 
+        public async Task<IActionResult> CustomerAddPage()
         {
             var events = await _eventService.GetDropdownListAsync();
+            var stores = await _storeService.GetStoreDropdownListAsync(); // 3. Ambil data Store
 
             var model = new CustomerDetailViewModel
             {
@@ -45,12 +48,17 @@ namespace JPP.Web.Areas.Customer.Controllers
                 {
                     Value = e.Id.ToString(),
                     Text = $"{e.Code} - {e.Name}"
+                }),
+                // 4. Masukkan ke StoreOptions (Hanya menampilkan StoreName sesuai request-mu)
+                StoreOptions = stores.Select(s => new SelectListItem
+                {
+                    Value = s.ID.ToString(),
+                    Text = s.StoreName
                 })
             };
 
             return View("CustomerAddPage", model);
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -59,17 +67,23 @@ namespace JPP.Web.Areas.Customer.Controllers
             if (!ModelState.IsValid)
             {
 
+                // JIKA ERROR, AMBIL ULANG KEDUA DATA AGAR DROPDOWN TIDAK KOSONG
                 var events = await _eventService.GetDropdownListAsync();
+                var stores = await _storeService.GetStoreDropdownListAsync();
 
                 var model = new CustomerDetailViewModel
                 {
                     Form = form,
                     IsReadOnly = false,
-
                     EventOptions = events.Select(e => new SelectListItem
                     {
                         Value = e.Id.ToString(),
                         Text = $"{e.Code} - {e.Name}"
+                    }),
+                    StoreOptions = stores.Select(s => new SelectListItem
+                    {
+                        Value = s.ID.ToString(),
+                        Text = s.StoreName
                     })
                 };
                 return View("CustomerAddPage", model);
@@ -92,7 +106,9 @@ namespace JPP.Web.Areas.Customer.Controllers
             {
                 TempData["ErrorMessage"] = result.StatusMessage;
 
+                // JIKA GAGAL SIMPAN, AMBIL ULANG JUGA KEDUA DATANYA
                 var events = await _eventService.GetDropdownListAsync();
+                var stores = await _storeService.GetStoreDropdownListAsync();
 
                 var model = new CustomerDetailViewModel
                 {
@@ -102,13 +118,15 @@ namespace JPP.Web.Areas.Customer.Controllers
                     {
                         Value = e.Id.ToString(),
                         Text = $"{e.Code} - {e.Name}"
+                    }),
+                    StoreOptions = stores.Select(s => new SelectListItem
+                    {
+                        Value = s.ID.ToString(),
+                        Text = s.StoreName
                     })
                 };
                 return View("CustomerAddPage", model);
             }
         }
-
-
-
     }
 }

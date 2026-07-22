@@ -13,5 +13,6 @@ namespace JPP.Data.Interfaces
         Task<bool> EmailExistsAsync(string email);
 
         Task<int> CreateCustomerAsync(CustomerRequest request);
+        Task<bool> PhoneNumberExistsAsync(string phoneNumber);
     }
 }

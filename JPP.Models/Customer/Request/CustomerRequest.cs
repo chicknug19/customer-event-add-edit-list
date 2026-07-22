@@ -15,14 +15,16 @@ namespace JPP.Models.Customer.Request
         public string FirstName { get; set; } = string.Empty;
         public string? MiddleName { get; set; }
         public string? LastName { get; set; }
-        [Required(ErrorMessage = "Phone Number is required")]
+        [Required(ErrorMessage = "Phone Number cannot be empty.")]
+        [RegularExpression(@"^8[0-9]{5,14}$", ErrorMessage = "The mobile number must start with the digit 8 (without a leading 0) and contain only digits.")]
         public string PhoneNumber { get; set; } = string.Empty;
-        public string? PhoneNumber2 { get; set; }
+        //public string? PhoneNumber2 { get; set; }
         public string? EmailAddress { get; set; }
         [Required(ErrorMessage = "Address is required")]
         public string Address1 { get; set; } = string.Empty;
-        public string? Address2 { get; set; }
+        //public string? Address2 { get; set; }
         public int EventId { get; set; }
         public string? EventName { get; set; }
+        public int? StoreId { get; set; }
     }
 }

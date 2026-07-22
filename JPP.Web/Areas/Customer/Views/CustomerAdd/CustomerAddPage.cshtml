@@ -5,6 +5,7 @@
     ViewData["PageTitle"] = Model.PageTitle;
     ViewData["PageSubtitle"] = Model.PageSubtitle;
     Layout = "~/Views/Shared/_Layout.cshtml";
+    <link rel="stylesheet" href="~/css/app.css" />
 
     var form = Model.Form;
     var disabled = Model.IsReadOnly ? "disabled" : null;
@@ -122,16 +123,18 @@
                     <hr class="text-muted opacity-25 my-1" />
                 </div>
 
-                <div class="col-xl-4 col-md-6">
+
+                <div class="col-xl-6 col-md-6">
                     <label class="form-label admin-form-label">Phone Number <span class="text-danger">*</span></label>
-                    <input type="text" name="PhoneNumber" value="@form.PhoneNumber" class="form-control" @disabled />
+                    <!-- Tambahkan placeholder di sini -->
+                    <input type="text" name="PhoneNumber" value="@form.PhoneNumber" class="form-control" placeholder="e.g. 8123456789" @disabled />
                     @Html.ValidationMessage("PhoneNumber", "", new { @class = "text-danger small mt-1 d-block" })
                 </div>
 
-                <div class="col-xl-4 col-md-6">
+                @* <div class="col-xl-4 col-md-6">
                     <label class="form-label admin-form-label">Phone Number 2 (Optional)</label>
                     <input type="text" name="PhoneNumber2" value="@form.PhoneNumber2" class="form-control" @disabled />
-                </div>
+                </div> *@
 
                 <div class="col-xl-4 col-md-6">
                     <label class="form-label admin-form-label">Email Address</label>
@@ -145,112 +148,66 @@
                     @Html.ValidationMessage("Address1", "", new { @class = "text-danger small mt-1 d-block" })
                 </div>
 
-                <div class="col-xl-6 col-md-12">
+                @* <div class="col-xl-6 col-md-12">
                     <label class="form-label admin-form-label">Address 2</label>
                     <input type="text" name="Address2" value="@form.Address2" class="form-control" @disabled />
-                </div>
+                </div> *@
 
                 <div class="col-12">
                     <hr class="text-muted opacity-25 my-1" />
                 </div>
 
-                <div class="col-xl-4 col-md-6">
-                    <label class="form-label admin-form-label">Event Selection<span class="text-danger">*</span></label>
+                <!-- EVENT DROPDOWN -->
+                <div class="col-xl-6 col-md-6">
+                    <label class="form-label admin-form-label">Event Selection</label>
                     <select name="EventId" class="form-select" @disabled>
                         <option value="">- Please Select Event -</option>
-
                         @if (Model.EventOptions != null && Model.EventOptions.Any())
                         {
                             foreach (var item in Model.EventOptions)
                             {
-                                <option value="@item.Value">@item.Text</option>
+                                <!-- Logika penahan state -->
+                                if (form.EventId != null && item.Value == form.EventId.ToString())
+                                {
+                                    <option value="@item.Value" selected>@item.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
                             }
                         }
                     </select>
                 </div>
+
+                <!-- STORE DROPDOWN -->
+                <div class="col-xl-6 col-md-6">
+                    <label class="form-label admin-form-label">Store Selection</label>
+                    <select name="StoreId" class="form-select" @disabled>
+                        <option value="">- Please Select Store -</option>
+                        @if (Model.StoreOptions != null && Model.StoreOptions.Any())
+                        {
+                            foreach (var item in Model.StoreOptions)
+                            {
+                                <!-- Logika penahan state -->
+                                if (form.StoreId != null && item.Value == form.StoreId.ToString())
+                                {
+                                    <option value="@item.Value" selected>@item.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+
+
             </div>
         </div>
-        <!-- AKHIR DARI 1 CARD -->
     </div>
 </form>
-
-<style>
-    /* PERBAIKAN: Menambahkan ruang kosong (padding) di bawah form agar dropdown punya area untuk membuka ke bawah */
-    .employee-form-shell {
-        padding-bottom: 12rem;
-    }
-
-        .employee-form-shell .crm-card {
-            border: 0;
-            border-radius: 18px;
-            box-shadow: 0 12px 35px rgba(49, 55, 69, .08);
-            padding: 1.75rem;
-        }
-
-    .employee-toolbar {
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        align-items: center;
-        padding: 1.25rem;
-    }
-
-        .employee-toolbar h5 {
-            margin: 0;
-            font-weight: 700;
-            color: #313745;
-        }
-
-        .employee-toolbar p {
-            margin: .25rem 0 0;
-            color: #7b8190;
-        }
-
-    .employee-toolbar-actions {
-        display: flex;
-        gap: .75rem;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-    }
-
-    .section-title {
-        margin-bottom: 1.5rem;
-    }
-
-        .section-title h5 {
-            margin: 0 0 0.5rem;
-            font-weight: 700;
-            color: #313745;
-        }
-
-        .section-title p {
-            margin: 0;
-            color: #7b8190;
-            font-size: 0.9rem;
-        }
-
-    .btn-main-outline {
-        border: 1px solid #313745;
-        color: #313745;
-        background: #fff;
-    }
-
-        .btn-main-outline:hover {
-            background: #313745;
-            color: #fff;
-        }
-
-    @@media (max-width: 768px) {
-        .employee-toolbar {
-            align-items: stretch;
-            flex-direction: column;
-        }
-
-        .employee-toolbar-actions {
-            justify-content: flex-start;
-        }
-    }
-</style>
 
 @section Scripts {
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

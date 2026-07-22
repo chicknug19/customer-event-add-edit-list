@@ -72,10 +72,10 @@ namespace JPP.Data.Repositories
                 MiddleName = request.MiddleName?.Trim(),
                 LastName = request.LastName?.Trim(),
                 PhoneNumber = request.PhoneNumber?.Trim() ?? string.Empty,
-                PhoneNumber2 = request.PhoneNumber2?.Trim(),
+                //PhoneNumber2 = request.PhoneNumber2?.Trim(),
                 EmailAddress = request.EmailAddress?.Trim(),
                 Address1 = request.Address1?.Trim() ?? string.Empty,
-                Address2 = request.Address2?.Trim()
+                //Address2 = request.Address2?.Trim()
             });
 
             return rowsAffected > 0;

@@ -14,8 +14,8 @@ namespace JPP.Models.Customer.Responses
         public string PageTitle => IsEditMode ? "Edit Customer" : "Add Customer";
         public string PageSubtitle => IsEditMode ? "Update customer master data" : "Create new customer master data";
 
-        // TAMBAHKAN INI UNTUK DROPDOWN
         public IEnumerable<SelectListItem> EventOptions { get; set; } = new List<SelectListItem>();
         public string EventName { get; set; } = string.Empty;
+        public IEnumerable<SelectListItem> StoreOptions { get; set; } = new List<SelectListItem>();
     }
 }

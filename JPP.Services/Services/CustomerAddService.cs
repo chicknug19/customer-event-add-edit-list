@@ -16,27 +16,45 @@ namespace JPP.Services.Services
             _customerRepository = customerRepository;
         }
 
+
         public async Task<BaseResult<int>> AddCustomerAsync(CustomerRequest request)
         {
             try
             {
-                if (!string.IsNullOrWhiteSpace(request.EmailAddress))
+                if (!string.IsNullOrWhiteSpace(request.PhoneNumber) && request.PhoneNumber.StartsWith("0"))
                 {
-                    bool isEmailExist = await _customerRepository.EmailExistsAsync(request.EmailAddress);
-                    if (isEmailExist)
+                    request.PhoneNumber = request.PhoneNumber.Substring(1);
+                }
+
+                if (!string.IsNullOrWhiteSpace(request.PhoneNumber))
+                {
+                    bool isPhoneExist = await _customerRepository.PhoneNumberExistsAsync(request.PhoneNumber);
+                    if (isPhoneExist)
                     {
-                        return BaseResult<int>.Fail("Email sudah terdaftar.", 400);
+                        return BaseResult<int>.Fail($"Phone Number '{request.PhoneNumber}' Already registered. Please use another number.", 400);
                     }
                 }
 
-                var newId = await _customerRepository.CreateCustomerAsync(request);
+                // 3. CEK DUPLIKAT EMAIL (Jika sebelumnya kamu punya validasi email, biarkan saja)
+                //if (!string.IsNullOrWhiteSpace(request.EmailAddress))
+                //{
+                //    bool isEmailExist = await _customerRepository.EmailExistsAsync(request.EmailAddress);
+                //    if (isEmailExist)
+                //    {
+                //        return BaseResult<int>.Fail("The email is already registered.", 400);
+                //    }
+                //}
 
-                return BaseResult<int>.Ok(newId, "Customer berhasil ditambahkan.", 200);
+                // 4. SIMPAN KE DATABASE
+                var newId = await _customerRepository.CreateCustomerAsync(request);
+                return BaseResult<int>.Ok(newId, "Customer successfully added.", 200);
             }
             catch (Exception ex)
             {
-                return BaseResult<int>.Fail($"Terjadi kesalahan sistem: {ex.Message}", 500);
+                return BaseResult<int>.Fail($"A system error occurred: {ex.Message}", 500);
             }
         }
+
+
     }
 }

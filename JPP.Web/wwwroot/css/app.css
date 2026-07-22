@@ -2079,3 +2079,79 @@ a {
         flex-shrink: 0;
         margin-top: 1px;
     }
+
+/* File: wwwroot/css/admin-form.css */
+.employee-form-shell {
+    padding-bottom: 12rem;
+}
+
+    .employee-form-shell .crm-card {
+        border: 0;
+        border-radius: 18px;
+        box-shadow: 0 12px 35px rgba(49, 55, 69, .08);
+        padding: 1.75rem;
+    }
+
+.employee-toolbar {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: center;
+    padding: 1.25rem;
+}
+
+    .employee-toolbar h5 {
+        margin: 0;
+        font-weight: 700;
+        color: #313745;
+    }
+
+    .employee-toolbar p {
+        margin: .25rem 0 0;
+        color: #7b8190;
+    }
+
+.employee-toolbar-actions {
+    display: flex;
+    gap: .75rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.section-title {
+    margin-bottom: 1.5rem;
+}
+
+    .section-title h5 {
+        margin: 0 0 0.5rem;
+        font-weight: 700;
+        color: #313745;
+    }
+
+    .section-title p {
+        margin: 0;
+        color: #7b8190;
+        font-size: 0.9rem;
+    }
+
+.btn-main-outline {
+    border: 1px solid #313745;
+    color: #313745;
+    background: #fff;
+}
+
+    .btn-main-outline:hover {
+        background: #313745;
+        color: #fff;
+    }
+
+@media (max-width: 768px) {
+    .employee-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .employee-toolbar-actions {
+        justify-content: flex-start;
+    }
+}

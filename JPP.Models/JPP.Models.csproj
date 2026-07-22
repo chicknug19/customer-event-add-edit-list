@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <Folder Include="Inventory\" />
+    <Folder Include="Store\Request\" />
     <Folder Include="SupplyChain\" />
   </ItemGroup>
 
