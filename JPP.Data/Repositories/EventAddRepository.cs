@@ -30,18 +30,28 @@ namespace JPP.Data.Repositories
 
         public async Task<int> CreateEventAsync(EventDto request)
         {
+            // Tambahkan kolom baru di dalam kurung INSERT dan VALUES
             const string sql = @"
-                INSERT INTO BIZ_Event (Name, Code, Description)
-                VALUES (@Name, @Code, @Description);
-                
-                SELECT CAST(SCOPE_IDENTITY() AS INT);";
+            INSERT INTO BIZ_Event 
+            (Name, Code, Description, Location, DatabaseName, Brand, EventOrganizer, EventDateTime, Duration)
+            VALUES 
+            (@Name, @Code, @Description, @Location, @DatabaseName, @Brand, @EventOrganizer, @EventDateTime, @Duration);
+        
+            SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
             using var conn = _connFactory.Create();
+
             var newId = await conn.ExecuteScalarAsync<int>(sql, new
             {
                 Name = request.Name?.Trim() ?? string.Empty,
                 Code = request.Code?.Trim() ?? string.Empty,
-                Description = request.Description?.Trim() ?? string.Empty
+                Description = request.Description?.Trim() ?? string.Empty,
+                Location = request.Location?.Trim() ?? string.Empty,
+                DatabaseName = request.DatabaseName?.Trim() ?? string.Empty,
+                Brand = request.Brand?.Trim() ?? string.Empty,
+                EventOrganizer = request.EventOrganizer?.Trim() ?? string.Empty,
+                EventDateTime = request.EventDateTime,
+                Duration = request.Duration
             });
 
             return newId;

@@ -23,7 +23,7 @@ namespace JPP.Services.Services
             {
                 if (request == null)
                 {
-                    return BaseResult<int>.Fail("Data event tidak valid.", 400);
+                    return BaseResult<int>.Fail("Invalid event data.", 400);
                 }
 
                 if (!string.IsNullOrWhiteSpace(request.Code))
@@ -31,7 +31,7 @@ namespace JPP.Services.Services
                     bool isCodeExist = await _eventAddRepo.CodeExistsAsync(request.Code);
                     if (isCodeExist)
                     {
-                        return BaseResult<int>.Fail($"Event Code '{request.Code}' sudah terdaftar.", 400);
+                        return BaseResult<int>.Fail($"Event Code '{request.Code}' already registered.", 400);
                     }
                 }
 
@@ -40,14 +40,21 @@ namespace JPP.Services.Services
                     Id = request.Id,
                     Name = request.Name,
                     Code = request.Code,
-                    Description = request.Description
+                    Description = request.Description,
+                    Location = request.Location,
+                    DatabaseName = request.DatabaseName,
+                    Brand = request.Brand,
+                    EventOrganizer = request.EventOrganizer,
+                    EventDateTime = request.EventDateTime.Value,
+                    Duration = request.Duration.Value
+
                 });
 
-                return BaseResult<int>.Ok(newId, "Event berhasil ditambahkan.", 200);
+                return BaseResult<int>.Ok(newId, "The event was successfully added.", 200);
             }
             catch (Exception ex)
             {
-                return BaseResult<int>.Fail($"Terjadi kesalahan sistem: {ex.Message}", 500);
+                return BaseResult<int>.Fail($"A system error occurred: {ex.Message}", 500);
             }
         }
     }

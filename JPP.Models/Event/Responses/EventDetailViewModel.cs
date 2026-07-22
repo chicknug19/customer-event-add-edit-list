@@ -1,4 +1,5 @@
 ﻿using JPP.Models.Event.Request;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace JPP.Models.Event.Responses
 {
@@ -10,5 +11,7 @@ namespace JPP.Models.Event.Responses
 
         public string PageTitle => IsEditMode ? "Edit Event" : "Add New Event";
         public string PageSubtitle => IsEditMode ? "Update event master data" : "Create new event master data";
+
+        public IEnumerable<SelectListItem> DurationOptions { get; set; } = new List<SelectListItem>();
     }
 }

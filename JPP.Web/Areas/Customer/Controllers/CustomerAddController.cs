@@ -20,7 +20,6 @@ namespace JPP.Web.Areas.Customer.Controllers
         private readonly IEventDropdownService _eventService;
         private readonly IStoreDropdownService _storeService;
 
-        // 2. Inject di constructor
         public CustomerAddController(ICustomerAddService customerService, IEventDropdownService eventService, IStoreDropdownService storeService)
         {
             _customerService = customerService;
@@ -38,7 +37,7 @@ namespace JPP.Web.Areas.Customer.Controllers
         public async Task<IActionResult> CustomerAddPage()
         {
             var events = await _eventService.GetDropdownListAsync();
-            var stores = await _storeService.GetStoreDropdownListAsync(); // 3. Ambil data Store
+            var stores = await _storeService.GetStoreDropdownListAsync();
 
             var model = new CustomerDetailViewModel
             {
@@ -49,7 +48,7 @@ namespace JPP.Web.Areas.Customer.Controllers
                     Value = e.Id.ToString(),
                     Text = $"{e.Code} - {e.Name}"
                 }),
-                // 4. Masukkan ke StoreOptions (Hanya menampilkan StoreName sesuai request-mu)
+
                 StoreOptions = stores.Select(s => new SelectListItem
                 {
                     Value = s.ID.ToString(),
@@ -66,8 +65,6 @@ namespace JPP.Web.Areas.Customer.Controllers
         {
             if (!ModelState.IsValid)
             {
-
-                // JIKA ERROR, AMBIL ULANG KEDUA DATA AGAR DROPDOWN TIDAK KOSONG
                 var events = await _eventService.GetDropdownListAsync();
                 var stores = await _storeService.GetStoreDropdownListAsync();
 

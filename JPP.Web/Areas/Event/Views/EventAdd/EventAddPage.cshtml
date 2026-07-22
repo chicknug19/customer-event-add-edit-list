@@ -5,6 +5,7 @@
     ViewData["PageTitle"] = Model.PageTitle;
     ViewData["PageSubtitle"] = Model.PageSubtitle;
     Layout = "~/Views/Shared/_Layout.cshtml";
+    <link rel="stylesheet" href="~/css/app.css" />
 
     var form = Model.Form;
     var disabled = Model.IsReadOnly ? "disabled" : null;
@@ -98,7 +99,7 @@
         <div class="crm-card mb-4">
             <div class="section-title">
                 <h5>Event Information</h5>
-                <p>Define the unique code, name, and description for this event.</p>
+                <p>Define the details, location, and schedule for this event.</p>
             </div>
 
             <div class="row g-4">
@@ -110,12 +111,79 @@
 
                 <div class="col-xl-8 col-md-7">
                     <label class="form-label admin-form-label">Event Name <span class="text-danger">*</span></label>
-                    <input type="text" name="Name" value="@form.Name" class="form-control" placeholder="Enter event name"@disabled />
+                    <input type="text" name="Name" value="@form.Name" class="form-control" placeholder="Enter event name" @disabled />
                     @Html.ValidationMessage("Name", "", new { @class = "text-danger small mt-1 d-block" })
                 </div>
 
                 <div class="col-12">
-                    <label class="form-label admin-form-label">Description <span class="text-danger">*</span> </label>
+                    <hr class="text-muted opacity-25 my-1" />
+                </div>
+
+                <div class="col-xl-6 col-md-6">
+                    <label class="form-label admin-form-label">Location <span class="text-danger">*</span></label>
+                    <input type="text" name="Location" value="@form.Location" class="form-control" placeholder="Enter location" @disabled />
+                    @Html.ValidationMessage("Location", "", new { @class = "text-danger small mt-1 d-block" })
+                </div>
+
+                <div class="col-xl-6 col-md-6">
+                    <label class="form-label admin-form-label">Database <span class="text-danger">*</span></label>
+                    <input type="text" name="DatabaseName" value="@form.DatabaseName" class="form-control" placeholder="Enter database name" @disabled />
+                    @Html.ValidationMessage("DatabaseName", "", new { @class = "text-danger small mt-1 d-block" })
+                </div>
+
+                <div class="col-xl-6 col-md-6">
+                    <label class="form-label admin-form-label">Brand <span class="text-danger">*</span></label>
+                    <input type="text" name="Brand" value="@form.Brand" class="form-control" placeholder="Enter brand name" @disabled />
+                    @Html.ValidationMessage("Brand", "", new { @class = "text-danger small mt-1 d-block" })
+                </div>
+
+                <div class="col-xl-6 col-md-6">
+                    <label class="form-label admin-form-label">Event Organizer <span class="text-danger">*</span></label>
+                    <input type="text" name="EventOrganizer" value="@form.EventOrganizer" class="form-control" placeholder="Enter organizer name" @disabled />
+                    @Html.ValidationMessage("EventOrganizer", "", new { @class = "text-danger small mt-1 d-block" })
+                </div>
+
+                <div class="col-12">
+                    <hr class="text-muted opacity-25 my-1" />
+                </div>
+
+                <div class="col-xl-6 col-md-6">
+                    <label class="form-label admin-form-label">Date and Time <span class="text-danger">*</span></label>
+                    <input type="datetime-local"
+                           name="EventDateTime"
+                           value="@(form.EventDateTime?.ToString("yyyy-MM-ddTHH:mm"))"
+                           class="form-control" @disabled />
+                    @Html.ValidationMessage("EventDateTime", "", new { @class = "text-danger small mt-1 d-block" })
+                </div>
+
+                <div class="col-xl-6 col-md-6">
+                    <label class="form-label admin-form-label">Duration <span class="text-danger">*</span></label>
+                    <select name="Duration" class="form-select" @disabled>
+                        <option value="">- Please Select Duration -</option>
+                        @if (Model.DurationOptions != null && Model.DurationOptions.Any())
+                        {
+                            foreach (var item in Model.DurationOptions)
+                            {
+                                if (form.Duration != null && item.Value == form.Duration.Value.ToString("0.0"))
+                                {
+                                    <option value="@item.Value" selected>@item.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        }
+                    </select>
+                    @Html.ValidationMessage("Duration", "", new { @class = "text-danger small mt-1 d-block" })
+                </div>
+
+                <div class="col-12">
+                    <hr class="text-muted opacity-25 my-1" />
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label admin-form-label">Description</label>
                     <textarea name="Description" class="form-control" rows="4" placeholder="Enter detailed description about this event..." @disabled>@form.Description</textarea>
                     @Html.ValidationMessage("Description", "", new { @class = "text-danger small mt-1 d-block" })
                 </div>
@@ -123,80 +191,6 @@
         </div>
     </div>
 </form>
-
-<style>
-    .employee-form-shell .crm-card {
-        border: 0;
-        border-radius: 18px;
-        box-shadow: 0 12px 35px rgba(49, 55, 69, .08);
-        padding: 1.75rem;
-        background: #fff;
-    }
-
-    .employee-toolbar {
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        align-items: center;
-        padding: 1.25rem;
-    }
-
-        .employee-toolbar h5 {
-            margin: 0;
-            font-weight: 700;
-            color: #313745;
-        }
-
-        .employee-toolbar p {
-            margin: .25rem 0 0;
-            color: #7b8190;
-        }
-
-    .employee-toolbar-actions {
-        display: flex;
-        gap: .75rem;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-    }
-
-    .section-title {
-        margin-bottom: 1.5rem;
-    }
-
-        .section-title h5 {
-            margin: 0 0 0.5rem;
-            font-weight: 700;
-            color: #313745;
-        }
-
-        .section-title p {
-            margin: 0;
-            color: #7b8190;
-            font-size: 0.9rem;
-        }
-
-    .btn-main-outline {
-        border: 1px solid #313745;
-        color: #313745;
-        background: #fff;
-    }
-
-        .btn-main-outline:hover {
-            background: #313745;
-            color: #fff;
-        }
-
-    @@media (max-width: 768px) {
-        .employee-toolbar {
-            align-items: stretch;
-            flex-direction: column;
-        }
-
-        .employee-toolbar-actions {
-            justify-content: flex-start;
-        }
-    }
-</style>
 
 @section Scripts {
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
