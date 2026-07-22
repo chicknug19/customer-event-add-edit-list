@@ -26,5 +26,6 @@ namespace JPP.Models.Customer.Request
         public int EventId { get; set; }
         public string? EventName { get; set; }
         public int? StoreId { get; set; }
+        public string? AccountNumber { get; set; } = string.Empty;
     }
 }

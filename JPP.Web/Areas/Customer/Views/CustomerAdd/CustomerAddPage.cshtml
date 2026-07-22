@@ -203,6 +203,11 @@
                     </select>
                 </div>
 
+                <div class="col-xl-12 col-md-12">
+                    <label class="form-label admin-form-label">Account Number</label>
+                    <input type="text" id="AccountNumberPreview" class="form-control bg-light" readonly placeholder="Auto-generated after selecting a Store" />
+                </div>
+
 
             </div>
         </div>
@@ -231,6 +236,29 @@
             $('#customerForm').on('submit', function () {
                 setSavingState(true);
             });
+
+            $('select[name="StoreId"]').on('change', function () {
+            var selectedStoreId = $(this).val();
+
+            if (selectedStoreId) {
+
+                $('#AccountNumberPreview').val('Generating...');
+
+
+                $.get('/Customer/CustomerAdd/GetPreviewAccountNumber', { storeId: selectedStoreId }, function (data) {
+
+                    $('#AccountNumberPreview').val(data.accountNumber);
+                }).fail(function() {
+                    $('#AccountNumberPreview').val('Error loading account number');
+                });
+            } else {
+
+                $('#AccountNumberPreview').val('');
+            }
+        });
+
+
+
         })(jQuery);
     </script>
 }

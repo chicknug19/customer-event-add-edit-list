@@ -2,6 +2,7 @@
 using JPP.Data.DataAccess;
 using JPP.Data.Interfaces;
 using JPP.Models.Customer.Request;
+using System.Data;
 using System;
 using System.Threading.Tasks;
 
@@ -33,26 +34,27 @@ namespace JPP.Data.Repositories
         public async Task<int> CreateCustomerAsync(CustomerRequest request)
         {
             const string sql = @"
-        INSERT INTO BIZ_Customer 
-        (FirstName, MiddleName, LastName, PhoneNumber, EmailAddress, Address1, EventId, StoreId)
-        VALUES 
-        (@FirstName, @MiddleName, @LastName, @PhoneNumber, @EmailAddress, @Address1, @EventId, @StoreId);
-        
-        SELECT CAST(SCOPE_IDENTITY() AS INT);";
+            INSERT INTO BIZ_Customer 
+            (FirstName, MiddleName, LastName, PhoneNumber, EmailAddress, Address1, EventId, StoreId, AccountNumber)
+            VALUES 
+            (@FirstName, @MiddleName, @LastName, @PhoneNumber, @EmailAddress, @Address1, @EventId, @StoreId, @AccountNumber);
+    
+            SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
             using var conn = _crmDbConnectionFactory.Create();
 
-            // PERBAIKAN: Memastikan semua parameter yang ada di query SQL dikirim ke Dapper
             var newId = await conn.ExecuteScalarAsync<int>(sql, new
             {
                 FirstName = request.FirstName?.Trim() ?? string.Empty,
                 MiddleName = request.MiddleName?.Trim(),
                 LastName = request.LastName?.Trim(),
                 PhoneNumber = request.PhoneNumber?.Trim() ?? string.Empty,
-                EmailAddress = request.EmailAddress?.Trim(),
+                EmailAddress = request.EmailAddress?.Trim() ?? string.Empty,
                 Address1 = request.Address1?.Trim() ?? string.Empty,
                 EventId = request.EventId,
-                StoreId = request.StoreId 
+                StoreId = request.StoreId,
+
+                AccountNumber = request.AccountNumber
             });
 
             return newId;
@@ -67,6 +69,29 @@ namespace JPP.Data.Repositories
 
             using var conn = _crmDbConnectionFactory.Create();
             return await conn.ExecuteScalarAsync<int>(sql, new { PhoneNumber = phoneNumber.Trim() }) > 0;
+        }
+
+
+        public async Task<string> GenerateAccountNumberAsync(int storeId)
+        {
+            using var conn = _crmDbConnectionFactory.Create();
+
+            // Memanggil Stored Procedure bawaan database
+            var accNo = await conn.QuerySingleOrDefaultAsync<string>(
+                "CRM_GetNewCustNo",
+                new { strStoreID = storeId.ToString() },
+                commandType: CommandType.StoredProcedure);
+
+            if (!string.IsNullOrEmpty(accNo))
+            {
+                int digitIndex = accNo.IndexOfAny("0123456789".ToCharArray());
+                if (digitIndex >= 0)
+                {
+                    accNo = accNo.Insert(digitIndex, "E");
+                }
+            }
+
+            return accNo ?? string.Empty;
         }
 
 

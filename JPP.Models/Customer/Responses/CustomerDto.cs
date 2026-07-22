@@ -19,5 +19,6 @@ namespace JPP.Models.Customer.Responses.CustomerDto
         public string? Address2 { get; set; }
         public int EventId { get; set; }
         public string? EventName { get; set; }
+        public string? AccountNumber { get; set; } = string.Empty;
     }
 }

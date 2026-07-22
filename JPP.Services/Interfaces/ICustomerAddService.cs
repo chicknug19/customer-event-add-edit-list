@@ -14,5 +14,6 @@ namespace JPP.Services.Interfaces
     public interface ICustomerAddService
     {
         Task<BaseResult<int>> AddCustomerAsync(CustomerRequest request);
+        Task<string> GetPreviewAccountNumberAsync(int storeId);
     }
 }

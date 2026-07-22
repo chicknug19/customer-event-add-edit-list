@@ -125,5 +125,15 @@ namespace JPP.Web.Areas.Customer.Controllers
                 return View("CustomerAddPage", model);
             }
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetPreviewAccountNumber(int storeId)
+        {
+            var accNo = await _customerService.GetPreviewAccountNumberAsync(storeId);
+            return Json(new { accountNumber = accNo });
+        }
+
+
     }
 }

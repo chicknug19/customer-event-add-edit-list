@@ -35,7 +35,17 @@ namespace JPP.Services.Services
                     }
                 }
 
-                // 3. CEK DUPLIKAT EMAIL (Jika sebelumnya kamu punya validasi email, biarkan saja)
+                if (request.StoreId.HasValue)
+                {
+                    request.AccountNumber = await _customerRepository.GenerateAccountNumberAsync(request.StoreId.Value);
+                }
+                else
+                {
+                    return BaseResult<int>.Fail("A store must be selected.", 400);
+                }
+
+                var newId = await _customerRepository.CreateCustomerAsync(request);
+                return BaseResult<int>.Ok(newId, "Customer successfully added.", 200);
                 //if (!string.IsNullOrWhiteSpace(request.EmailAddress))
                 //{
                 //    bool isEmailExist = await _customerRepository.EmailExistsAsync(request.EmailAddress);
@@ -45,15 +55,20 @@ namespace JPP.Services.Services
                 //    }
                 //}
 
-                // 4. SIMPAN KE DATABASE
-                var newId = await _customerRepository.CreateCustomerAsync(request);
-                return BaseResult<int>.Ok(newId, "Customer successfully added.", 200);
             }
             catch (Exception ex)
             {
                 return BaseResult<int>.Fail($"A system error occurred: {ex.Message}", 500);
             }
         }
+
+        public async Task<string> GetPreviewAccountNumberAsync(int storeId)
+        {
+            return await _customerRepository.GenerateAccountNumberAsync(storeId);
+        }
+
+
+
 
 
     }

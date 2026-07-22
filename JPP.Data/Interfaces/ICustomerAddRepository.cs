@@ -14,5 +14,6 @@ namespace JPP.Data.Interfaces
 
         Task<int> CreateCustomerAsync(CustomerRequest request);
         Task<bool> PhoneNumberExistsAsync(string phoneNumber);
+        Task<string> GenerateAccountNumberAsync(int storeId);
     }
 }
