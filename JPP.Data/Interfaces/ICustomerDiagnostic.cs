@@ -11,7 +11,7 @@ namespace JPP.Data.Interfaces
 {
     public interface ICustomerDiagnosticRepository
     {
-    Task<List<CustomerDiagnosticDto>> GetCustomerDiagnosticAsync(int CustomerId, int EventId);
+    Task<List<CustomerDiagnosticDto>> GetCustomerDiagnosticAsync(int CustomerId);
     }
     
 }

@@ -72,11 +72,11 @@ namespace JPP.Web.Areas.Customer.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetDiagnosticList([FromQuery] int customerId, [FromQuery] int eventId = 0)
+        public async Task<IActionResult> GetDiagnosticList([FromQuery] int customerId)
         {
             try
             {
-                var result = await _customerDiagnosticService.GetCustomerDiagnosticAsync(customerId, eventId);
+                var result = await _customerDiagnosticService.GetCustomerDiagnosticAsync(customerId);
                 return Json(result);
             }
             catch (Exception ex)
