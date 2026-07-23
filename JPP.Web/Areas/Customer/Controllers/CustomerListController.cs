@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using JPP.Web.Controllers;
 using JPP.Services.Interfaces;
 using JPP.Models.Customer.Request;
+using JPP.Models.Customer.Responses;
 
 namespace JPP.Web.Areas.Customer.Controllers
 {
@@ -87,6 +88,40 @@ namespace JPP.Web.Areas.Customer.Controllers
                     {
                         Success = false,
                         Message = $"Failed to load diagnostic history. {ex.Message}",
+                        StatusCode = StatusCodes.Status500InternalServerError
+                    });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveDiagnostic([FromBody] NewCustomerDiagnosticDto request)
+        {
+            try
+            {
+                var success = await _customerDiagnosticService.AddCustomerDiagnosticAsync(request);
+
+                if (!success)
+                {
+                    return StatusCode(
+                        StatusCodes.Status400BadRequest,
+                        new
+                        {
+                            Success = false,
+                            Message = "Unable to save diagnostic entry. No matching customer event was found.",
+                            StatusCode = StatusCodes.Status400BadRequest
+                        });
+                }
+
+                return Json(new { Success = true });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    new
+                    {
+                        Success = false,
+                        Message = $"Failed to save diagnostic entry. {ex.Message}",
                         StatusCode = StatusCodes.Status500InternalServerError
                     });
             }

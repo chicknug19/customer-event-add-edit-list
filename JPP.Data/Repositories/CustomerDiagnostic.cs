@@ -45,5 +45,37 @@ namespace JPP.Data.Repositories
 
             return result.ToList();
         }
+
+        public async Task<LatestCustomerEventDto> GetLatestCustomerEventAsync(int customerId)
+        {
+            const string sql = @"
+                SELECT TOP 1
+                    HQID,
+                    EventID AS EventId
+                FROM Customer_Event
+                WHERE CustomerId = @CustomerId
+                ORDER BY DateCreated DESC;";
+
+            using var conn = _crmDbConnectionFactory.Create();
+
+            return await conn.QueryFirstOrDefaultAsync<LatestCustomerEventDto>(
+                sql,
+                new { CustomerId = customerId });
+        }
+
+        public async Task<int> AddCustomerDiagnosticAsync(NewCustomerDiagnosticDto dto)
+        {
+            const string sql = @"
+                INSERT INTO Customer_Diagnostic
+                    (UID, HQID, CustomerID, Type, EventID, Description, LogDate, InActive, DateCreated, LastUpdated, IsUpdating)
+                VALUES
+                    (NEWID(), @HQID, @CustomerId, @Type, @EventId, @Description, GETDATE(), 0, GETDATE(), GETDATE(), 0);
+
+                SELECT CAST(SCOPE_IDENTITY() AS int);";
+
+            using var conn = _crmDbConnectionFactory.Create();
+
+            return await conn.ExecuteScalarAsync<int>(sql, dto);
+        }
     }
 }

@@ -303,7 +303,7 @@
                     $http.post('/Customer/CustomerList/SaveDiagnostic', {
                         customerId: customerId,
                         type: $scope.diagnosticModal.newEntry.type,
-                        note: $scope.diagnosticModal.newEntry.note
+                        description: $scope.diagnosticModal.newEntry.note
                     }).then(function () {
                         $scope.diagnosticModal.newEntry.note = '';
                         loadDiagnosticEntries(customerId);
