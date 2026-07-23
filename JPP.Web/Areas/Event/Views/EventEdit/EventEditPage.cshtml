@@ -5,6 +5,7 @@
     ViewData["PageTitle"] = Model.PageTitle;
     ViewData["PageSubtitle"] = Model.PageSubtitle;
     Layout = "~/Views/Shared/_Layout.cshtml";
+    <link rel="stylesheet" href="~/css/app.css" />
 
     var form = Model.Form;
     var disabled = Model.IsReadOnly ? "disabled" : null;
@@ -65,6 +66,7 @@
         <div class="employee-toolbar crm-card mb-4">
             <div>
                 <h5>@(Model.IsEditMode? form.Name: "New Event")</h5>
+                <p>@(Model.IsEditMode ? $"Edit the event data below." : "Complete the event data below.")</p>
             </div>
 
             <div class="employee-toolbar-actions">
@@ -189,80 +191,6 @@
         </div>
     </div>
 </form>
-
-<style>
-    .employee-form-shell .crm-card {
-        border: 0;
-        border-radius: 18px;
-        box-shadow: 0 12px 35px rgba(49, 55, 69, .08);
-        padding: 1.75rem;
-        background: #fff;
-    }
-
-    .employee-toolbar {
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        align-items: center;
-        padding: 1.25rem;
-    }
-
-        .employee-toolbar h5 {
-            margin: 0;
-            font-weight: 700;
-            color: #313745;
-        }
-
-        .employee-toolbar p {
-            margin: .25rem 0 0;
-            color: #7b8190;
-        }
-
-    .employee-toolbar-actions {
-        display: flex;
-        gap: .75rem;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-    }
-
-    .section-title {
-        margin-bottom: 1.5rem;
-    }
-
-        .section-title h5 {
-            margin: 0 0 0.5rem;
-            font-weight: 700;
-            color: #313745;
-        }
-
-        .section-title p {
-            margin: 0;
-            color: #7b8190;
-            font-size: 0.9rem;
-        }
-
-    .btn-main-outline {
-        border: 1px solid #313745;
-        color: #313745;
-        background: #fff;
-    }
-
-        .btn-main-outline:hover {
-            background: #313745;
-            color: #fff;
-        }
-
-    @@media (max-width: 768px) {
-        .employee-toolbar {
-            align-items: stretch;
-            flex-direction: column;
-        }
-
-        .employee-toolbar-actions {
-            justify-content: flex-start;
-        }
-    }
-</style>
 
 @section Scripts {
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

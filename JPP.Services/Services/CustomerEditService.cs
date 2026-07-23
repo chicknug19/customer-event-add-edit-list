@@ -44,7 +44,8 @@ namespace JPP.Services.Services
                     EventName = customer.EventName,
                     StoreId = customer.StoreId,
                     Age = customer.Age,
-                    AccountNumber = customer.AccountNumber
+                    AccountNumber = customer.AccountNumber,
+                    District = customer.District
                 },
                 EventName = customer.EventName ?? string.Empty,
                 IsReadOnly = false
