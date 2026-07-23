@@ -65,9 +65,9 @@
                     <div class="admin-input-icon">
                         <i class="bi bi-search"></i>
                         <input type="text"
-                            ng-model="filter.keyword"
-                            class="form-control"
-                            placeholder="Search by name, address, or phone" />
+                               ng-model="filter.keyword"
+                               class="form-control"
+                               placeholder="Search by name, address, or phone" />
                     </div>
                 </div>
 
@@ -75,7 +75,6 @@
                     <label class="form-label admin-form-label">Store</label>
                     <select ng-model="filter.storeId" class="form-select">
                         <option ng-value="0">All</option>
-                        <!-- Added fallback casing (store.Id) to ensure values bind correctly -->
                         <option ng-repeat="store in storeOptions" ng-value="store.id || store.Id">{{ store.name || store.Name }}</option>
                     </select>
                 </div>
@@ -84,7 +83,6 @@
                     <label class="form-label admin-form-label">Event</label>
                     <select ng-model="filter.eventId" class="form-select">
                         <option ng-value="0">All</option>
-                        <!-- Added fallback casing (event.Id) to ensure values bind correctly -->
                         <option ng-repeat="event in eventOptions" ng-value="event.id || event.Id">{{ event.name || event.Name }}</option>
                     </select>
                 </div>
@@ -97,7 +95,7 @@
                         Reset
                     </button>
                 </div>
-            </div> 
+            </div>
         </form>
     </div>
 
@@ -161,6 +159,7 @@
                         <td data-label="Kecamatan">
                             <span ng-bind="customer.kecamatan || customer.Kecamatan || '-'"></span>
                         </td>
+
                         <td data-label="Skin">
                             <span ng-bind="customer.skin || customer.Skin || 'No'"></span>
                         </td>
@@ -168,17 +167,30 @@
                             <span ng-bind="customer.dental || customer.Dental || 'No'"></span>
                         </td>
                         <td class="text-center action-sticky action-col" data-label="Action">
-                            <div class="table-action-icons">
+                            <div class="table-action-icons d-flex justify-content-center gap-1">
+                                <!-- Tombol Edit (Kuning/Krem bawaan) -->
                                 <a href="/Customer/CustomerEdit/Edit?id={{ customer.customerID || customer.CustomerID || customer.Id }}"
-                                class="btn-action-icon btn-edit"
-                                title="Edit">
+                                   class="btn-action-icon btn-edit"
+                                   title="Edit">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
+
+                                <!-- Tombol Diagnostic (Biru Pastel) -->
                                 <button type="button"
-                                        class="btn-action-icon btn-diagnostic"
+                                        class="btn-action-icon text-primary"
+                                        style="background-color: #e7f1ff; border-color: #cce5ff; border-style: solid; border-width: 1px;"
                                         title="Diagnostic"
                                         ng-click="openDiagnosticModal(customer)">
                                     <i class="bi bi-clipboard2-pulse"></i>
+                                </button>
+
+                                <!-- Tombol Assign Event (Hijau Pastel) -->
+                                <button type="button"
+                                        class="btn-action-icon text-success"
+                                        style="background-color: #d1e7dd; border-color: #badbcc; border-style: solid; border-width: 1px;"
+                                        title="Assign Event"
+                                        ng-click="openEventModal(customer)">
+                                    <i class="bi bi-calendar-plus"></i>
                                 </button>
                             </div>
                         </td>
@@ -187,7 +199,58 @@
             </table>
         </div>
     </div>
-     @await Html.PartialAsync("Diagnostic")
+
+    <div class="custom-bottom-right-panel shadow" ng-if="eventModal.visible" ng-cloak>
+        <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-white" style="border-radius: 8px 8px 0 0;">
+            <span class="fw-bold text-dark" style="font-size: 0.95rem;">
+                {{ eventModal.customer.fullName || eventModal.customer.FullName }}
+            </span>
+            <button type="button" class="btn-close" style="font-size: 0.75rem;" ng-click="closeEventModal()"></button>
+        </div>
+
+        <div class="p-3 overflow-auto bg-white" style="max-height: 250px;">
+            <div class="text-center my-4" ng-if="eventModal.isLoading">
+                <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+                <div class="small mt-2 text-muted">Loading events...</div>
+            </div>
+
+            <div class="text-center text-muted small py-3" ng-if="!eventModal.isLoading && eventModal.events.length === 0">
+                No events available.
+            </div>
+
+            <div ng-if="!eventModal.isLoading && eventModal.events.length > 0">
+                <div class="d-flex align-items-start mb-3 border-bottom pb-2" ng-repeat="event in eventModal.events">
+                    <input class="form-check-input mt-1 me-2"
+                           type="checkbox"
+                           id="eventCheck_{{ event.id || event.Id }}"
+                           value="{{ event.id || event.Id }}"
+                           ng-checked="eventModal.selectedIds.includes(event.id || event.Id)"
+                           ng-click="toggleEventSelection(event.id || event.Id)"
+                           style="cursor: pointer;">
+                    <label for="eventCheck_{{ event.id || event.Id }}" style="cursor: pointer; width: 100%;">
+                        <div class="fw-medium text-dark" style="font-size: 0.85rem;">{{ event.name || event.Name }}</div>
+                        <div class="text-muted" style="font-size: 0.75rem;">{{ event.code || event.Code }}</div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-3 border-top bg-white d-flex justify-content-between align-items-center" style="border-radius: 0 0 8px 8px;">
+            <span class="text-muted" style="font-size: 0.75rem;">
+                {{ eventModal.selectedIds.length }} selected
+            </span>
+            <button type="button"
+                    class="btn btn-outline-secondary btn-sm"
+                    style="border-radius: 50%; width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;"
+                    ng-click="saveCustomerEvents()"
+                    ng-disabled="eventModal.selectedIds.length === 0 || eventModal.isSaving">
+                <span class="spinner-border spinner-border-sm" ng-if="eventModal.isSaving"></span>
+                <i class="bi bi-check2" ng-if="!eventModal.isSaving"></i>
+            </button>
+        </div>
+    </div>
+    <!-- ========================================== -->
+    @await Html.PartialAsync("Diagnostic")
 </div>
 
 @section Scripts {
@@ -217,6 +280,21 @@
                 $scope.openDiagnosticModal = openDiagnosticModal;
                 $scope.closeDiagnosticModal = closeDiagnosticModal;
                 $scope.saveDiagnosticEntry = saveDiagnosticEntry;
+
+                // --- EVENT MODAL VARIABLES ---
+                $scope.eventModal = {
+                    visible: false,
+                    isLoading: false,
+                    isSaving: false,
+                    customer: null,
+                    events: [],
+                    selectedIds: []
+                };
+
+                $scope.openEventModal = openEventModal;
+                $scope.closeEventModal = closeEventModal;
+                $scope.toggleEventSelection = toggleEventSelection;
+                $scope.saveCustomerEvents = saveCustomerEvents;
 
                 $scope.sort = {
                     column: 'fullName',
@@ -251,11 +329,77 @@
                 loadFilterOptions();
                 loadCustomers();
 
-                
+                // --- EVENT MODAL FUNCTIONS ---
+                function openEventModal(customer) {
+                    if (!customer) return;
+
+                    $scope.eventModal.customer = customer;
+                    $scope.eventModal.selectedIds = [];
+                    $scope.eventModal.visible = true;
+                    $scope.eventModal.isLoading = true;
+
+                    $http.get('/Customer/CustomerList/GetEventOptions')
+                        .then(function (response) {
+                            $scope.eventModal.events = response.data || [];
+                            $scope.eventModal.isLoading = false;
+                        })
+                        .catch(function (error) {
+                            $scope.eventModal.isLoading = false;
+                            showAlert('danger', 'Failed to load event list.');
+                        });
+                }
+
+                function closeEventModal() {
+                    if ($scope.eventModal.isSaving) return;
+                    $scope.eventModal.visible = false;
+                    $scope.eventModal.customer = null;
+                    $scope.eventModal.selectedIds = [];
+                }
+
+                function toggleEventSelection(eventId) {
+                    var index = $scope.eventModal.selectedIds.indexOf(eventId);
+                    if (index > -1) {
+                        $scope.eventModal.selectedIds.splice(index, 1);
+                    } else {
+                        $scope.eventModal.selectedIds.push(eventId);
+                    }
+                }
+
+                function saveCustomerEvents() {
+                    if ($scope.eventModal.selectedIds.length === 0) return;
+
+                    $scope.eventModal.isSaving = true;
+
+                    var customerId = $scope.eventModal.customer.customerID || $scope.eventModal.customer.CustomerID || $scope.eventModal.customer.Id;
+
+                    var payload = {
+                        CustomerId: customerId,
+                        EventIds: $scope.eventModal.selectedIds
+                    };
+
+                    $http.post('/Customer/CustomerList/SaveCustomerEvents', payload)
+                        .then(function (response) {
+                            $scope.eventModal.isSaving = false;
+                            if (response.data && response.data.success) {
+                                showAlert('success', response.data.message);
+                                closeEventModal();
+                            } else {
+                                showAlert('danger', response.data ? response.data.message : 'Failed to save events.');
+                            }
+                        })
+                        .catch(function (error) {
+                            $scope.eventModal.isSaving = false;
+                            showAlert('danger', 'System error while saving events.');
+                        });
+                }
+
+
                 function openDiagnosticModal(customer) {
                     if (!customer) return;
-                    
+
                     var customerId = customer.customerID || customer.CustomerID || customer.Id;
+                    var eventId = customer.eventId || customer.EventId || 0;
+                    
                     if (!customerId) return;
 
                     $scope.diagnosticModal.visible = true;
@@ -263,10 +407,8 @@
                     $scope.diagnosticModal.errorMessage = '';
                     $scope.diagnosticModal.newEntry = { type: 'Skin', note: '' };
                     
-                    loadDiagnosticEntries(customerId);
+                    loadDiagnosticEntries(customerId, eventId);
                 }
-
-                $scope.openDiagnosticModal = openDiagnosticModal;
 
                 function closeDiagnosticModal() {
                     if ($scope.diagnosticModal.isSaving) return;
@@ -279,7 +421,7 @@
                     $scope.diagnosticModal.isLoading = true;
 
                     $http.get('/Customer/CustomerList/GetDiagnosticList', { 
-                        params: { customerId: customerId } 
+                        params: { customerId: customerId, eventId: eventId  } 
                     })
                     .then(function (response) {
                         $scope.diagnosticModal.entries = response.data.data || response.data || [];

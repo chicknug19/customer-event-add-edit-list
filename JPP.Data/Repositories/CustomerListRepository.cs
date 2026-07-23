@@ -1,11 +1,12 @@
 using Dapper;
 using JPP.Data.DataAccess;
 using JPP.Data.Interfaces;
+using JPP.Models.Customer.Request;
 using JPP.Models.Customer.Responses;
+using JPP.Models.CustomerEvent.Request;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JPP.Models.Customer.Request;
 
 namespace JPP.Data.Repositories
 {
@@ -88,5 +89,59 @@ namespace JPP.Data.Repositories
 
             return result.ToList();
         }
+
+
+        public async Task<bool> SaveCustomerEventsAsync(CustomerEventSaveRequest request)
+        {
+            using var conn = _crmDbConnectionFactory.Create();
+
+
+            if (conn.State != System.Data.ConnectionState.Open)
+            {
+                conn.Open();
+            }
+
+            string getStoreIdSql = "SELECT StoreId FROM BIZ_Customer WHERE ID = @CustomerId";
+            int hqId = await conn.QueryFirstOrDefaultAsync<int>(getStoreIdSql, new { CustomerId = request.CustomerId });
+
+            string insertSql = @"
+            INSERT INTO Customer_Event 
+            (UID, HQID, CustomerID, EventID, InActive, DateCreated, LastUpdated, IsUpdating, LastHQSync)
+            VALUES 
+            (@UID, @HQID, @CustomerID, @EventID, 0, @Now, @Now, 0, NULL)";
+
+            using var transaction = conn.BeginTransaction();
+            try
+            {
+                var now = DateTime.Now;
+
+                // Looping sebanyak event yang dipilih oleh user
+                foreach (var eventId in request.EventIds)
+                {
+                    await conn.ExecuteAsync(insertSql, new
+                    {
+                        UID = Guid.NewGuid(),
+                        HQID = hqId,
+                        CustomerID = request.CustomerId,
+                        EventID = eventId,
+                        Now = now
+                    }, transaction);
+                }
+
+                transaction.Commit();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                return false;
+            }
+        }
+
+
+
+
+
+
     }
 }

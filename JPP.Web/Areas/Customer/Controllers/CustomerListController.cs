@@ -1,3 +1,9 @@
+using JPP.Models.Customer.Request;
+using JPP.Models.CustomerEvent.Request;
+using JPP.Services.Interfaces;
+using JPP.Web.Controllers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -92,6 +98,40 @@ namespace JPP.Web.Areas.Customer.Controllers
                     });
             }
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> SaveCustomerEvents([FromBody] CustomerEventSaveRequest request)
+        {
+            try
+            {
+                if (request == null || request.CustomerId <= 0 || request.EventIds == null || request.EventIds.Count == 0)
+                {
+                    return BadRequest(new { Success = false, Message = "Invalid data. Please select at least one event." });
+                }
+
+                var isSuccess = await _customerListService.SaveCustomerEventsAsync(request);
+
+                if (isSuccess)
+                {
+                    return Ok(new { Success = true, Message = "Events successfully assigned to the customer." });
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Success = false, Message = "Failed to save customer events. Please try again." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    Success = false,
+                    Message = $"An error occurred while saving. {ex.Message}"
+                });
+            }
+        }
+
+
 
         [HttpPost]
         public async Task<IActionResult> SaveDiagnostic([FromBody] NewCustomerDiagnosticDto request)

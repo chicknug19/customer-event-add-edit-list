@@ -2,6 +2,7 @@ using JPP.Commons.Extensions;
 using JPP.Data.Interfaces;
 using JPP.Models.Customer.Request;
 using JPP.Models.Customer.Responses;
+using JPP.Models.CustomerEvent.Request;
 using JPP.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -36,5 +37,18 @@ namespace JPP.Services.Services
                 return CustomerServiceResult.Fail("An error occurred while fetching customers", 500);
             }
         }
+
+
+        public async Task<bool> SaveCustomerEventsAsync(CustomerEventSaveRequest request)
+        {
+            if (request == null || request.CustomerId <= 0 || request.EventIds == null || request.EventIds.Count == 0)
+            {
+                return false;
+            }
+
+            // Teruskan ke Repository
+            return await _customerListRepository.SaveCustomerEventsAsync(request);
+        }
+
     }
 }
