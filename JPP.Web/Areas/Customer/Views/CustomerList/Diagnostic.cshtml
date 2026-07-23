@@ -1,3 +1,7 @@
+@{
+    <link rel="stylesheet" href="~/css/app.css" />
+}
+
 <div class="diagnostic-panel" ng-if="diagnosticModal.visible">
     <div class="diagnostic-panel-header">
         <div>
@@ -54,49 +58,3 @@
         </div>
     </div>
 </div>
-
-<style>
-    .diagnostic-panel {
-        position: fixed;
-        bottom: 24px;
-        right: 24px;
-        width: 380px;
-        max-width: 90vw;
-        max-height: 70vh;
-        overflow-y: auto;
-        background: #fff;
-        border: 1px solid #d8dee5;
-        border-radius: 10px;
-        box-shadow: 0 8px 28px rgba(0,0,0,.18);
-        z-index: 1060;
-    }
-
-    .diagnostic-panel-header {
-        display: flex; justify-content: space-between; align-items: center;
-        padding: .75rem 1rem;
-        border-bottom: 1px solid #eee;
-        position: sticky; top: 0;
-        background: #fff;
-        border-radius: 10px 10px 0 0;
-    }
-
-    .diagnostic-panel-body { padding: 1rem; }
-
-    .diagnostic-entry {
-        display: flex; justify-content: space-between; align-items: flex-start;
-        gap: 1rem;
-        padding: .5rem 0;
-        border-bottom: 1px solid #f0f0f0;
-        font-size: .9rem;
-    }
-
-    .diagnostic-entry-date { white-space: nowrap; color: #888; font-size: .8rem; }
-
-    .diagnostic-new-entry {
-        margin-top: 1rem;
-        padding-top: .75rem;
-        border-top: 1px solid #eee;
-    }
-
-    .diagnostic-type-toggle { display: flex; gap: 1.25rem; font-size: .9rem; }
-</style>

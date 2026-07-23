@@ -116,15 +116,19 @@
                     <tr>
                         <th>No</th>
                         <th>Event Name</th>
-                        <th>Code</th>
-                        <th>Description</th>
+                        <th>Location</th>
+                        <th>Database</th>
+                        <th>Brand</th>
+                        <th>Event Organizer</th>
+                        <th>Date and Time</th>
+                        <th>Duration</th>
                         <th class="text-center action-col">Action</th>
                     </tr>
                 </thead>
 
                 <tbody>
                     <tr ng-repeat="event in events track by event.eventId">
-                        <td data-label="Event Id">
+                        <td data-label="No">
                             <span ng-bind="$index + 1"></span>
                         </td>
 
@@ -132,19 +136,35 @@
                             <span ng-bind="event.eventName || '-'"></span>
                         </td>
 
-                        <td data-label="Code">
-                            <span ng-bind="event.code || '-'"></span>
+                        <td data-label="Location">
+                            <span ng-bind="event.location || '-'"></span>
                         </td>
 
-                        <td data-label="Description">
-                            <span ng-bind="event.description || '-'"></span>
+                        <td data-label="Database">
+                            <span ng-bind="event.databaseName || '-'"></span>
+                        </td>
+
+                        <td data-label="Brand">
+                            <span ng-bind="event.brand || '-'"></span>
+                        </td>
+
+                        <td data-label="Event Organizer">
+                            <span ng-bind="event.eventOrganizer || '-'"></span>
+                        </td>
+
+                        <td data-label="Date and Time">
+                            <span>{{ event.eventDateTime ? (event.eventDateTime | date:'dd MMM yyyy, HH:mm') : '-' }}</span>
+                        </td>
+
+                        <td data-label="Duration">
+                            <span>{{ event.duration ? (event.duration + ' hrs') : '-' }}</span>
                         </td>
 
                         <td class="text-center action-sticky action-col" data-label="Action">
                             <div class="table-action-icons">
                                 <a href="/Event/EventEdit/Edit/{{ event.eventId }}"
-                                   class="btn-action-icon btn-edit"
-                                   title="Edit">
+                                class="btn-action-icon btn-edit"
+                                title="Edit">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
                             </div>
