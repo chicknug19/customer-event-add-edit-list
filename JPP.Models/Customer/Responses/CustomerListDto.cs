@@ -8,7 +8,7 @@ namespace JPP.Models.Customer.Responses
             public string? PhoneNumber { get; set; }
             public int? Age { get; set; }
             public string? Address1 { get; set; }
-            public string District { get; set; } = string.Empty;
+            public string Kecamatan { get; set; } = string.Empty;
             public int? EventId { get; set; }
             public string? EventName { get; set; }
             public string Skin { get; set; } = "No";

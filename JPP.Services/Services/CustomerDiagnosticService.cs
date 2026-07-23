@@ -33,5 +33,30 @@ namespace JPP.Services.Services
                 return new List<CustomerDiagnosticDto>();
             }
         }
+
+        public async Task<bool> AddCustomerDiagnosticAsync(NewCustomerDiagnosticDto request)
+        {
+            try
+            {
+                var latestEvent = await _customerDiagnosticRepository.GetLatestCustomerEventAsync(request.CustomerId);
+
+                if (latestEvent == null)
+                {
+                    _logger.LogWarning("No Customer_Event found for CustomerId: {CustomerId}", request.CustomerId);
+                    return false;
+                }
+
+                request.HQID = latestEvent.HQID;
+                request.EventId = latestEvent.EventId;
+
+                var newId = await _customerDiagnosticRepository.AddCustomerDiagnosticAsync(request);
+                return newId > 0;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error saving customer diagnostic for CustomerId: {CustomerId}", request.CustomerId);
+                return false;
+            }
+        }
     }
 }

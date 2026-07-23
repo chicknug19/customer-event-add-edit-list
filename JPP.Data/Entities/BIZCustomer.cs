@@ -20,7 +20,6 @@ namespace JPP.Data.Entities
         public string PhoneNumber { get; set; }
         public string EmailAddress { get; set; }
         public string Address1 { get; set; }
-        public string AccountNumber { get; set; } = string.Empty;
         public int Age { get; set; }
         public string District { get; set; }
     }
