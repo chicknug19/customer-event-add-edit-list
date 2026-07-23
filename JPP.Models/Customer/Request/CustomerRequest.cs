@@ -45,5 +45,8 @@ namespace JPP.Models.Customer.Request
 
         [Required(ErrorMessage = "Age is required")]
         public int? Age { get; set; }
+
+        [Required(ErrorMessage = "District is required")]
+        public string District { get; set; }
     }
 }

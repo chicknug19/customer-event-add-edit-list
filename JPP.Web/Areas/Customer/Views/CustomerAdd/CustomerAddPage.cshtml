@@ -124,7 +124,7 @@
                 </div>
 
 
-                <div class="col-xl-6 col-md-6">
+                <div class="col-xl-4 col-md-6">
                     <label class="form-label admin-form-label">Phone Number <span class="text-danger">*</span></label>
                     <!-- Tambahkan placeholder di sini -->
                     <input type="text" name="PhoneNumber" value="@form.PhoneNumber" class="form-control" placeholder="e.g. 8123456789" @disabled />
@@ -137,18 +137,24 @@
                 </div> *@
 
                 <div class="col-xl-4 col-md-6">
+                    <label class="form-label admin-form-label">District <span class="text-danger">*</span></label>
+                    <input type="text" name="District" value="@form.District" class="form-control" min="0" placeholder="e.g. Cimanggis" @disabled />
+                    @Html.ValidationMessage("District", "", new { @class = "text-danger small mt-1 d-block" })
+                </div>
+
+                <div class="col-xl-4 col-md-6">
                     <label class="form-label admin-form-label">Email Address</label>
                     <input type="email" name="EmailAddress" value="@form.EmailAddress" class="form-control" @disabled />
                     @Html.ValidationMessage("EmailAddress", "", new { @class = "text-danger small mt-1 d-block" })
                 </div>
 
-                <div class="col-xl-6 col-md-12">
-                    <label class="form-label admin-form-label">Address 1 <span class="text-danger">*</span></label>
+                <div class="col-xl-4 col-md-6">
+                    <label class="form-label admin-form-label">Address <span class="text-danger">*</span></label>
                     <input type="text" name="Address1" value="@form.Address1" class="form-control" @disabled />
                     @Html.ValidationMessage("Address1", "", new { @class = "text-danger small mt-1 d-block" })
                 </div>
 
-                <div class="col-xl-3 col-md-4">
+                <div class="col-xl-4 col-md-6">
                     <label class="form-label admin-form-label">Age <span class="text-danger">*</span></label>
                     <input type="number" name="Age" value="@form.Age" class="form-control" min="0" placeholder="e.g. 25" @disabled />
                     @Html.ValidationMessage("Age", "", new { @class = "text-danger small mt-1 d-block" })

@@ -35,9 +35,9 @@ namespace JPP.Data.Repositories
         {
             const string sql = @"
             INSERT INTO BIZ_Customer 
-            (FirstName, MiddleName, LastName, PhoneNumber, EmailAddress, Address1,Age, EventId, StoreId, AccountNumber)
+            (FirstName, MiddleName, LastName, PhoneNumber, EmailAddress, Address1,Age, EventId, StoreId, AccountNumber,District)
             VALUES 
-            (@FirstName, @MiddleName, @LastName, @PhoneNumber, @EmailAddress, @Address1,@Age, @EventId, @StoreId, @AccountNumber);
+            (@FirstName, @MiddleName, @LastName, @PhoneNumber, @EmailAddress, @Address1,@Age, @EventId, @StoreId, @AccountNumber,@District);
     
             SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
@@ -54,7 +54,8 @@ namespace JPP.Data.Repositories
                 Age = request.Age.Value,
                 EventId = request.EventId,
                 StoreId = request.StoreId,
-                AccountNumber = request.AccountNumber
+                AccountNumber = request.AccountNumber,
+                District = request.District
             });
 
             return newId;
