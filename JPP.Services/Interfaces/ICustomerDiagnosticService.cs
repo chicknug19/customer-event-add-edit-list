@@ -6,6 +6,6 @@ namespace JPP.Services.Interfaces
 {
     public interface ICustomerDiagnosticService
     {
-        Task<List<CustomerDiagnosticDto>> GetCustomerDiagnosticAsync(int customerId, int eventId);
+        Task<List<CustomerDiagnosticDto>> GetCustomerDiagnosticAsync(int customerId);
     }
 }

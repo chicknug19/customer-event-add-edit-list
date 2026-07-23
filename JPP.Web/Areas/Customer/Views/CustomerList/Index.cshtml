@@ -131,6 +131,8 @@
                         <th>Age</th>
                         <th>Address</th>
                         <th>Kecamatan</th>
+                        <th>Skin</th>
+                        <th>Dental</th>
                         <th class="text-center action-col">Action</th>
                     </tr>
                 </thead>
@@ -158,6 +160,12 @@
                         </td>
                         <td data-label="Kecamatan">
                             <span ng-bind="customer.kecamatan || customer.Kecamatan || '-'"></span>
+                        </td>
+                        <td data-label="Skin">
+                            <span ng-bind="customer.skin || customer.Skin || 'No'"></span>
+                        </td>
+                        <td data-label="Dental">
+                            <span ng-bind="customer.dental || customer.Dental || 'No'"></span>
                         </td>
                         <td class="text-center action-sticky action-col" data-label="Action">
                             <div class="table-action-icons">
@@ -244,21 +252,18 @@
                 loadCustomers();
 
                 
-                // Remove the duplicate/conflicting function declarations and use this single definition:
                 function openDiagnosticModal(customer) {
                     if (!customer) return;
                     
                     var customerId = customer.customerID || customer.CustomerID || customer.Id;
-                    var eventId = customer.eventId || customer.EventId || 0;
-                    
                     if (!customerId) return;
 
-                    $scope.diagnosticModal.visible = true; // Matches ng-if="diagnosticModal.visible" in HTML
+                    $scope.diagnosticModal.visible = true;
                     $scope.diagnosticModal.customer = customer;
                     $scope.diagnosticModal.errorMessage = '';
                     $scope.diagnosticModal.newEntry = { type: 'Skin', note: '' };
                     
-                    loadDiagnosticEntries(customerId, eventId);
+                    loadDiagnosticEntries(customerId);
                 }
 
                 $scope.openDiagnosticModal = openDiagnosticModal;
@@ -274,7 +279,7 @@
                     $scope.diagnosticModal.isLoading = true;
 
                     $http.get('/Customer/CustomerList/GetDiagnosticList', { 
-                        params: { customerId: customerId, eventId: eventId  } 
+                        params: { customerId: customerId } 
                     })
                     .then(function (response) {
                         $scope.diagnosticModal.entries = response.data.data || response.data || [];

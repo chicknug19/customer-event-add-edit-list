@@ -21,11 +21,11 @@ namespace JPP.Services.Services
             _logger = logger;
         }
 
-        public async Task<List<CustomerDiagnosticDto>> GetCustomerDiagnosticAsync(int customerId, int eventId)
+        public async Task<List<CustomerDiagnosticDto>> GetCustomerDiagnosticAsync(int customerId)
         {
             try
             {
-                return await _customerDiagnosticRepository.GetCustomerDiagnosticAsync(customerId, eventId);
+                return await _customerDiagnosticRepository.GetCustomerDiagnosticAsync(customerId);
             }
             catch (Exception ex)
             {

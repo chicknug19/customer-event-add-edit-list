@@ -34,7 +34,25 @@ namespace JPP.Data.Repositories
                     c.Address1,
                     c.District AS Kecamatan,
                     c.EventID AS EventId,
-                    e.Name AS EventName
+                    e.Name AS EventName,
+                    CASE WHEN EXISTS (
+                        SELECT 1
+                        FROM Customer_Event ce
+                        INNER JOIN Customer_Diagnostic cd
+                            ON cd.CustomerId = ce.CustomerId
+                        AND cd.EventId   = ce.EventId
+                        WHERE ce.CustomerId = c.ID
+                        AND cd.Type = 'Skin'
+                    ) THEN 'Yes' ELSE 'No' END AS Skin,
+                    CASE WHEN EXISTS (
+                        SELECT 1
+                        FROM Customer_Event ce
+                        INNER JOIN Customer_Diagnostic cd
+                            ON cd.CustomerId = ce.CustomerId
+                        AND cd.EventId   = ce.EventId
+                        WHERE ce.CustomerId = c.ID
+                        AND cd.Type = 'Dental'
+                    ) THEN 'Yes' ELSE 'No' END AS Dental
                 FROM BIZ_Customer c
                 LEFT JOIN BIZ_Event e ON e.Id = c.EventID
                 WHERE
