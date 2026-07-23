@@ -34,7 +34,11 @@ namespace JPP.Data.Repositories
                     c.Address1,
                     c.Address2,
                     c.EventID AS EventId,
-                    e.Name AS EventName
+                    e.Name AS EventName,
+                    c.StoreID AS StoreId,
+                    c.AccountNumber,
+                    c.Age,
+                    c.District
                 FROM BIZ_Customer c
                 LEFT JOIN BIZ_Event e ON e.Id = c.EventID
                 WHERE c.ID = @Id";
@@ -57,10 +61,12 @@ namespace JPP.Data.Repositories
                     MiddleName = @MiddleName,
                     LastName = @LastName,
                     PhoneNumber = @PhoneNumber,
-                    PhoneNumber2 = @PhoneNumber2,
                     EmailAddress = @EmailAddress,
                     Address1 = @Address1,
-                    Address2 = @Address2,
+                    StoreID = @StoreId,
+                    Age = @Age,
+                    AccountNumber = @AccountNumber,
+                    District = @District,
                     LastUpdated = GETDATE()
                 WHERE ID = @ID";
 
@@ -72,13 +78,25 @@ namespace JPP.Data.Repositories
                 MiddleName = request.MiddleName?.Trim(),
                 LastName = request.LastName?.Trim(),
                 PhoneNumber = request.PhoneNumber?.Trim() ?? string.Empty,
-                //PhoneNumber2 = request.PhoneNumber2?.Trim(),
                 EmailAddress = request.EmailAddress?.Trim(),
                 Address1 = request.Address1?.Trim() ?? string.Empty,
-                //Address2 = request.Address2?.Trim()
+                StoreId = request.StoreId,
+                Age = request.Age,
+                AccountNumber = request.AccountNumber,
+                District = request.District?.Trim()
             });
 
             return rowsAffected > 0;
+        }
+        
+        public async Task<bool> PhoneNumberExistsAsync(string phoneNumber)
+        {
+            if (string.IsNullOrWhiteSpace(phoneNumber)) return false;
+
+            const string sql = "SELECT COUNT(1) FROM BIZ_Customer WHERE PhoneNumber = @PhoneNumber";
+
+            using var conn = _crmDbConnectionFactory.Create();
+            return await conn.ExecuteScalarAsync<int>(sql, new { PhoneNumber = phoneNumber.Trim() }) > 0;
         }
     }
 }

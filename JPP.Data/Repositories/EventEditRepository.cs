@@ -22,7 +22,7 @@ namespace JPP.Data.Repositories
             }
 
             const string sql = @"
-                SELECT Id, Name, Code, Description
+                SELECT Id, Name, Code, Location, DatabaseName, Brand, EventOrganizer, EventDateTime, Duration, Description
                 FROM BIZ_Event
                 WHERE Id = @Id";
 
@@ -64,6 +64,12 @@ namespace JPP.Data.Repositories
                 UPDATE BIZ_Event
                 SET Name = @Name,
                     Code = @Code,
+                    Location = @Location,
+                    DatabaseName = @DatabaseName,
+                    Brand = @Brand,
+                    EventOrganizer = @EventOrganizer,
+                    EventDateTime = @EventDateTime,
+                    Duration = @Duration,
                     Description = @Description
                 WHERE Id = @Id";
 
@@ -73,6 +79,12 @@ namespace JPP.Data.Repositories
                 Id = request.Id,
                 Name = request.Name?.Trim() ?? string.Empty,
                 Code = request.Code?.Trim() ?? string.Empty,
+                Location = request.Location?.Trim() ?? string.Empty,
+                DatabaseName = request.DatabaseName?.Trim() ?? string.Empty,
+                Brand = request.Brand?.Trim() ?? string.Empty,
+                EventOrganizer = request.EventOrganizer?.Trim() ?? string.Empty,
+                EventDateTime = request.EventDateTime,
+                Duration = request.Duration,
                 Description = request.Description?.Trim() ?? string.Empty
             });
 

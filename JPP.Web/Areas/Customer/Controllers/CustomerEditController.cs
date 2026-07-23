@@ -1,10 +1,10 @@
 using JPP.Models.Customer.Request;
 using JPP.Models.Customer.Responses;
 using JPP.Models.Shared.Responses;
-using JPP.Models.Customer.Responses.CustomerDto;
 using JPP.Services.Interfaces;
 using JPP.Web.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,10 +17,15 @@ namespace JPP.Web.Areas.Customer.Controllers
         protected override bool RequireLogin => true;
 
         private readonly ICustomerEditService _customerEditService;
+        private readonly IEventDropdownService _eventService;
+        private readonly IStoreDropdownService _storeService;
 
-        public CustomerEditController(ICustomerEditService customerEditService)
+
+        public CustomerEditController(ICustomerEditService customerEditService, IEventDropdownService eventService, IStoreDropdownService storeService)
         {
             _customerEditService = customerEditService;
+            _eventService = eventService;
+            _storeService = storeService;
         }
 
         [HttpGet]
@@ -39,6 +44,21 @@ namespace JPP.Web.Areas.Customer.Controllers
                 TempData["ErrorMessage"] = "Customer data was not found.";
                 return RedirectToAction(nameof(Index));
             }
+
+            var events = await _eventService.GetDropdownListAsync();
+            var stores = await _storeService.GetStoreDropdownListAsync();
+
+            model.EventOptions = events.Select(e => new SelectListItem
+            {
+                Value = e.Id.ToString(),
+                Text = $"{e.Code} - {e.Name}"
+            });
+
+            model.StoreOptions = stores.Select(s => new SelectListItem
+            {
+                Value = s.ID.ToString(),
+                Text = s.StoreName
+            });
 
             return View("CustomerEditPage", model);
         }
@@ -136,56 +156,64 @@ namespace JPP.Web.Areas.Customer.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["ErrorMessage"] = "Mohon periksa kembali kelengkapan data Anda.";
+                var events = await _eventService.GetDropdownListAsync();
+                var stores = await _storeService.GetStoreDropdownListAsync();
 
-                var invalidModel = new CustomerDetailViewModel
+                var model = new CustomerDetailViewModel
                 {
                     Form = form,
-                    IsReadOnly = false
+                    IsReadOnly = false,
+                    EventName = form.EventName ?? string.Empty,
+                    EventOptions = events.Select(e => new SelectListItem
+                    {
+                        Value = e.Id.ToString(),
+                        Text = $"{e.Code} - {e.Name}"
+                    }),
+                    StoreOptions = stores.Select(s => new SelectListItem
+                    {
+                        Value = s.ID.ToString(),
+                        Text = s.StoreName
+                    })
                 };
-
-                return View("CustomerEditPage", invalidModel);
+                return View("CustomerEditPage", model);
             }
 
-            try
+            var result = await _customerEditService.SaveCustomerAsync(form);
+
+            if (result.StatusCode == 200)
             {
-                var result = await _customerEditService.SaveCustomerAsync(form);
-
-                if (result.StatusCode != 200)
-                {
-                    TempData["ErrorMessage"] = result.StatusMessage;
-
-                    var invalidModel = new CustomerDetailViewModel
-                    {
-                        Form = form,
-                        EventName = form.EventName ?? string.Empty,
-                        IsReadOnly = false
-                    };
-
-                    return View("CustomerEditPage", invalidModel);
-                }
-
-                TempData["SuccessMessage"] = "Customer berhasil diperbarui.";
+                TempData["SuccessMessage"] = "Customer successfully saved!";
 
                 if (SubmitMode == "SaveAndClose")
                 {
                     return RedirectToAction("Index", "CustomerList", new { area = "Customer" });
                 }
 
-                return RedirectToAction(nameof(Edit), new { id = form.ID });
+                return RedirectToAction("Edit", new { id = result.Data });
             }
-            catch (Exception ex)
+            else
             {
-                TempData["ErrorMessage"] = $"Terjadi kesalahan sistem: {ex.Message}";
+                TempData["ErrorMessage"] = result.StatusMessage;
 
-                var invalidModel = new CustomerDetailViewModel
+                var events = await _eventService.GetDropdownListAsync();
+                var stores = await _storeService.GetStoreDropdownListAsync();
+
+                var model = new CustomerDetailViewModel
                 {
                     Form = form,
-                    EventName = form.EventName ?? string.Empty,
-                    IsReadOnly = false
+                    IsReadOnly = false,
+                    EventOptions = events.Select(e => new SelectListItem
+                    {
+                        Value = e.Id.ToString(),
+                        Text = $"{e.Code} - {e.Name}"
+                    }),
+                    StoreOptions = stores.Select(s => new SelectListItem
+                    {
+                        Value = s.ID.ToString(),
+                        Text = s.StoreName
+                    })
                 };
-
-                return View("CustomerEditPage", invalidModel);
+                return View("CustomerEditPage", model);
             }
         }
 

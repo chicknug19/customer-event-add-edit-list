@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Threading.Tasks;
 
-namespace JPP.Web.Areas.Customer.Controllers
+namespace JPP.Web.Areas.Event.Controllers
 {
     [Area("Event")]
     public class EventAddController : BaseController

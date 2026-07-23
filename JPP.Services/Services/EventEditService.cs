@@ -3,6 +3,7 @@ using JPP.Models.Event.Request;
 using JPP.Models.Event.Responses;
 using JPP.Models.Shared.Responses;
 using JPP.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace JPP.Services.Services
 {
@@ -15,19 +16,26 @@ namespace JPP.Services.Services
             _eventEditRepository = eventEditRepository;
         }
 
-        public async Task<EventDetailViewModel?> BuildEditViewModelAsync(int id)
-        {
-            if (id <= 0)
+        private List<SelectListItem> GenerateDurationList()
+{
+            var durationList = new List<SelectListItem>();
+            for (decimal i = 0.5m; i <= 4.0m; i += 0.5m)
             {
-                return null;
+                durationList.Add(new SelectListItem
+                {
+                    Value = i.ToString("0.0"),
+                    Text = $"{i:0.0} hours"
+                });
             }
+            return durationList;
+        }
+
+        public async Task<EventDetailViewModel?> BuildEditViewModelAsync(int id)
+{
+            if (id <= 0) return null;
 
             var eventData = await _eventEditRepository.GetEventByIdAsync(id);
-
-            if (eventData == null)
-            {
-                return null;
-            }
+            if (eventData == null) return null;
 
             return new EventDetailViewModel
             {
@@ -36,9 +44,16 @@ namespace JPP.Services.Services
                     Id = eventData.Id,
                     Name = eventData.Name,
                     Code = eventData.Code,
+                    Location = eventData.Location,
+                    DatabaseName = eventData.DatabaseName,
+                    Brand = eventData.Brand,
+                    EventOrganizer = eventData.EventOrganizer,
+                    EventDateTime = eventData.EventDateTime,
+                    Duration = eventData.Duration,
                     Description = eventData.Description
                 },
-                IsReadOnly = false
+                IsReadOnly = false,
+                DurationOptions = GenerateDurationList() // <- added
             };
         }
 

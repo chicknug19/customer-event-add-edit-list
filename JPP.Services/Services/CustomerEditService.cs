@@ -38,12 +38,14 @@ namespace JPP.Services.Services
                     MiddleName = customer.MiddleName,
                     LastName = customer.LastName,
                     PhoneNumber = customer.PhoneNumber,
-                    //PhoneNumber2 = customer.PhoneNumber2,
                     EmailAddress = customer.EmailAddress,
                     Address1 = customer.Address1,
-                    //Address2 = customer.Address2,
                     EventId = customer.EventId,
-                    EventName = customer.EventName
+                    EventName = customer.EventName,
+                    StoreId = customer.StoreId,
+                    Age = customer.Age,
+                    AccountNumber = customer.AccountNumber,
+                    District = customer.District
                 },
                 EventName = customer.EventName ?? string.Empty,
                 IsReadOnly = false

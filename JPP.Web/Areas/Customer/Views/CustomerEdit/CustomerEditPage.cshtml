@@ -5,6 +5,7 @@
     ViewData["PageTitle"] = Model.PageTitle;
     ViewData["PageSubtitle"] = Model.PageSubtitle;
     Layout = "~/Views/Shared/_Layout.cshtml";
+    <link rel="stylesheet" href="~/css/app.css" />
 
     var form = Model.Form;
     var disabled = Model.IsReadOnly ? "disabled" : null;
@@ -66,6 +67,7 @@
         <div class="employee-toolbar crm-card mb-4">
             <div>
                 <h5>@(Model.IsEditMode? Model.DisplayName: "New Customer")</h5>
+                <p>@(Model.IsEditMode ? $"Edit the customer data below." : "Complete the customer data below.")</p>
             </div>
 
             <div class="employee-toolbar-actions">
@@ -99,13 +101,14 @@
         <div class="crm-card mb-4">
             <div class="section-title">
                 <h5>Personal Information</h5>
-                <p>Customer basic personal details.</p>
+                <p>Complete customer personal, contact, and address details.</p>
             </div>
 
             <div class="row g-3">
                 <div class="col-xl-4 col-md-6">
                     <label class="form-label admin-form-label">First Name <span class="text-danger">*</span></label>
                     <input type="text" name="FirstName" value="@form.FirstName" class="form-control" @disabled />
+                    @Html.ValidationMessage("FirstName", "", new { @class = "text-danger small mt-1 d-block" })
                 </div>
 
                 <div class="col-xl-4 col-md-6">
@@ -113,131 +116,107 @@
                     <input type="text" name="MiddleName" value="@form.MiddleName" class="form-control" @disabled />
                 </div>
 
-                <div class="col-xl-4 col-md-6">
+                <div class="col-xl-4 col-md-12">
                     <label class="form-label admin-form-label">Last Name</label>
                     <input type="text" name="LastName" value="@form.LastName" class="form-control" @disabled />
                 </div>
-            </div>
-        </div>
 
-        <div class="crm-card mb-4">
-            <div class="section-title">
-                <h5>Contact & Address Information</h5>
-                <p>Customer contact and residential details.</p>
-            </div>
+                <div class="col-12">
+                    <hr class="text-muted opacity-25 my-1" />
+                </div>
 
-            <div class="row g-3">
+
                 <div class="col-xl-4 col-md-6">
                     <label class="form-label admin-form-label">Phone Number <span class="text-danger">*</span></label>
-                    <input type="text" name="PhoneNumber" value="@form.PhoneNumber" class="form-control" @disabled />
+                    <!-- Tambahkan placeholder di sini -->
+                    <input type="text" name="PhoneNumber" value="@form.PhoneNumber" class="form-control" placeholder="e.g. 8123456789" @disabled />
+                    @Html.ValidationMessage("PhoneNumber", "", new { @class = "text-danger small mt-1 d-block" })
                 </div>
 
                 @* <div class="col-xl-4 col-md-6">
-                    <label class="form-label admin-form-label">Phone Number 2</label>
+                    <label class="form-label admin-form-label">Phone Number 2 (Optional)</label>
                     <input type="text" name="PhoneNumber2" value="@form.PhoneNumber2" class="form-control" @disabled />
                 </div> *@
 
                 <div class="col-xl-4 col-md-6">
-                    <label class="form-label admin-form-label">Email Address</label>
-                    <input type="email" name="EmailAddress" value="@form.EmailAddress" class="form-control" @disabled />
+                    <label class="form-label admin-form-label">District <span class="text-danger">*</span></label>
+                    <input type="text" name="District" value="@form.District" class="form-control" min="0" placeholder="e.g. Cimanggis" @disabled />
+                    @Html.ValidationMessage("District", "", new { @class = "text-danger small mt-1 d-block" })
                 </div>
-
-                <div class="col-xl-6 col-md-12">
-                    <label class="form-label admin-form-label">Address 1 <span class="text-danger">*</span></label>
-                    <input type="text" name="Address1" value="@form.Address1" class="form-control" @disabled />
-                </div>
-
-                @* <div class="col-xl-6 col-md-12">
-                    <label class="form-label admin-form-label">Address 2</label>
-                    <input type="text" name="Address2" value="@form.Address2" class="form-control" @disabled />
-                </div> *@
 
                 <div class="col-xl-4 col-md-6">
+                    <label class="form-label admin-form-label">Email Address</label>
+                    <input type="email" name="EmailAddress" value="@form.EmailAddress" class="form-control" @disabled />
+                    @Html.ValidationMessage("EmailAddress", "", new { @class = "text-danger small mt-1 d-block" })
+                </div>
+
+                <div class="col-xl-4 col-md-6">
+                    <label class="form-label admin-form-label">Address <span class="text-danger">*</span></label>
+                    <input type="text" name="Address1" value="@form.Address1" class="form-control" @disabled />
+                    @Html.ValidationMessage("Address1", "", new { @class = "text-danger small mt-1 d-block" })
+                </div>
+
+                <div class="col-xl-4 col-md-6">
+                    <label class="form-label admin-form-label">Age <span class="text-danger">*</span></label>
+                    <input type="number" name="Age" value="@form.Age" class="form-control" min="0" placeholder="e.g. 25" @disabled />
+                    @Html.ValidationMessage("Age", "", new { @class = "text-danger small mt-1 d-block" })
+                </div>
+
+                <div class="col-12">
+                    <hr class="text-muted opacity-25 my-1" />
+                </div>
+
+                <div class="col-xl-6 col-md-6">
                     <label class="form-label admin-form-label">Event Name</label>
                     <input type="text" value="@Model.EventName" class="form-control" readonly />
                     <input type="hidden" name="EventId" value="@form.EventId" />
                     <input type="hidden" name="EventName" value="@Model.EventName" />
+                </div>
+
+                @if (Model.IsEditMode)
+                {
+                    <div class="col-xl-6 col-md-6">
+                        <label class="form-label admin-form-label">Store Selection</label>
+                        <input type="text" class="form-control" readonly value="@(Model.StoreOptions?.FirstOrDefault(s => s.Value == form.StoreId.ToString())?.Text ?? "")" />
+                        <input type="hidden" name="StoreId" value="@form.StoreId" />
+                    </div>
+                }
+                else
+                {
+                    <div class="col-xl-6 col-md-6">
+                        <label class="form-label admin-form-label">Store Selection</label>
+                        <select name="StoreId" class="form-select">
+                            <option value="">- Please Select Store -</option>
+                            @if (Model.StoreOptions != null && Model.StoreOptions.Any())
+                            {
+                                foreach (var item in Model.StoreOptions)
+                                {
+                                    if (form.StoreId != null && item.Value == form.StoreId.ToString())
+                                    {
+                                        <option value="@item.Value" selected>@item.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+                }
+
+                <div class="col-xl-12 col-md-12">
+                    <label class="form-label admin-form-label">Account Number</label>
+                    <input type="text" id="AccountNumber" name="AccountNumber" value="@form.AccountNumber" class="form-control bg-light" readonly placeholder="Auto-generated after selecting a Store" />
                 </div>
             </div>
         </div>
     </div>
 </form>
 
-<style>
-    .employee-form-shell .crm-card {
-        border: 0;
-        border-radius: 18px;
-        box-shadow: 0 12px 35px rgba(49, 55, 69, .08);
-        padding: 1.5rem;
-    }
-
-    .employee-toolbar {
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        align-items: center;
-        padding: 1.25rem;
-    }
-
-        .employee-toolbar h5 {
-            margin: 0;
-            font-weight: 700;
-            color: #313745;
-        }
-
-        .employee-toolbar p {
-            margin: .25rem 0 0;
-            color: #7b8190;
-        }
-
-    .employee-toolbar-actions {
-        display: flex;
-        gap: .75rem;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-    }
-
-    .section-title {
-        margin-bottom: 1.5rem;
-    }
-
-        .section-title h5 {
-            margin: 0 0 0.5rem;
-            font-weight: 700;
-            color: #313745;
-        }
-
-        .section-title p {
-            margin: 0;
-            color: #7b8190;
-            font-size: 0.9rem;
-        }
-
-    .btn-main-outline {
-        border: 1px solid #313745;
-        color: #313745;
-        background: #fff;
-    }
-
-        .btn-main-outline:hover {
-            background: #313745;
-            color: #fff;
-        }
-
-    @@media (max-width: 768px) {
-        .employee-toolbar {
-            align-items: stretch;
-            flex-direction: column;
-        }
-
-        .employee-toolbar-actions {
-            justify-content: flex-start;
-        }
-    }
-</style>
-
 @section Scripts {
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
     <script>
         (function ($) {
             function setSubmitMode(mode) {
@@ -258,6 +237,29 @@
             $('#customerForm').on('submit', function () {
                 setSavingState(true);
             });
+
+            $('select[name="StoreId"]').on('change', function () {
+            var selectedStoreId = $(this).val();
+
+            if (selectedStoreId) {
+
+                $('#AccountNumber').val('Generating...');
+
+
+                $.get('/Customer/CustomerAdd/GetPreviewAccountNumber', { storeId: selectedStoreId }, function (data) {
+
+                    $('#AccountNumber').val(data.accountNumber);
+                }).fail(function() {
+                    $('#AccountNumber').val('Error loading account number');
+                });
+            } else {
+
+                $('#AccountNumber').val('');
+            }
+        });
+
+
+
         })(jQuery);
     </script>
 }

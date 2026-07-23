@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace JPP.Web.Areas.Event.Controllers
 {
@@ -42,92 +43,19 @@ namespace JPP.Web.Areas.Event.Controllers
             return View("EventEditPage", model);
         }
 
-        // [HttpPost]
-        // [ValidateAntiForgeryToken]
-        // public async Task<IActionResult> Edit(StoreDetailRequest request)
-        // {
-        //     if (request.Id <= 0)
-        //     {
-        //         TempData["ErrorMessage"] = "Invalid store ID.";
-        //         return RedirectToAction(nameof(Index));
-        //     }
-
-        //     var inChargeAllowed = await ApplyInChargePermissionAsync(request);
-
-        //     if (!inChargeAllowed)
-        //     {
-        //         TempData["ErrorMessage"] = "Store data was not found.";
-        //         return RedirectToAction(nameof(Index));
-        //     }
-
-        //     if (!ModelState.IsValid)
-        //     {
-        //         var invalidModel = await _storeListService.BuildEditViewModelAsync(
-        //             request.Id,
-        //             canChangeInCharge: CanChangeInCharge());
-
-        //         if (invalidModel == null)
-        //         {
-        //             TempData["ErrorMessage"] = "Store data was not found.";
-        //             return RedirectToAction(nameof(Index));
-        //         }
-
-        //         invalidModel.Form = request;
-
-        //         return View("Form", invalidModel);
-        //     }
-
-        //     try
-        //     {
-        //         var result = await _storeListService.UpdateStoreAsync(request);
-
-        //         if (!result)
-        //         {
-        //             ModelState.AddModelError(string.Empty, "Failed to update store. Please try again.");
-
-        //             var invalidModel = await _storeListService.BuildEditViewModelAsync(
-        //                 request.Id,
-        //                 canChangeInCharge: CanChangeInCharge());
-
-        //             if (invalidModel == null)
-        //             {
-        //                 TempData["ErrorMessage"] = "Store data was not found.";
-        //                 return RedirectToAction(nameof(Index));
-        //             }
-
-        //             invalidModel.Form = request;
-
-        //             return View("Form", invalidModel);
-        //         }
-
-        //         TempData["SuccessMessage"] = "Store has been updated successfully.";
-
-        //         if (IsSaveAndClose(request))
-        //         {
-        //             return RedirectToAction(nameof(Index));
-        //         }
-
-        //         return RedirectToAction(nameof(Edit), new { id = request.Id });
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         ModelState.AddModelError(string.Empty, $"Failed to update store. {ex.Message}");
-
-        //         var invalidModel = await _storeListService.BuildEditViewModelAsync(
-        //             request.Id,
-        //             canChangeInCharge: CanChangeInCharge());
-
-        //         if (invalidModel == null)
-        //         {
-        //             TempData["ErrorMessage"] = "Store data was not found.";
-        //             return RedirectToAction(nameof(Index));
-        //         }
-
-        //         invalidModel.Form = request;
-
-        //         return View("Form", invalidModel);
-        //     }
-        // }
+        private List<SelectListItem> GenerateDurationList()
+        {
+            var durationList = new List<SelectListItem>();
+            for (decimal i = 0.5m; i <= 4.0m; i += 0.5m)
+            {
+                durationList.Add(new SelectListItem
+                {
+                    Value = i.ToString("0.0"),
+                    Text = $"{i:0.0} hours"
+                });
+            }
+            return durationList;
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -140,7 +68,8 @@ namespace JPP.Web.Areas.Event.Controllers
                 var invalidModel = new EventDetailViewModel
                 {
                     Form = form,
-                    IsReadOnly = false
+                    IsReadOnly = false,
+                    DurationOptions = GenerateDurationList() // <- added
                 };
 
                 return View("EventEditPage", invalidModel);
@@ -157,7 +86,8 @@ namespace JPP.Web.Areas.Event.Controllers
                     var invalidModel = new EventDetailViewModel
                     {
                         Form = form,
-                        IsReadOnly = false
+                        IsReadOnly = false,
+                        DurationOptions = GenerateDurationList() // <- added
                     };
 
                     return View("EventEditPage", invalidModel);
@@ -179,9 +109,9 @@ namespace JPP.Web.Areas.Event.Controllers
                 var invalidModel = new EventDetailViewModel
                 {
                     Form = form,
-                    IsReadOnly = false
+                    IsReadOnly = false,
+                    DurationOptions = GenerateDurationList() // <- added
                 };
-
                 return View("EventEditPage", invalidModel);
             }
         }
