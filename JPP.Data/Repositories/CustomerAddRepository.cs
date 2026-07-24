@@ -33,32 +33,66 @@ namespace JPP.Data.Repositories
 
         public async Task<int> CreateCustomerAsync(CustomerRequest request)
         {
-            const string sql = @"
-            INSERT INTO BIZ_Customer 
-            (FirstName, MiddleName, LastName, PhoneNumber, EmailAddress, Address1,Age, EventId, StoreId, AccountNumber,District)
-            VALUES 
-            (@FirstName, @MiddleName, @LastName, @PhoneNumber, @EmailAddress, @Address1,@Age, @EventId, @StoreId, @AccountNumber,@District);
-    
-            SELECT CAST(SCOPE_IDENTITY() AS INT);";
-
             using var conn = _crmDbConnectionFactory.Create();
 
-            var newId = await conn.ExecuteScalarAsync<int>(sql, new
+            if (conn.State != ConnectionState.Open)
             {
-                FirstName = request.FirstName?.Trim() ?? string.Empty,
-                MiddleName = request.MiddleName?.Trim(),
-                LastName = request.LastName?.Trim(),
-                PhoneNumber = request.PhoneNumber?.Trim() ?? string.Empty,
-                EmailAddress = request.EmailAddress?.Trim() ?? string.Empty,
-                Address1 = request.Address1?.Trim() ?? string.Empty,
-                Age = request.Age.Value,
-                EventId = request.EventId,
-                StoreId = request.StoreId,
-                AccountNumber = request.AccountNumber,
-                District = request.District
-            });
+                conn.Open();
+            }
 
-            return newId;
+            using var transaction = conn.BeginTransaction();
+
+            try
+            {
+                const string sqlCustomer = @"
+                INSERT INTO BIZ_Customer 
+                (FirstName, MiddleName, LastName, PhoneNumber, EmailAddress, Address1, Age, EventId, StoreId, AccountNumber, District)
+                VALUES 
+                (@FirstName, @MiddleName, @LastName, @PhoneNumber, @EmailAddress, @Address1, @Age, @EventId, @StoreId, @AccountNumber, @District);
+                
+                SELECT CAST(SCOPE_IDENTITY() AS INT);";
+
+                var newCustomerId = await conn.ExecuteScalarAsync<int>(sqlCustomer, new
+                {
+                    FirstName = request.FirstName?.Trim() ?? string.Empty,
+                    MiddleName = request.MiddleName?.Trim(),
+                    LastName = request.LastName?.Trim(),
+                    PhoneNumber = request.PhoneNumber?.Trim() ?? string.Empty,
+                    EmailAddress = request.EmailAddress?.Trim() ?? string.Empty,
+                    Address1 = request.Address1?.Trim() ?? string.Empty,
+                    Age = request.Age.Value,
+                    EventId = request.EventId,
+                    StoreId = request.StoreId,
+                    AccountNumber = request.AccountNumber,
+                    District = request.District
+                }, transaction);
+
+                if (request.EventId.HasValue && request.EventId.Value > 0)
+                {
+                    const string sqlCustomerEvent = @"
+                    INSERT INTO Customer_Event 
+                    (UID, CustomerID, EventID, HQID)
+                    VALUES 
+                    (@UID, @CustomerID, @EventID, @HQID);";
+
+                    await conn.ExecuteAsync(sqlCustomerEvent, new
+                    {
+                        UID = Guid.NewGuid().ToString(),
+                        CustomerID = newCustomerId,
+                        EventID = request.EventId.Value, 
+                        HQID = request.StoreId  
+                    }, transaction);
+                }
+
+                transaction.Commit();
+
+                return newCustomerId;
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw;
+            }
         }
 
 
