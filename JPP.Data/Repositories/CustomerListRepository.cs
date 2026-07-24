@@ -69,7 +69,15 @@ namespace JPP.Data.Repositories
                     OR ISNULL(CAST(c.District AS NVARCHAR(150)), '') LIKE '%' + @Keyword + '%'
                 )
                 AND (@StoreId = 0 OR c.StoreID = @StoreId)
-                AND (@EventId = 0 OR c.EventID = @EventId)
+                AND (
+                    @EventId = 0
+                    OR EXISTS (
+                        SELECT 1
+                        FROM Customer_Event ce
+                        WHERE ce.CustomerId = c.ID
+                        AND ce.EventId = @EventId
+                    )
+                )
                 ORDER BY FullName ASC
                 OFFSET @Skip ROWS
                 FETCH NEXT @PageSize ROWS ONLY;";

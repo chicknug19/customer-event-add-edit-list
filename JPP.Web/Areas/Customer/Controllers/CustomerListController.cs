@@ -6,11 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using JPP.Web.Controllers;
-using JPP.Services.Interfaces;
-using JPP.Models.Customer.Request;
 using JPP.Models.Customer.Responses;
 
 namespace JPP.Web.Areas.Customer.Controllers

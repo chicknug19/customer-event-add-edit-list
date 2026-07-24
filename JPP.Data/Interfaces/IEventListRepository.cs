@@ -12,6 +12,7 @@ namespace JPP.Data.Interfaces
     public interface IEventListRepository
     {
     Task<List<EventListDto>> GetEventListAsync(EventListFilterRequest filter);
+    Task<bool> DeleteEventAsync(int id);
     }
     
 }

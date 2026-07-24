@@ -38,5 +38,25 @@ namespace JPP.Services.Services
                 return EventListServiceResult.Fail("An error occurred while fetching events", 500);
             }
         }
+
+        public async Task<EventListServiceResult> DeleteEventAsync(int id)
+        {
+            try
+            {
+                var success = await _eventListRepository.DeleteEventAsync(id);
+
+                if (success)
+                {
+                    return EventListServiceResult.Ok(null, "Event deleted successfully");
+                }
+
+                return EventListServiceResult.Fail("Event not found or could not be deleted", 400);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting event with ID {EventId}", id);
+                return EventListServiceResult.Fail("An error occurred while deleting the event", 500);
+            }
+        }
     }
 }

@@ -2404,40 +2404,59 @@ a {
         }
     }
 
-    /* keep Save / SaveAndClose / Cancel on one row on small screens */
-@media (max-width: 768px) {
-  .employee-toolbar-actions {
-    display: flex !important;
-    gap: .75rem;
-    flex-wrap: nowrap !important;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    justify-content: flex-start !important;
-  }
-
-  .employee-toolbar-actions > * {
-    white-space: nowrap;
-    flex: 0 0 auto;
-  }
+.custom-bottom-right-panel {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 350px;
+    background: #fff;
+    border-radius: 8px;
+    z-index: 1050;
+    border: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
 }
 
-@media (max-width: 768px) {
-  .custom-bottom-right-panel {
-    position: fixed !important;
-    left: 50% !important;
-    right: auto !important;
-    top: auto !important;
-    bottom: 16px !important;
-    transform: translateX(-50%) !important;
-    width: min(96vw, 420px) !important;
-    max-height: 70vh !important;
-    overflow-y: auto;
-    border-radius: 12px !important;
-    box-shadow: 0 12px 28px rgba(0,0,0,.18);
-    z-index: 2000;
-  }
+ .diagnostic-panel {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        width: 380px;
+        max-width: 90vw;
+        max-height: 70vh;
+        overflow-y: auto;
+        background: #fff;
+        border: 1px solid #d8dee5;
+        border-radius: 10px;
+        box-shadow: 0 8px 28px rgba(0,0,0,.18);
+        z-index: 1060;
+    }
 
-  .custom-bottom-right-panel .p-3 {
-    padding: .75rem;
-  }
-}
+    .diagnostic-panel-header {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: .75rem 1rem;
+        border-bottom: 1px solid #eee;
+        position: sticky; top: 0;
+        background: #fff;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .diagnostic-panel-body { padding: 1rem; }
+
+    .diagnostic-entry {
+        display: flex; justify-content: space-between; align-items: flex-start;
+        gap: 1rem;
+        padding: .5rem 0;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: .9rem;
+    }
+
+    .diagnostic-entry-date { white-space: nowrap; color: #888; font-size: .8rem; }
+
+    .diagnostic-new-entry {
+        margin-top: 1rem;
+        padding-top: .75rem;
+        border-top: 1px solid #eee;
+    }
+
+    .diagnostic-type-toggle { display: flex; gap: 1.25rem; font-size: .9rem; }

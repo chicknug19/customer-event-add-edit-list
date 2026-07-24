@@ -45,5 +45,27 @@ namespace JPP.Web.Areas.Event.Controllers
                     });
             }
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteEvent(int id)
+        {
+            try
+            {
+                var result = await _eventListService.DeleteEventAsync(id);
+
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    new
+                    {
+                        Success = false,
+                        Message = $"Failed to delete event. {ex.Message}",
+                        StatusCode = StatusCodes.Status500InternalServerError
+                    });
+            }
+        }
     }
 }
