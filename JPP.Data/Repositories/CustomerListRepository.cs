@@ -31,7 +31,16 @@ namespace JPP.Data.Repositories
                     ISNULL(c.MiddleName, '') + ' ' +
                     ISNULL(c.LastName, '') AS FullName,
                     c.PhoneNumber,
-                    c.Age,
+                    CASE
+                        WHEN c.DOB IS NULL THEN NULL
+                        ELSE
+                            DATEDIFF(YEAR, c.DOB, GETDATE())
+                            - CASE
+                                WHEN DATEADD(YEAR, DATEDIFF(YEAR, c.DOB, GETDATE()), c.DOB) > GETDATE()
+                                THEN 1
+                                ELSE 0
+                            END
+                    END AS Age,
                     c.Address1,
                     c.District AS Kecamatan,
                     c.EventID AS EventId,
