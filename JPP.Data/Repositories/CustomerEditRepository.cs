@@ -38,7 +38,7 @@ namespace JPP.Data.Repositories
                     e.Name AS EventName,
                     c.StoreID AS StoreId,
                     c.AccountNumber,
-                    c.Age,
+                    c.DOB,
                     c.District
                 FROM BIZ_Customer c
                 LEFT JOIN BIZ_Event e ON e.Id = c.EventID
@@ -65,7 +65,7 @@ namespace JPP.Data.Repositories
                     EmailAddress = @EmailAddress,
                     Address1 = @Address1,
                     StoreID = @StoreId,
-                    Age = @Age,
+                    DOB = @DOB,
                     AccountNumber = @AccountNumber,
                     District = @District,
                     LastUpdated = GETDATE()
@@ -82,7 +82,7 @@ namespace JPP.Data.Repositories
                 EmailAddress = request.EmailAddress?.Trim(),
                 Address1 = request.Address1?.Trim() ?? string.Empty,
                 StoreId = request.StoreId,
-                Age = request.Age,
+                DOB = request.DOB,
                 AccountNumber = request.AccountNumber,
                 District = request.District?.Trim()
             });

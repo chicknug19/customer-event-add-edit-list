@@ -43,8 +43,8 @@ namespace JPP.Models.Customer.Request
 
         public string? AccountNumber { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Age is required")]
-        public int? Age { get; set; }
+        [Required(ErrorMessage = "Date of Birth is required")]
+        public DateTime? DOB { get; set; }
 
         [Required(ErrorMessage = "District is required")]
         public string District { get; set; }
