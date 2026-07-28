@@ -41,8 +41,8 @@ namespace JPP.Data.Repositories
                     c.DOB,
                     c.District
                 FROM BIZ_Customer c
-                LEFT JOIN BIZ_Event e ON e.Id = c.EventID
                 LEFT JOIN Customer_Event ce ON ce.CustomerId = c.ID
+                LEFT JOIN BIZ_Event e ON e.Id = ce.EventID
                 WHERE c.ID = @Id";
 
             using var conn = _crmDbConnectionFactory.Create();
