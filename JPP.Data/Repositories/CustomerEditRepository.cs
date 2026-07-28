@@ -34,7 +34,7 @@ namespace JPP.Data.Repositories
                     c.EmailAddress,
                     c.Address1,
                     c.Address2,
-                    ce.EventID AS EventId,
+                    ce.EventID,
                     e.Name AS EventName,
                     c.StoreID AS StoreId,
                     c.AccountNumber,
@@ -46,7 +46,11 @@ namespace JPP.Data.Repositories
                 WHERE c.ID = @Id";
 
             using var conn = _crmDbConnectionFactory.Create();
-            return await conn.QuerySingleOrDefaultAsync<CustomerDto>(sql, new { Id = id });
+
+            // PERBAIKAN DI SINI:
+            // Ganti QuerySingleOrDefaultAsync menjadi QueryFirstOrDefaultAsync
+            // Agar jika ada banyak event, sistem hanya mengambil event pertama tanpa error.
+            return await conn.QueryFirstOrDefaultAsync<CustomerDto>(sql, new { Id = id });
         }
 
         public async Task<bool> UpdateCustomerAsync(CustomerRequest request)
