@@ -34,7 +34,7 @@ namespace JPP.Data.Repositories
                     c.EmailAddress,
                     c.Address1,
                     c.Address2,
-                    c.EventID AS EventId,
+                    ce.EventID AS EventId,
                     e.Name AS EventName,
                     c.StoreID AS StoreId,
                     c.AccountNumber,
@@ -42,6 +42,7 @@ namespace JPP.Data.Repositories
                     c.District
                 FROM BIZ_Customer c
                 LEFT JOIN BIZ_Event e ON e.Id = c.EventID
+                LEFT JOIN Customer_Event ce ON ce.CustomerId = c.ID
                 WHERE c.ID = @Id";
 
             using var conn = _crmDbConnectionFactory.Create();

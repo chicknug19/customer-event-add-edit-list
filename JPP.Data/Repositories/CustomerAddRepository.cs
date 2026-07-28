@@ -46,9 +46,9 @@ namespace JPP.Data.Repositories
             {
                 const string sqlCustomer = @"
                 INSERT INTO BIZ_Customer 
-                (FirstName, MiddleName, LastName, PhoneNumber, EmailAddress, Address1, DOB, EventId, StoreId, AccountNumber, District)
+                (FirstName, MiddleName, LastName, PhoneNumber, EmailAddress, Address1, DOB, StoreId, AccountNumber, District)
                 VALUES 
-                (@FirstName, @MiddleName, @LastName, @PhoneNumber, @EmailAddress, @Address1, @DOB, @EventId, @StoreId, @AccountNumber, @District);
+                (@FirstName, @MiddleName, @LastName, @PhoneNumber, @EmailAddress, @Address1, @DOB, @StoreId, @AccountNumber, @District);
                 
                 SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
@@ -61,7 +61,6 @@ namespace JPP.Data.Repositories
                     EmailAddress = request.EmailAddress?.Trim() ?? string.Empty,
                     Address1 = request.Address1?.Trim() ?? string.Empty,
                     DOB = request.DOB.Value,
-                    EventId = request.EventId,
                     StoreId = request.StoreId,
                     AccountNumber = request.AccountNumber,
                     District = request.District
