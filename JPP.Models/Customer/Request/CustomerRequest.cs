@@ -20,7 +20,7 @@ namespace JPP.Models.Customer.Request
         public string? LastName { get; set; }
 
         [Required(ErrorMessage = "Phone Number cannot be empty.")]
-        [RegularExpression(@"^8[0-9]{5,14}$", ErrorMessage = "The mobile number must start with the digit 8 (without a leading 0) and contain only digits.")]
+        [RegularExpression(@"^8[0-9]{9,12}$", ErrorMessage = "The mobile number must start with the digit 8 and contain 10 to 13 digits.")]
         public string PhoneNumber { get; set; } = string.Empty;
 
         //public string? PhoneNumber2 { get; set; }
