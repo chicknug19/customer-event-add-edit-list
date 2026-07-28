@@ -43,8 +43,6 @@ namespace JPP.Data.Repositories
                     END AS Age,
                     c.Address1,
                     c.District AS Kecamatan,
-                    c.EventID AS EventId,
-                    e.Name AS EventName,
                     CASE WHEN EXISTS (
                         SELECT 1
                         FROM Customer_Event ce
@@ -64,7 +62,6 @@ namespace JPP.Data.Repositories
                         AND cd.Type = 'Dental'
                     ) THEN 'Yes' ELSE 'No' END AS Dental
                 FROM BIZ_Customer c
-                LEFT JOIN BIZ_Event e ON e.Id = c.EventID
                 WHERE
                 (
                     @Keyword = ''
