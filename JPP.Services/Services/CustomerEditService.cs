@@ -43,7 +43,7 @@ namespace JPP.Services.Services
                     EventId = customer.EventId,
                     EventName = customer.EventName,
                     StoreId = customer.StoreId,
-                    Age = customer.Age,
+                    DOB = customer.DOB,
                     AccountNumber = customer.AccountNumber,
                     District = customer.District
                 },

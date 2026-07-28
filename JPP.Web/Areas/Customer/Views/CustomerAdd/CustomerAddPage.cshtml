@@ -159,9 +159,9 @@
                 </div>
 
                 <div class="col-xl-4 col-md-6">
-                    <label class="form-label admin-form-label">Age <span class="text-danger">*</span></label>
-                    <input type="number" name="Age" value="@form.Age" class="form-control" min="0" placeholder="e.g. 25" @disabled />
-                    @Html.ValidationMessage("Age", "", new { @class = "text-danger small mt-1 d-block" })
+                    <label class="form-label admin-form-label">Date of Birth <span class="text-danger">*</span></label>
+                    <input type="date" name="DOB" value="@(form.DOB?.ToString("yyyy-MM-dd") ?? "1970-01-01")" class="form-control" @disabled />
+                    @Html.ValidationMessage("DOB", "", new { @class = "text-danger small mt-1 d-block" })
                 </div>
 
                 @* <div class="col-xl-6 col-md-12">
