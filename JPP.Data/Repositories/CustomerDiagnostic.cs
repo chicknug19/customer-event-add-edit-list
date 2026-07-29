@@ -20,19 +20,16 @@ namespace JPP.Data.Repositories
         public async Task<List<CustomerDiagnosticDto>> GetCustomerDiagnosticAsync(int customerId)
         {
             const string sql = @"
-                SELECT 
-                    cd.Id,
-                    cd.CustomerId,
-                    cd.EventId,
-                    cd.Type,
-                    cd.Description,
-                    cd.LogDate
-                FROM Customer_Diagnostic cd
-                INNER JOIN Customer_Event ce
-                    ON ce.EventId = cd.EventId
-                AND ce.CustomerId = cd.CustomerId
-                WHERE cd.CustomerId = @CustomerId
-                ORDER BY cd.LogDate DESC;";
+                SELECT
+                cd.Id,
+                cd.CustomerId,
+                cd.EventId,
+                cd.Type,
+                cd.Description,
+                cd.LogDate
+            FROM Customer_Diagnostic cd
+            WHERE cd.CustomerId = @CustomerId
+            ORDER BY cd.LogDate DESC;";
 
             using var conn = _crmDbConnectionFactory.Create();
 
@@ -76,6 +73,22 @@ namespace JPP.Data.Repositories
             using var conn = _crmDbConnectionFactory.Create();
 
             return await conn.ExecuteScalarAsync<int>(sql, dto);
+        }
+        public async Task<int?> GetCustomerStoreIdAsync(int customerId)
+        {
+            const string sql = @"
+                SELECT StoreID
+                FROM BIZ_Customer
+                WHERE ID = @CustomerId;";
+
+            using var conn = _crmDbConnectionFactory.Create();
+
+            return await conn.QueryFirstOrDefaultAsync<int?>(
+                sql,
+                new
+                {
+                    CustomerId = customerId
+                });
         }
     }
 }

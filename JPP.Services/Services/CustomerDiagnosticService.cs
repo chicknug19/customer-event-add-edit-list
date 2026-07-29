@@ -38,16 +38,31 @@ namespace JPP.Services.Services
         {
             try
             {
-                var latestEvent = await _customerDiagnosticRepository.GetLatestCustomerEventAsync(request.CustomerId);
+                var latestEvent =
+                    await _customerDiagnosticRepository.GetLatestCustomerEventAsync(request.CustomerId);
 
-                if (latestEvent == null)
+                if (latestEvent != null)
                 {
-                    _logger.LogWarning("No Customer_Event found for CustomerId: {CustomerId}", request.CustomerId);
-                    return false;
+                    request.HQID = latestEvent.HQID;
+                    request.EventId = latestEvent.EventId;
                 }
+                else
+                {
+                    var storeId =
+                        await _customerDiagnosticRepository.GetCustomerStoreIdAsync(request.CustomerId);
 
-                request.HQID = latestEvent.HQID;
-                request.EventId = latestEvent.EventId;
+                    if (!storeId.HasValue)
+                    {
+                        _logger.LogWarning(
+                            "Customer {CustomerId} not found.",
+                            request.CustomerId);
+
+                        return false;
+                    }
+
+                    request.HQID = storeId.Value;
+                    request.EventId = 0;
+                }
 
                 var newId = await _customerDiagnosticRepository.AddCustomerDiagnosticAsync(request);
                 return newId > 0;
