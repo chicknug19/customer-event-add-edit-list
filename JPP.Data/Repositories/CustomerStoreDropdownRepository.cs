@@ -25,6 +25,7 @@ namespace JPP.Data.Repositories
                     StoreName AS Name
                 FROM BIZ_Stores
                 WHERE ISNULL(Inactive, 0) = 0
+                AND ID IN (19, 27)
                 ORDER BY StoreName ASC;";
 
             using var conn = _connFactory.Create();
