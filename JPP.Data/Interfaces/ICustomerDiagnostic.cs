@@ -14,6 +14,7 @@ namespace JPP.Data.Interfaces
     Task<List<CustomerDiagnosticDto>> GetCustomerDiagnosticAsync(int CustomerId);
     Task<LatestCustomerEventDto> GetLatestCustomerEventAsync(int customerId);
     Task<int> AddCustomerDiagnosticAsync(NewCustomerDiagnosticDto dto);
+    Task<int?> GetCustomerStoreIdAsync(int customerId);
     }
     
 }
